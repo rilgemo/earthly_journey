@@ -1,25 +1,563 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useRef, useEffect, useCallback } from "react";
 
-function App() {
+const C = {
+  bg:"#0e0e12", panel:"#141418", border:"#2a2a35", borderHi:"#44445a",
+  text:"#d4d0c8", textDim:"#6b6880", textHi:"#e8e4dc",
+  accent:"#7c6fcd", accentDim:"#3d3666",
+  green:"#5a9e6f", red:"#9e5a5a", gold:"#b89a4a",
+  log0:"#c4c0b8", log1:"#7a7890",
+  hp:"#8b3a3a", hpFill:"#c05050",
+  stFull:"#4a9e6f", stOk:"#8a9e3a", stWarn:"#c07830", stCrit:"#c03030",
+};
+
+const SKILL_TYPE_COLOR = { 战斗:"#9e5a5a", 生产:"#7c6fcd", 采集:"#5a9e6f", 辅助:"#b89a4a", 隐藏:"#666" };
+const SKILL_SLOTS = 10;
+const ST_MAX = 100; const ST_WARN = 30; const ST_CRIT = 10;
+const ST_COST = { high:18, mid:10, low:5, vlow:2 };
+
+const EQUIP_SLOTS = [
+  { id:"head",  label:"头部", icon:"🪖" },
+  { id:"body",  label:"身体", icon:"🥋" },
+  { id:"hands", label:"手部", icon:"🧤" },
+  { id:"feet",  label:"脚部", icon:"👢" },
+  { id:"main",  label:"主手", icon:"⚔️" },
+  { id:"off",   label:"副手", icon:"🛡️" },
+  { id:"acc1",  label:"饰品", icon:"💍" },
+  { id:"acc2",  label:"饰品", icon:"📿" },
+];
+
+function stColor(p) { return p>69?C.stFull:p>29?C.stOk:p>9?C.stWarn:C.stCrit; }
+function stLabel(p) { return p>69?"充沛":p>29?"疲惫":p>9?"警戒":"极限"; }
+
+const AREAS = {
+  "新叶镇·广场":{ label:"新叶镇 · 广场", intro:["你站在新叶镇的广场中央。","青石板路被岁月磨得光滑，中央有一座久已干涸的喷泉。商贩整理着摊位，两名旅人在城门附近低声争论，一只猫蹲在木桶上漠然注视着你。","没有人告诉你该做什么。从哪里开始，由你决定。"], actions:["环顾四周","走向商贩摊位","查看告示板","与旅人搭话"], travel:["新叶镇·晨星旅店","新叶镇·药剂店","新叶镇·锻造铺","新叶镇·皮革防具店","新叶镇·城门外"] },
+  "新叶镇·晨星旅店":{ label:"新叶镇 · 晨星旅店", intro:["旅店兼着餐厅，木头桌椅摆得满满当当，炉火烧得旺。","掌柜是个圆脸女人，手脚麻利。厨房飘出炖肉的香气，几名旅客低头吃饭，偶尔传来压低的交谈声。","墙角有一块小黑板，写着今日菜单。"], actions:["与掌柜交谈","查看今日菜单","在大厅休息（免费·小量回复）","点一碗炖肉汤（5G）","租住房间（10G·完全回复）"], travel:["新叶镇·广场"] },
+  "新叶镇·药剂店":{ label:"新叶镇 · 翠叶药剂店", intro:["药剂店的空气里弥漫着草药和酒精的混合气味。","货架上整齐排列着各色瓶瓶罐罐，瓶签上写着潦草的字。","店主是个戴眼镜的中年妇人，正低头研磨什么东西，见你进来只是抬了抬眼。"], actions:["查看货架","与店主交谈","购买小型回复药水（15G）","购买解毒剂（20G）"], travel:["新叶镇·广场"] },
+  "新叶镇·锻造铺":{ label:"新叶镇 · 铁砧锻造铺", intro:["锻造铺的热浪扑面而来，叮叮当当的敲击声不曾停歇。","铁匠是个沉默的壮汉，正专注地处理一块烧红的铁料。","铺子分两侧——左边挂着武器，右边立着防具和工具。"], actions:["查看武器陈列","查看防具陈列","查看工具陈列","与铁匠搭话","靠近铁匠铺观摩锻造"], travel:["新叶镇·广场"] },
+  "新叶镇·皮革防具店":{ label:"新叶镇 · 猎人皮革店", intro:["店面不大，但皮革的气味很浓。","墙上挂满了各种皮甲、皮带、手套和靴子，做工细腻，针脚整齐。","老板是个精瘦的老人，正用锥子在一块皮革上打孔，头也不抬。"], actions:["浏览皮革防具","与老板交谈","询问定制服务"], travel:["新叶镇·广场"] },
+  "新叶镇·城门外":{ label:"新叶镇 · 城门外", intro:["你踏出城门，脚下的石板路渐渐变成夯实的泥土。","风从旷野吹来，带着青草和泥土的气息。出口分叉为两条路——向南蜿蜒进入一片疏朗的林地，向北则沿着山脚延伸，远处隐约可见矿洞的轮廓。"], actions:["观察周围环境","在路边稍作休息（营地·部分回复）"], travel:["新叶镇·广场","南边林地","北边矿洞·入口"] },
+  "南边林地":{ label:"南边林地", intro:["林地疏朗，阳光从树隙间漏下，在地面投下碎金般的光斑。","脚边长着各色野草，偶尔有松鼠从枝头一跃而过。"], actions:["采集草药","深入林地","观察周围环境","就地休息（营地·部分回复）"], travel:["新叶镇·城门外"] },
+  "北边矿洞·入口":{ label:"北边矿洞 · 入口", intro:["山路越走越窄，空气中多了一股铁锈和潮湿的气味。","矿洞入口黑漆漆的，像张开的口。洞壁上有人凿下的痕迹，也有更古老的、不像是人工的刻痕。里面传来微弱的回声。"], actions:["检查洞壁上的刻痕","聆听洞内动静"], travel:["新叶镇·城门外","北边矿洞·浅层"] },
+  "北边矿洞·浅层":{ label:"北边矿洞 · 浅层", intro:["洞内昏暗，你的眼睛慢慢适应了黑暗。","地面潮湿，岩壁上嵌着隐隐发光的矿脉。空气沉重，每一口呼吸都带着铁锈的味道。","远处似乎有什么在移动。"], actions:["采集矿石","仔细观察矿脉","保持警戒"], travel:["北边矿洞·入口"] },
+};
+
+const ACTION_DATA = {
+  "环顾四周":{ stCost:"vlow", narrative:["你缓缓转身，打量着这座小镇。","广场不大，却透着一种经年累月的烟火气。干涸的喷泉旁，几个孩子追逐嬉闹；锻造铺传来断断续续的敲击声；远处城墙的豁口透进一缕山风。","这里没有人在意你——或许这正是你需要的。"], log:["你环顾四周，对新叶镇有了初步的了解。"], addActions:{"新叶镇·广场":["检查干涸的喷泉"]} },
+  "走向商贩摊位":{ stCost:"vlow", narrative:["商贩是个中年男人，眼角堆着笑纹，手里摆弄着几块布料。","「哟，新来的？」他抬起头，打量你一眼，「这镇上什么都卖，就是不卖后悔药。」","他的摊位上摆着各色物件——草药、皮革、几本翻旧了的小册子。"], log:["商贩似乎见多识广，也许能从他那里学到些什么。"], addActions:{"新叶镇·广场":["翻看商贩的小册子","询问商贩关于这座镇子"]}, removeActions:["走向商贩摊位"] },
+  "查看告示板":{ stCost:"vlow", narrative:["告示板立在广场一角，木头已经被风雨侵蚀得发灰。上面钉着几张皮纸：","『本镇近日野猪出没，请勿单独前往东林。——镇长』","『收购：品质草药、矿石、鱼获，价格公道。——繁荣商会』","『……第七封印已裂，天赋之地的沉眠者……』——这张纸被撕去了大半，只剩残片。"], log:["告示板上透露了一些线索，其中一张残缺的纸引起了你的注意。"], addActions:{"新叶镇·广场":["仔细研究那张残缺的纸"]}, removeActions:["查看告示板"] },
+  "与旅人搭话":{ stCost:"vlow", narrative:["两名旅人压低声音争论着什么，见你走近，其中一个停了口。","「你也是来找机会的？」高个子旅人打量你，「这地方看着平静，但……算了，自己去摸索吧。」","矮个子旅人往城门方向努努嘴：「北边的矿洞最近不太平，但矿石品质一流。南边的林子倒是安全，适合刚入门的人。」"], log:["旅人提到了北边的矿洞和南边的林子。"], removeActions:["与旅人搭话"] },
+  "检查干涸的喷泉":{ stCost:"vlow", narrative:["喷泉中心是一尊石像，岁月将它磨损得几乎认不出原来的模样。","你俯身细看，石像底座刻着一行几乎被苔藓覆盖的字：","「凡有所求者，先知自身所缺。」"], log:["喷泉底座的铭文：「凡有所求者，先知自身所缺。」"], removeActions:["检查干涸的喷泉"] },
+  "翻看商贩的小册子":{ stCost:"vlow", narrative:["商贩见你伸手，也不阻拦，只是笑着说：「眼力好的人，才看得出里面有什么。」","你翻开其中一本——是一本简陋的草药图鉴，画工粗糙，但标注颇为详细。","「喜欢就拿去，算我送你的见面礼。」"], log:["你从商贩那里得到了一本草药图鉴。"], unlockSkill:{ name:"草药知识", type:"辅助", desc:"辨别常见草药的种类与药效。", stats:{ HP:2, 精神:1 } }, giveItem:{ name:"草药图鉴", qty:1 }, removeActions:["翻看商贩的小册子","询问商贩关于这座镇子"] },
+  "询问商贩关于这座镇子":{ stCost:"vlow", narrative:["「新叶镇啊——」商贩把布料叠了叠，「说大不大，说小不小。从前这里是个驿站，后来慢慢有人定居，就成了镇子。」","他压低声音：「每个人身上都带着点什么……」他意味深长地看了你一眼，「你也是。」"], log:["商贩告诉了你新叶镇的来历。"], removeActions:["询问商贩关于这座镇子"] },
+  "仔细研究那张残缺的纸":{ stCost:"vlow", narrative:["你将那片残纸小心取下。墨迹已褪，字迹潦草，能辨认的只有几个词：","「……第七封印……天赋之地……沉眠者苏醒……技能之根……」","纸张背面有一个奇异的符文，你盯着它看了片刻，脑中隐隐有什么东西一闪而过——随即消失。"], log:["残纸上的「天赋之地」和「技能之根」留在了你心里。"], removeActions:["仔细研究那张残缺的纸"] },
+  "与掌柜交谈":{ stCost:"vlow", stRestore:"tiny", narrative:["「来了多久了？」掌柜一边擦拭柜台一边问。","「不管来多久，这里都是新叶镇最暖和的地方。」她笑了笑。"], log:["与掌柜交谈，心情舒缓了些。"] },
+  "查看今日菜单":{ stCost:"vlow", narrative:["小黑板上写着：","今日例汤：野菌炖肉汤 — 5G","今日特餐：烤鱼配根茎菜 — 12G","「都是自家做的，料放得足。」掌柜在旁边补了一句。"], log:["今日菜单：野菌炖肉汤 5G，烤鱼特餐 12G。"] },
+  "在大厅休息（免费·小量回复）":{ stCost:"rest_tiny", narrative:["你找了个角落的椅子坐下，靠着温热的壁炉，闭上眼睛。","断断续续的交谈声、锅碗碰撞的声音……这些声音反而让人安心。"], log:["你在旅店大厅小憩，体力略有回复。"] },
+  "点一碗炖肉汤（5G）":{ stCost:"rest_tiny", cost:{ gold:5 }, hpRestore:5, narrative:["掌柜端来一碗冒着热气的浓汤，里面浮着几块肉和蘑菇。","入口鲜浓，暖意从胃里散开，蔓延到四肢。你感觉好多了。"], log:["你喝了一碗炖肉汤，体力和气色都好转了些。"] },
+  "租住房间（10G·完全回复）":{ stCost:"rest_full", cost:{ gold:10 }, narrative:["掌柜领你上楼，推开一间小而整洁的房间。","床铺铺着洗干净的亚麻布，窗外透进月光。你躺下去，几乎在头碰到枕头的瞬间就睡着了。","—— 次日清晨 ——","你睁开眼，神清气爽。昨日的疲惫已经消散殆尽。"], log:["你在晨星旅店住了一晚，体力完全恢复。"] },
+  "查看货架":{ stCost:"vlow", narrative:["货架上整齐排列着各种药剂：","· 小型回复药水（红色）— 15G，回复少量HP","· 解毒剂（绿色）— 20G，解除中毒状态","· 提神剂（黄色）— 30G，立即回复大量体力","角落还有几瓶标签模糊的瓶子，看不出内容物。"], log:["药剂店货架：回复药水 15G、解毒剂 20G、提神剂 30G，以及几瓶不明药剂。"], addActions:{"新叶镇·药剂店":["购买提神剂（30G）","查看不明药剂"]} },
+  "与店主交谈":{ stCost:"vlow", narrative:["店主放下研磨钵，摘下眼镜擦了擦。","「草药和矿物，我都收购。品质好的价格高。」她说，「你要是懂采集，可以来找我谈。」","她顿了顿，「自己调配药剂的话……要小心。有些东西混在一起会出人命。」"], log:["药剂店主收购草药和矿物，提醒了药剂调配的危险性。"], unlockSkill:{ name:"炼金入门", type:"生产", desc:"对药剂调配的基础理解。", stats:{ 魔攻:1, 灵巧:2, 精神:1 } } },
+  "购买小型回复药水（15G）":{ stCost:"vlow", cost:{ gold:15 }, giveItem:{ name:"小型回复药水", qty:1 }, narrative:["你递过金币，店主从货架上取下一个红色小瓶递给你。","「摔碎了别来找我。」她面无表情地说。"], log:["购买了 小型回复药水 ×1。"] },
+  "购买解毒剂（20G）":{ stCost:"vlow", cost:{ gold:20 }, giveItem:{ name:"解毒剂", qty:1 }, narrative:["店主从货架取下一瓶绿色药剂，塞了个软木塞。","「进矿洞记得带着，那里的东西有些会下毒。」"], log:["购买了 解毒剂 ×1。"] },
+  "购买提神剂（30G）":{ stCost:"vlow", cost:{ gold:30 }, giveItem:{ name:"提神剂", qty:1 }, stRestore:"full_item", narrative:["店主递来一瓶金黄色的液体，「一口喝下去，马上精神。不过别太依赖它。」","你决定留着备用。"], log:["购买了 提神剂 ×1。（使用后完全恢复体力）"] },
+  "查看不明药剂":{ stCost:"vlow", narrative:["你走近那几瓶标签模糊的瓶子，试图辨认。","一瓶里的液体是奇异的蓝紫色，另一瓶则几乎是纯黑的。","店主的声音从身后传来：「那几瓶不卖。」她没有解释原因。"], log:["货架角落有几瓶不明药剂，店主拒绝出售。也许需要更深入的了解才能接触到它们。"], removeActions:["查看不明药剂"] },
+  "查看武器陈列":{ stCost:"vlow", narrative:["武器架上挂着数柄铁剑、一把宽背砍刀，以及几把匕首。","工艺不算精细，但结实耐用，适合初学者。","最下面还有一把木柄锤，看起来更像是工具而非武器。"], log:["锻造铺武器陈列：铁剑、砍刀、匕首、工具锤。（暂无库存可购买）"] },
+  "查看防具陈列":{ stCost:"vlow", narrative:["右侧架子上摆着几件铁制护具：胸甲、护腕、头盔。","做工厚重，穿上去应该会影响行动速度。","旁边有个标牌：「铁甲系列，委托打造需3日。」"], log:["锻造铺防具陈列：铁甲系列，均为委托打造，需时3日。"] },
+  "查看工具陈列":{ stCost:"vlow", narrative:["工具区摆着锄头、锤子、凿子、矿镐。","其中一把矿镐做工不错，镐头沉甸甸的，适合采矿。","标价：采矿镐 — 40G。"], log:["锻造铺工具：矿镐 40G，可提升采矿效率。"], addActions:{"新叶镇·锻造铺":["购买采矿镐（40G）"]} },
+  "与铁匠搭话":{ stCost:"vlow", narrative:["铁匠停下锤子，用袖子擦了擦额头的汗。","「要打什么，说。」他话不多，但眼神直接。","「没有材料就别来找我。铁矿石、皮革、木材——带来，我给你打。」"], log:["铁匠接受委托锻造，需提供材料：铁矿石、皮革、木材。"] },
+  "靠近铁匠铺观摩锻造":{ stCost:"low", narrative:["你站在一旁，默默观察铁匠的手法。","锤落的角度、力道的节奏、烧红铁料的时机……你感到某些东西在脑中隐隐成形。"], log:["你观察了铁匠的锻造手法，对金属加工有了一丝直觉。"], unlockSkill:{ name:"锻造入门", type:"生产", desc:"对金属锻造的基础感知。", stats:{ 物攻:1, 灵巧:2 } }, removeActions:["靠近铁匠铺观摩锻造"] },
+  "购买采矿镐（40G）":{ stCost:"vlow", cost:{ gold:40 }, giveItem:{ name:"采矿镐", qty:1 }, narrative:["你递过金币，铁匠从架子上取下那把矿镐，检查了一下镐头，递给你。","「用坏了再来。」"], log:["购买了 采矿镐 ×1。采矿效率将提升。"] },
+  "浏览皮革防具":{ stCost:"vlow", narrative:["皮甲系列做工细腻：轻便皮甲、皮手套、皮靴，以及几条皮带。","相比铁甲，皮甲更轻，不影响速度，适合需要灵活的人。","老板头也不抬：「都是自己鞣的皮，结实。」"], log:["皮革店有：轻便皮甲 25G、皮手套 12G、皮靴 15G。适合速度型玩家。"], addActions:{"新叶镇·皮革防具店":["购买轻便皮甲（25G）","购买皮手套（12G）","购买皮靴（15G）"]} },
+  "与老板交谈":{ stCost:"vlow", narrative:["老板放下锥子，抬起头打量了你一眼。","「猎人？还是冒险者？皮料不一样，用途不一样。」","「你要是能带来好皮革，我可以帮你做定制的。普通兽皮我也收。」"], log:["皮革店老板接受定制委托，收购兽皮。"] },
+  "询问定制服务":{ stCost:"vlow", narrative:["老板打开柜台下的一个小册子，翻到空白页。","「定制要量身，材料自备。基础皮甲需要：兽皮 ×3，费工钱 20G，需要两天。」","「做出来的东西贴身，比架子上卖的好穿。」"], log:["皮革定制：兽皮×3 + 20G工钱，两天完成。"] },
+  "购买轻便皮甲（25G）":{ stCost:"vlow", cost:{ gold:25 }, giveItem:{ name:"轻便皮甲", qty:1 }, equipDrop:{ slot:"body", item:{ id:"light_leather", name:"轻便皮甲", icon:"🥋", stats:{ 防御:3, 速度:-1 } } }, narrative:["老板从架子上取下一件皮甲，递给你。针脚整齐，内衬柔软。"], log:["购买了 轻便皮甲 ×1。已装备到身体槽位。"] },
+  "购买皮手套（12G）":{ stCost:"vlow", cost:{ gold:12 }, giveItem:{ name:"皮手套", qty:1 }, equipDrop:{ slot:"hands", item:{ id:"leather_gloves", name:"皮手套", icon:"🧤", stats:{ 灵巧:2 } } }, narrative:["一双做工扎实的皮手套，内侧贴着薄薄一层软革。"], log:["购买了 皮手套 ×1。已装备到手部槽位。"] },
+  "购买皮靴（15G）":{ stCost:"vlow", cost:{ gold:15 }, giveItem:{ name:"皮靴", qty:1 }, equipDrop:{ slot:"feet", item:{ id:"leather_boots", name:"皮靴", icon:"👢", stats:{ 速度:2 } } }, narrative:["靴底厚实，靴筒高至小腿，走起路来脚步轻稳。"], log:["购买了 皮靴 ×1。已装备到脚部槽位。"] },
+  "观察周围环境":{ stCost:"low", narrative:["你放慢脚步，仔细感受周围的一切。","风向、光线、地面的纹理——这些细节在你意识到之前，已经悄悄在脑中留下印记。"], log:["你仔细观察了周围的环境。"], skillXp:{ name:"探索", xp:5 } },
+  "采集草药":{ stCost:"mid", narrative:["你蹲下身，凭着草药图鉴留在脑中的印象，挑选了几株状态良好的植物，连根带叶小心采下。","手指触碰叶片的瞬间，你感到一种奇妙的共鸣，仿佛这株草在轻轻回应你。"], log:["你采集到了 普通草药 ×2。"], giveItem:{ name:"普通草药", qty:2 }, skillXp:{ name:"采集", xp:5 }, unlockSkill:{ name:"采集", type:"采集", desc:"从自然环境中收集有用的材料。", stats:{ 速度:1, 灵巧:2, HP:1 } } },
+  "深入林地":{ stCost:"mid", narrative:["树木渐渐密集，光线暗了下来。你踏过一片苔藓，脚下的泥土松软而潮湿。","忽然，你几乎踩到一丛蘑菇——数量很多，颜色各异，从未见过的品种。"], log:["你深入了林地，发现了罕见的蘑菇丛。"], unlockSkill:{ name:"辨别植物", type:"采集", desc:"能区分常见与罕见植物。", stats:{ 灵巧:2, 精神:1 } }, addActions:{"南边林地":["采集蘑菇"]}, removeActions:["深入林地"] },
+  "采集蘑菇":{ stCost:"mid", narrative:["你小心翼翼地蹲下，凭着辨别植物的本能，挑选了几株看起来无毒的品种。"], log:["你采集到了 野生蘑菇 ×1。"], giveItem:{ name:"野生蘑菇", qty:1 }, skillXp:{ name:"采集", xp:8 } },
+  "就地休息（营地·部分回复）":{ stCost:"rest_part", narrative:["你在林间找了片干燥的草地躺下，望着树梢间漏出的天光。","鸟鸣声、风声、远处溪流的声音——不知不觉，你眯了一会儿。","起身的时候，疲惫散去了不少。"], log:["你在林间休息，体力部分恢复。"] },
+  "在路边稍作休息（营地·部分回复）":{ stCost:"rest_part", narrative:["你找了块平整的石头坐下，解下包裹，让肩膀透透气。","风吹过来，有点凉，但清爽。休息了一会儿，你站起身，感觉腿脚轻快了些。"], log:["你在路边稍作休息，体力部分恢复。"] },
+  "检查洞壁上的刻痕":{ stCost:"vlow", narrative:["你举起手，抚摸洞壁上的刻痕。人工凿出的部分整齐而规律；但另一些刻痕……扭曲，深邃，像是某种语言，或者某种意志留下的印记。"], log:["洞壁上存在两种不同来源的刻痕——人工与非人工并存。"], removeActions:["检查洞壁上的刻痕"] },
+  "聆听洞内动静":{ stCost:"vlow", narrative:["你屏住呼吸。起初是风声，或者说像风声的东西。然后你听到了更深处传来的……节奏？低沉，规律，像是某种巨大生物的呼吸。"], log:["矿洞深处传来规律的低鸣声，来源不明。"], removeActions:["聆听洞内动静"] },
+  "采集矿石":{ stCost:"mid", narrative:["你找到一处较为松软的岩壁，徒手扒开表层，露出内部灰蓝色的矿石。","没有工具，只能取一点点，但手感沉甸甸的——品质不错。"], log:["你采集到了 铁矿石 ×1。"], giveItem:{ name:"铁矿石", qty:1 }, skillXp:{ name:"采集", xp:10 }, unlockSkill:{ name:"采矿", type:"采集", desc:"从岩层中提取矿石的能力。", stats:{ 物攻:1, HP:1 } } },
+  "仔细观察矿脉":{ stCost:"vlow", narrative:["矿脉在岩壁中蜿蜒，发出隐隐的蓝光。你伸手触碰，掌心传来一阵轻微的麻痒感。","这不是普通的铁矿——你说不清楚哪里不对，只是直觉告诉你，这东西有些特别。"], log:["矿脉隐隐发光，触感异常。也许需要更高的鉴别能力。"], removeActions:["仔细观察矿脉"] },
+  "保持警戒":{ stCost:"low", narrative:["你背靠岩壁，眼睛扫视着周围的黑暗。","什么都没有——或者说，你没有发现任何东西。但那种被注视的感觉始终没有消散。"], log:["你保持警戒，暂时没有发现危险。"], skillXp:{ name:"探索", xp:3 } },
+};
+
+function Bar({ label, cur, max, fillColor, bgColor, rightLabel }) {
+  const pct = Math.max(0, Math.min(100, (cur / max) * 100));
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ marginBottom:6 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:C.textDim, marginBottom:2 }}>
+        <span>{label}</span>
+        <span style={{ color: rightLabel ? fillColor : C.text, fontSize:10 }}>{rightLabel || `${cur} / ${max}`}</span>
+      </div>
+      <div style={{ height:5, background:bgColor||C.border, borderRadius:3 }}>
+        <div style={{ height:"100%", width:`${pct}%`, background:fillColor, borderRadius:3, transition:"width 0.4s" }} />
+      </div>
     </div>
   );
 }
 
-export default App;
+function StatRow({ label, value, dimmed }) {
+  return (
+    <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, padding:"1px 0", color: dimmed ? C.stWarn : value > 0 ? C.text : C.textDim }}>
+      <span>{label}{dimmed ? " ▼" : ""}</span>
+      <span>{value > 0 ? value : "—"}</span>
+    </div>
+  );
+}
+
+export default function Game() {
+  const [area, setArea] = useState("新叶镇·广场");
+  const [areaActions, setAreaActions] = useState(
+    () => Object.fromEntries(Object.entries(AREAS).map(([k,v]) => [k, [...v.actions]]))
+  );
+  const [narrative, setNarrative] = useState(AREAS["新叶镇·广场"].intro);
+  const [log, setLog] = useState([
+    "你睁开眼睛。",
+    "空气中飘着泥土与柴烟的气息。你站在新叶镇的广场中央。",
+    "没有人告诉你该做什么。从哪里开始，由你决定。",
+  ]);
+  const [skills, setSkills] = useState([]);
+  const [slots, setSlots] = useState(() => Array(SKILL_SLOTS).fill(null));
+  const [baseStats, setBaseStats] = useState({ HP:{ cur:20, max:20 }, 物攻:0, 防御:0, 魔攻:0, 魔防:0, 速度:0, 精神:0, 灵巧:0 });
+  const [stamina, setStamina] = useState(ST_MAX);
+  const [gold, setGold] = useState(50);
+  const [items, setItems] = useState([]);
+  const [equipped, setEquipped] = useState(() => Object.fromEntries(EQUIP_SLOTS.map(s => [s.id, null])));
+  const [rightTab, setRightTab] = useState("技能");
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [notif, setNotif] = useState(null);
+  const logRef = useRef(null);
+  const skillsRef = useRef([]);
+
+  useEffect(() => { skillsRef.current = skills; }, [skills]);
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = 0; }, [log]);
+  useEffect(() => {
+    const t = setInterval(() => setStamina(s => Math.min(ST_MAX, s + 1)), 15000);
+    return () => clearInterval(t);
+  }, []);
+
+  const pushLog = useCallback((...entries) => setLog(p => [...entries, ...p].slice(0, 80)), []);
+  const showNotif = useCallback(msg => { setNotif(msg); setTimeout(() => setNotif(null), 2600); }, []);
+
+  const stPct = (stamina / ST_MAX) * 100;
+  const stMult = stPct <= ST_CRIT ? 0.5 : stPct <= ST_WARN ? 0.7 : 1;
+  const debuffed = stMult < 1;
+
+  const getEquipBonus = (equippedMap) => {
+    const bonus = {};
+    Object.values(equippedMap).forEach(item => {
+      if (!item) return;
+      Object.entries(item.stats || {}).forEach(([k, v]) => { bonus[k] = (bonus[k] || 0) + v; });
+    });
+    return bonus;
+  };
+
+  const equipBonus = getEquipBonus(equipped);
+  const displayStats = {
+    HP: baseStats.HP,
+    物攻: Math.floor((baseStats.物攻 + (equipBonus.物攻||0)) * stMult),
+    防御: Math.floor((baseStats.防御 + (equipBonus.防御||0)) * stMult),
+    魔攻: Math.floor((baseStats.魔攻 + (equipBonus.魔攻||0)) * stMult),
+    魔防: Math.floor((baseStats.魔防 + (equipBonus.魔防||0)) * stMult),
+    速度: Math.floor((baseStats.速度 + (equipBonus.速度||0)) * stMult),
+    精神: Math.floor((baseStats.精神 + (equipBonus.精神||0)) * stMult),
+    灵巧: Math.floor((baseStats.灵巧 + (equipBonus.灵巧||0)) * stMult),
+  };
+
+  const recalc = useCallback((newSlots) => {
+    const sk = skillsRef.current;
+    const b = { HP:{ cur:20, max:20 }, 物攻:0, 防御:0, 魔攻:0, 魔防:0, 速度:0, 精神:0, 灵巧:0 };
+    newSlots.forEach(name => {
+      if (!name) return;
+      const s = sk.find(x => x.name === name);
+      if (!s) return;
+      Object.entries(s.stats || {}).forEach(([k, v]) => {
+        if (k === "HP") b.HP.max += v * s.level;
+        else b[k] = (b[k] || 0) + v * s.level;
+      });
+    });
+    setBaseStats(prev => { b.HP.cur = Math.min(prev.HP.cur + (b.HP.max - prev.HP.max), b.HP.max); return b; });
+  }, []);
+
+  const drainSt = useCallback(amt => {
+    setStamina(s => {
+      const next = Math.max(0, s - amt);
+      const np = (next / ST_MAX) * 100, pp = (s / ST_MAX) * 100;
+      if (pp > ST_WARN && np <= ST_WARN && np > ST_CRIT) pushLog("⚠ 你感到明显的疲惫，状态开始下滑……");
+      if (np <= ST_CRIT && pp > ST_CRIT) pushLog("⚠ 你几乎精疲力竭！能力大打折扣，请尽快休息。");
+      return next;
+    });
+  }, [pushLog]);
+
+  const restoreSt = useCallback(type => {
+    setStamina(s => type === "full" ? ST_MAX : type === "part" ? Math.min(ST_MAX, s + 50) : Math.min(ST_MAX, s + 15));
+  }, []);
+
+  const unlockSkill = useCallback(def => {
+    setSkills(prev => {
+      if (prev.find(s => s.name === def.name)) return prev;
+      pushLog(`✦ 新技能已解锁：【${def.name}】（${def.type}）`);
+      showNotif(`✦ 【${def.name}】已解锁！`);
+      return [...prev, { ...def, xp:0, level:1 }];
+    });
+  }, [pushLog, showNotif]);
+
+  const doAction = useCallback(name => {
+    const d = ACTION_DATA[name];
+    if (!d) { pushLog(`【${name}】（尚未开发）`); return; }
+    const isRest = d.stCost?.startsWith("rest") || d.stRestore;
+    if (stPct <= ST_CRIT && !isRest) { pushLog("⚠ 你已精疲力竭，请先休息。"); return; }
+    if (d.cost?.gold) {
+      if (gold < d.cost.gold) { pushLog(`金币不足（需要 ${d.cost.gold} G）。`); return; }
+      setGold(g => g - d.cost.gold);
+    }
+    setNarrative(d.narrative || []);
+    if (d.log) pushLog(...d.log);
+
+    if (d.stCost === "rest_full") restoreSt("full");
+    else if (d.stCost === "rest_part") restoreSt("part");
+    else if (d.stCost === "rest_tiny" || d.stRestore === "tiny") restoreSt("tiny");
+    else drainSt(ST_COST[d.stCost] || 0);
+
+    if (d.hpRestore) setBaseStats(b => ({ ...b, HP: { ...b.HP, cur: Math.min(b.HP.max, b.HP.cur + d.hpRestore) } }));
+
+    setAreaActions(prev => {
+      const next = Object.fromEntries(Object.entries(prev).map(([k,v]) => [k, [...v]]));
+      (d.removeActions || []).forEach(r => { Object.keys(next).forEach(k => { next[k] = next[k].filter(x => x !== r); }); });
+      if (d.addActions) Object.entries(d.addActions).forEach(([k, acts]) => {
+        if (!next[k]) next[k] = [];
+        acts.forEach(x => { if (!next[k].includes(x)) next[k].push(x); });
+      });
+      return next;
+    });
+
+    if (d.unlockSkill) unlockSkill(d.unlockSkill);
+    if (d.giveItem) setItems(prev => {
+      const ex = prev.find(i => i.name === d.giveItem.name);
+      return ex ? prev.map(i => i.name === d.giveItem.name ? { ...i, qty: i.qty + d.giveItem.qty } : i) : [...prev, { ...d.giveItem }];
+    });
+    if (d.equipDrop) {
+      const { slot, item } = d.equipDrop;
+      setEquipped(prev => ({ ...prev, [slot]: item }));
+      pushLog(`✦ 「${item.name}」已装备到${EQUIP_SLOTS.find(s => s.id === slot)?.label}槽位。`);
+    }
+    if (d.skillXp) setSkills(prev => prev.map(s => {
+      if (s.name !== d.skillXp.name) return s;
+      const xp = s.xp + d.skillXp.xp, lv = Math.floor(xp / 20) + 1;
+      if (lv > s.level) pushLog(`✦ 【${s.name}】升级！Lv.${s.level} → Lv.${lv}`);
+      return { ...s, xp, level: lv };
+    }));
+  }, [stPct, gold, pushLog, restoreSt, drainSt, unlockSkill]);
+
+  const travelTo = useCallback(key => {
+    if (!AREAS[key]) return;
+    setArea(key);
+    setNarrative(AREAS[key].intro);
+    pushLog(`── 前往「${AREAS[key].label}」`);
+    drainSt(ST_COST.low);
+  }, [pushLog, drainSt]);
+
+  const equipSkill = useCallback((skillName, slotIdx) => {
+    setSlots(prev => {
+      const next = [...prev];
+      const already = next.indexOf(skillName);
+      if (already !== -1) next[already] = null;
+      next[slotIdx] = skillName;
+      recalc(next);
+      return next;
+    });
+    pushLog(`将【${skillName}】装备到技能槽位 ${slotIdx + 1}。`);
+    setSelectedSkill(null);
+  }, [recalc, pushLog]);
+
+  const unequipSkillSlot = useCallback(i => {
+    setSlots(prev => {
+      const name = prev[i]; if (!name) return prev;
+      const next = [...prev]; next[i] = null;
+      recalc(next);
+      pushLog(`从技能槽位 ${i + 1} 卸下【${name}】。`);
+      return next;
+    });
+  }, [recalc, pushLog]);
+
+  const unequipGear = useCallback(slotId => {
+    setEquipped(prev => {
+      const item = prev[slotId]; if (!item) return prev;
+      pushLog(`卸下装备：${item.name}。`);
+      return { ...prev, [slotId]: null };
+    });
+  }, [pushLog]);
+
+  const curArea = AREAS[area];
+  const allCurActions = areaActions[area] || [];
+  const curActions = allCurActions.filter(a => !ACTION_DATA[a]?.stCost?.startsWith("rest") && !ACTION_DATA[a]?.stRestore);
+  const curRest = allCurActions.filter(a => ACTION_DATA[a]?.stCost?.startsWith("rest") || ACTION_DATA[a]?.stRestore);
+  const travel = curArea?.travel || [];
+  const equippedSkillNames = slots.filter(Boolean);
+  const unequippedSkills = skills.filter(s => !slots.includes(s.name));
+
+  const panel = { background:C.panel, border:`1px solid ${C.border}`, borderRadius:6, padding:"9px 11px", marginBottom:7 };
+  const sec = { fontSize:10, color:C.textDim, letterSpacing:1, marginBottom:5 };
+  const tabBtn = active => ({ flex:1, padding:"3px 0", fontSize:11, borderRadius:4, border:`1px solid ${active ? C.accent : C.border}`, background:active ? C.accentDim : "transparent", color:active ? C.accent : C.textDim, cursor:"pointer" });
+
+  return (
+    <div style={{ background:C.bg, minHeight:"100vh", color:C.text, fontFamily:"'Noto Serif SC',serif", fontSize:13, display:"flex", flexDirection:"column" }}>
+      {notif && (
+        <div style={{ position:"fixed", top:14, left:"50%", transform:"translateX(-50%)", background:C.accentDim, border:`1px solid ${C.accent}`, color:C.accent, padding:"7px 20px", borderRadius:6, zIndex:999, fontSize:13, pointerEvents:"none" }}>
+          {notif}
+        </div>
+      )}
+
+      {/* 顶栏 */}
+      <div style={{ borderBottom:`1px solid ${C.border}`, padding:"6px 14px", display:"flex", alignItems:"center", gap:12, background:C.panel, flexShrink:0 }}>
+        <span style={{ color:C.accent, fontWeight:"bold", fontSize:15, letterSpacing:3 }}>天　赋</span>
+        <span style={{ color:C.textDim, fontSize:11 }}>Phase 1 · 测试版</span>
+        <span style={{ marginLeft:"auto", color:C.textDim, fontSize:11 }}>📍 {curArea?.label}</span>
+        <span style={{ color:C.textDim, fontSize:11 }}>🕐 清晨</span>
+        <span style={{ color:C.textDim, fontSize:11 }}>☀ 晴</span>
+        <span style={{ color:C.gold, fontSize:11 }}>💰 {gold} G</span>
+      </div>
+
+      {/* 三栏 */}
+      <div style={{ display:"grid", gridTemplateColumns:"190px 1fr 220px", flex:1, minHeight:0 }}>
+
+        {/* ── 左栏：状态 + 装备 ── */}
+        <div style={{ borderRight:`1px solid ${C.border}`, padding:9, overflowY:"auto", display:"flex", flexDirection:"column" }}>
+          <div style={panel}>
+            <div style={sec}>状 态</div>
+            <Bar label="HP" cur={baseStats.HP.cur} max={baseStats.HP.max} fillColor={C.hpFill} bgColor={C.hp} />
+            <Bar label="体力" cur={stamina} max={ST_MAX} fillColor={stColor(stPct)} bgColor="#1a1a1a" rightLabel={stLabel(stPct)} />
+            {debuffed && (
+              <div style={{ fontSize:10, color:C.stWarn, margin:"4px 0", padding:"2px 6px", border:`1px solid ${C.stWarn}`, borderRadius:3, textAlign:"center" }}>
+                {stPct <= ST_CRIT ? "极限 · 属性 ×0.5" : "警戒 · 属性 ×0.7"}
+              </div>
+            )}
+            <div style={{ height:1, background:C.border, margin:"6px 0" }} />
+            {["物攻","防御","魔攻","魔防","速度","精神","灵巧"].map(k => (
+              <StatRow key={k} label={k} value={displayStats[k]} dimmed={debuffed && ((baseStats[k]||0) + (equipBonus[k]||0)) > 0} />
+            ))}
+          </div>
+
+          <div style={{ ...panel, flex:1 }}>
+            <div style={sec}>装 备</div>
+            {EQUIP_SLOTS.map(sl => {
+              const item = equipped[sl.id];
+              return (
+                <div key={sl.id} onClick={() => item && unequipGear(sl.id)}
+                  style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4, padding:"4px 6px", borderRadius:4, border:`1px solid ${item ? C.borderHi : C.border}`, background:item ? "#1a1a22" : "transparent", cursor:item ? "pointer" : "default" }}>
+                  <span style={{ fontSize:14 }}>{item ? item.icon : sl.icon}</span>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:10, color:C.textDim }}>{sl.label}</div>
+                    {item
+                      ? <div style={{ fontSize:11, color:C.text, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{item.name}</div>
+                      : <div style={{ fontSize:11, color:C.border }}>— 空 —</div>}
+                  </div>
+                  {item && (
+                    <div style={{ fontSize:10, color:C.green, textAlign:"right", lineHeight:1.4 }}>
+                      {Object.entries(item.stats || {}).map(([k,v]) => (
+                        <div key={k}>{v > 0 ? `+${v}` : v}{k}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── 中栏：叙事 ── */}
+        <div style={{ display:"flex", flexDirection:"column", minHeight:0 }}>
+          <div style={{ flex:1, overflowY:"auto", padding:"16px 20px", lineHeight:2, fontSize:14 }}>
+            {narrative.map((p, i) => (
+              <p key={i} style={{ margin:"0 0 10px", color:i === 0 ? C.textHi : C.text }}>{p}</p>
+            ))}
+          </div>
+
+          <div style={{ borderTop:`1px solid ${C.border}`, padding:"7px 16px", maxHeight:108, overflowY:"auto" }} ref={logRef}>
+            <div style={{ ...sec, marginBottom:3 }}>── 事件日志 ──</div>
+            {log.map((l, i) => (
+              <div key={i} style={{ fontSize:12, color:i===0?C.log0:C.log1, paddingLeft:6, borderLeft:i===0?`2px solid ${C.accent}`:"2px solid transparent", marginBottom:1 }}>{l}</div>
+            ))}
+          </div>
+
+          <div style={{ borderTop:`1px solid ${C.border}`, padding:"10px 16px", flexShrink:0 }}>
+            {curActions.length > 0 && (
+              <div style={{ marginBottom:8 }}>
+                <div style={{ ...sec, marginBottom:5 }}>── 行 动 ──</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                  {curActions.map(a => {
+                    const blocked = stPct <= ST_CRIT;
+                    return (
+                      <button key={a} onClick={() => doAction(a)}
+                        style={{ padding:"5px 13px", borderRadius:4, border:`1px solid ${blocked?C.border:C.borderHi}`, background:"transparent", color:blocked?C.textDim:C.text, cursor:blocked?"not-allowed":"pointer", fontSize:13, opacity:blocked?0.45:1 }}
+                        onMouseEnter={e => { if (!blocked) e.currentTarget.style.borderColor = C.accent; }}
+                        onMouseLeave={e => { if (!blocked) e.currentTarget.style.borderColor = C.borderHi; }}>
+                        {a}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {curRest.length > 0 && (
+              <div style={{ marginBottom:8 }}>
+                <div style={{ ...sec, marginBottom:5 }}>── 休 息 ──</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                  {curRest.map(a => (
+                    <button key={a} onClick={() => doAction(a)}
+                      style={{ padding:"5px 13px", borderRadius:4, border:`1px solid ${C.green}`, background:"transparent", color:C.green, cursor:"pointer", fontSize:13 }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#1a2e1f"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      ♦ {a}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {travel.length > 0 && (
+              <div>
+                <div style={{ ...sec, marginBottom:5 }}>── 前 往 ──</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                  {travel.map(key => (
+                    <button key={key} onClick={() => travelTo(key)}
+                      style={{ padding:"5px 13px", borderRadius:4, border:`1px solid ${C.accent}`, background:"transparent", color:C.accent, cursor:"pointer", fontSize:13 }}
+                      onMouseEnter={e => e.currentTarget.style.background = C.accentDim}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      ▶ {AREAS[key]?.label || key}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── 右栏：技能 / 背包 ── */}
+        <div style={{ borderLeft:`1px solid ${C.border}`, padding:9, overflowY:"auto", display:"flex", flexDirection:"column" }}>
+          <div style={{ display:"flex", gap:4, marginBottom:7 }}>
+            {["技能","背包"].map(t => (
+              <button key={t} onClick={() => { setRightTab(t); setSelectedSkill(null); }} style={tabBtn(rightTab === t)}>{t}</button>
+            ))}
+          </div>
+
+          {/* 技能面板 */}
+          {rightTab === "技能" && (
+            <div style={{ flex:1 }}>
+              {!selectedSkill && (
+                <>
+                  {equippedSkillNames.length > 0 && (
+                    <div style={{ marginBottom:8 }}>
+                      <div style={sec}>已装备</div>
+                      {equippedSkillNames.map(name => {
+                        const sk = skills.find(s => s.name === name);
+                        if (!sk) return null;
+                        return (
+                          <div key={name} onClick={() => setSelectedSkill(name)}
+                            style={{ marginBottom:4, padding:"6px 8px", borderRadius:5, border:`1px solid ${SKILL_TYPE_COLOR[sk.type]||C.border}`, background:"#1a1a22", cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+                            <div style={{ flex:1 }}>
+                              <span style={{ color:SKILL_TYPE_COLOR[sk.type], fontSize:12 }}>【{sk.name}】</span>
+                              <span style={{ color:C.textDim, fontSize:10, marginLeft:4 }}>Lv.{sk.level}</span>
+                            </div>
+                            <div style={{ height:3, width:36, background:C.border, borderRadius:1 }}>
+                              <div style={{ height:"100%", width:`${(sk.xp%20)/20*100}%`, background:SKILL_TYPE_COLOR[sk.type], borderRadius:1 }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {unequippedSkills.length > 0 && (
+                    <div style={{ marginBottom:8 }}>
+                      <div style={sec}>未装备</div>
+                      {unequippedSkills.map(sk => (
+                        <div key={sk.name} onClick={() => setSelectedSkill(sk.name)}
+                          style={{ marginBottom:4, padding:"6px 8px", borderRadius:5, border:`1px solid ${C.border}`, background:C.panel, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+                          <div style={{ flex:1 }}>
+                            <span style={{ color:SKILL_TYPE_COLOR[sk.type], fontSize:12 }}>【{sk.name}】</span>
+                            <span style={{ color:C.textDim, fontSize:10, marginLeft:4 }}>Lv.{sk.level}</span>
+                          </div>
+                          <div style={{ height:3, width:36, background:C.border, borderRadius:1 }}>
+                            <div style={{ height:"100%", width:`${(sk.xp%20)/20*100}%`, background:SKILL_TYPE_COLOR[sk.type], borderRadius:1 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {skills.length === 0 && (
+                    <div style={{ color:C.textDim, fontSize:12, padding:"8px 4px" }}>
+                      尚未习得任何技能。<br />探索世界来发现技能。
+                    </div>
+                  )}
+                </>
+              )}
+
+              {selectedSkill && (() => {
+                const sk = skills.find(s => s.name === selectedSkill);
+                if (!sk) return null;
+                const slotIdx = slots.indexOf(sk.name);
+                const isEquipped = slotIdx !== -1;
+                return (
+                  <div>
+                    <button onClick={() => setSelectedSkill(null)} style={{ fontSize:11, color:C.textDim, background:"none", border:"none", cursor:"pointer", marginBottom:6, padding:0 }}>← 返回</button>
+                    <div style={panel}>
+                      <div style={{ color:SKILL_TYPE_COLOR[sk.type], fontSize:14, marginBottom:2 }}>【{sk.name}】</div>
+                      <div style={{ color:C.textDim, fontSize:11, marginBottom:6 }}>{sk.type} · Lv.{sk.level} · {sk.xp % 20}/20 XP</div>
+                      <div style={{ color:C.text, fontSize:12, marginBottom:8, lineHeight:1.6 }}>{sk.desc}</div>
+                      <div style={{ ...sec, marginBottom:4 }}>属性加成（每级）</div>
+                      {Object.entries(sk.stats || {}).map(([k, v]) => (
+                        <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:v > 0 ? C.green : C.red, padding:"1px 0" }}>
+                          <span>{k}</span><span>{v > 0 ? `+${v}` : v} × Lv</span>
+                        </div>
+                      ))}
+                      <div style={{ height:1, background:C.border, margin:"8px 0" }} />
+                      {isEquipped ? (
+                        <button onClick={() => unequipSkillSlot(slotIdx)} style={{ width:"100%", padding:"5px", borderRadius:4, border:`1px solid ${C.red}`, background:"transparent", color:C.red, cursor:"pointer", fontSize:12 }}>
+                          卸下技能
+                        </button>
+                      ) : (
+                        <>
+                          <div style={{ ...sec, marginBottom:4 }}>装备到技能槽位</div>
+                          <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                            {slots.map((s, i) => (
+                              <button key={i} onClick={() => !s && equipSkill(sk.name, i)}
+                                style={{ padding:"3px 8px", borderRadius:4, border:`1px solid ${s ? C.border : C.green}`, background:"transparent", color:s ? C.textDim : C.green, cursor:s ? "default" : "pointer", fontSize:11, opacity:s ? 0.4 : 1 }}>
+                                {s ? `${s.slice(0,3)}…` : `空槽 ${i+1}`}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* 背包面板 */}
+          {rightTab === "背包" && (
+            <div style={panel}>
+              <div style={sec}>背 包</div>
+              <div style={{ fontSize:12, color:C.gold, marginBottom:7, padding:"4px 6px", border:`1px solid ${C.border}`, borderRadius:4, display:"flex", justifyContent:"space-between" }}>
+                <span>金币</span><span>{gold} G</span>
+              </div>
+              {items.length === 0
+                ? <div style={{ color:C.textDim, fontSize:12 }}>空空如也。</div>
+                : items.map(it => (
+                  <div key={it.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", fontSize:12, padding:"5px 6px", borderBottom:`1px solid ${C.border}` }}>
+                    <span style={{ color:C.text }}>{it.name}</span>
+                    <span style={{ color:C.gold }}>×{it.qty}</span>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
