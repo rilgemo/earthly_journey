@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# Earthly Journey
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A browser-based text RPG sandbox where **discovery is the reward**.
 
-## Available Scripts
+You enter the world with nothing — no skills, no direction, no map. Every skill you gain, every mechanic you uncover, every hidden synergy you find — all of it comes from exploring the world on your own terms.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## What Makes This Game Different
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Skills define your character, not stats.**
+There are no attribute points to allocate. Your character's strength, speed, and abilities are entirely determined by the skills you have equipped. Swap your skills, change your identity.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**You can't see what you haven't found.**
+Locked skills are invisible. There are no hint systems, no skill trees to browse. New abilities surface naturally in the event log as you act, explore, and interact with the world.
 
-### `npm test`
+**Every skill has depth.**
+Even "useless" gathering or crafting skills contribute to your overall attributes. A dedicated crafter isn't weak — they're built differently. Combining unexpected skills can unlock hidden synergies that no one told you existed.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Skill slots create real choices.**
+You can only equip a limited number of skills at a time. Choosing what to keep equipped — and what to leave behind — shapes how you grow.
 
-### `npm run build`
+**The world is shared.**
+Earthly Journey is designed as an MMO. All players inhabit the same persistent world, and the player community becomes part of how knowledge spreads.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Current State
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> Phase 1 — Core Systems (In Development)
 
-### `npm run eject`
+- [x] Three-panel UI (Status / Narrative / Skills & Inventory)
+- [x] Area-based exploration with narrative text
+- [x] Dynamic action system (actions unlock through play)
+- [x] Skill discovery and equip system
+- [x] Skill slot system with attribute contribution
+- [x] Stamina system with rest mechanics
+- [x] Equipment slots (head, body, hands, feet, main hand, off hand, accessories)
+- [x] Town facilities: Inn, Apothecary, Blacksmith, Leather Armour Shop
+- [ ] Combat system
+- [ ] Skill evolution (level-up upgrades)
+- [ ] Skill fusion (multi-skill combination unlocks)
+- [ ] Save/load system
+- [ ] Backend & multiplayer foundation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Tech Stack
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- React (Create React App)
+- Plain CSS-in-JS (no external UI libraries)
+- GitHub for version control
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Getting Started
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/rilgemo/earthly_journey.git
+cd earthly_journey
+npm install
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Open `http://localhost:3000` in your browser.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Project Structure
 
-### Analyzing the Bundle Size
+```
+src/
+├── App.js              # Main game component
+├── data/               # Game data (areas, actions, skills) — to be separated in Phase 2
+└── components/         # UI panels — to be separated in Phase 2
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Private project. All rights reserved.
