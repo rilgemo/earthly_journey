@@ -19,7 +19,7 @@ export default function MainPanel({ narrative, log, curActions, curRest, travel,
       </div>
 
       {/* 行动 / 休息 / 前往 */}
-      <div style={{ padding: "0 16px 10px 16px", flexShrink: 0 }}>
+      <div style={{ padding: "0 16px 10px 16px", marginTop: "14px", flexShrink: 0 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {curActions.map(a => (
             <button key={a} onClick={() => onAction(a)}
