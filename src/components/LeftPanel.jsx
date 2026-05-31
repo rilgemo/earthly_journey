@@ -49,30 +49,8 @@ export default function LeftPanel({ baseStats, stamina, displayStats, debuffed, 
         ))}
       </div>
 
-      {/* 装备栏 */}
-      <div style={{ ...panel, flex: 1 }}>
-        <div style={sec}>装 备</div>
-        {EQUIP_SLOTS.map(sl => {
-          const item = equipped[sl.id];
-          return (
-            <div key={sl.id} onClick={() => item && onUnequipGear(sl.id)}
-              style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, padding: "4px 6px", borderRadius: 4, border: `1px solid ${item ? C.borderHi : C.border}`, background: item ? "#1a1a22" : "transparent", cursor: item ? "pointer" : "default" }}>
-              <span style={{ fontSize: 14 }}>{item ? item.icon : sl.icon}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 10, color: C.textDim }}>{sl.label}</div>
-                {item
-                  ? <div style={{ fontSize: 11, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
-                  : <div style={{ fontSize: 11, color: C.border }}>— 空 —</div>}
-              </div>
-              {item && (
-                <div style={{ fontSize: 10, color: C.green, textAlign: "right", lineHeight: 1.4 }}>
-                  {Object.entries(item.stats || {}).map(([k, v]) => <div key={k}>{v > 0 ? `+${v}` : v}{k}</div>)}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      {/* 装备栏（已移至右侧背包面板顶部；此处保留空白空间以便未来放置其他内容） */}
+      <div style={{ ...panel, flex: 1 }} />
     </div>
   );
 }

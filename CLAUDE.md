@@ -22,6 +22,8 @@ Repo: https://github.com/rilgemo/earthly_journey
 - Three-column layout: 190px | 1fr | 220px
 - Top bar: breadcrumb navigation (e.g. 新叶镇 / 铁砧锻造铺), time, weather, gold
 - Each area in areas.js must include `breadcrumb: string[]`
+ - Equipment slots displayed at top of 背包 tab in RightPanel
+ - LeftPanel: status bars and stats only (equipment section removed, space reserved)
 
 ### Centre Panel (MainPanel) Layout — top to bottom:
 1. Narrative text — scrollable, flex 1

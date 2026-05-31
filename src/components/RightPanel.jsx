@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { C } from "../App";
+import { C, EQUIP_SLOTS } from "../App";
 import { SKILL_TYPE_COLOR } from "../data/skills";
 
-export default function RightPanel({ skills, slots, gold, items, onEquipSkill, onUnequipSkillSlot }) {
+export default function RightPanel({ skills, slots, gold, items, onEquipSkill, onUnequipSkillSlot, equipped, onUnequipGear }) {
   const [tab, setTab] = useState("技能");
   const [selected, setSelected] = useState(null);
 
@@ -111,9 +111,32 @@ export default function RightPanel({ skills, slots, gold, items, onEquipSkill, o
       {tab === "背包" && (
         <div style={panel}>
           <div style={sec}>背 包</div>
+
+          {/* 装备区（位于背包顶部） */}
+          <div style={{ marginBottom: 8 }}>
+            {EQUIP_SLOTS.map(sl => {
+              const item = equipped?.[sl.id];
+              return (
+                <div key={sl.id} onClick={() => item && onUnequipGear && onUnequipGear(sl.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, padding: "4px 6px", borderRadius: 4, border: `1px solid ${item ? C.borderHi : C.border}`, background: item ? "#1a1a22" : "transparent", cursor: item ? "pointer" : "default" }}>
+                  <span style={{ fontSize: 14 }}>{item ? item.icon : sl.icon}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 10, color: C.textDim }}>{sl.label}</div>
+                    {item
+                      ? <div style={{ fontSize: 11, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</div>
+                      : <div style={{ fontSize: 11, color: C.border }}>— 空 —</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ height: 1, background: C.border, margin: "6px 0" }} />
+
           <div style={{ fontSize: 12, color: C.gold, marginBottom: 7, padding: "4px 6px", border: `1px solid ${C.border}`, borderRadius: 4, display: "flex", justifyContent: "space-between" }}>
             <span>金币</span><span>{gold} G</span>
           </div>
+
           {items.length === 0
             ? <div style={{ color: C.textDim, fontSize: 12 }}>空空如也。</div>
             : items.map(it => (

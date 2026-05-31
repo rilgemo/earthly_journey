@@ -285,6 +285,8 @@ export default function App() {
           items={items}
           onEquipSkill={equipSkill}
           onUnequipSkillSlot={unequipSkillSlot}
+          equipped={equipped}
+          onUnequipGear={unequipGear}
         />
       </div>
     </div>
