@@ -75,6 +75,13 @@ src/
 └── components/         # UI panels — to be separated in Phase 2
 ```
 
+## UI Conventions
+
+- Top bar shows breadcrumb navigation (e.g. 新叶镇 / 铁砧锻造铺)
+- Action, Rest, and Travel buttons are vertically stacked (left-aligned), not inline wrap
+- Event log is compact (maxHeight: 72px)
+- Each area in areas.js includes a breadcrumb: string[] field
+
 ---
 
 ## License
