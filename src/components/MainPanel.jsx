@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { C } from "../App";
-import { ACTION_DATA } from "../data/actions";
 import { AREAS } from "../data/areas";
 
 export default function MainPanel({ narrative, log, curActions, curRest, travel, stPct, onAction, onTravel, curArea }) {

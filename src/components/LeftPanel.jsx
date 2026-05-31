@@ -1,4 +1,4 @@
-import { C, EQUIP_SLOTS } from "../App";
+import { C } from "../App";
 
 function Bar({ label, cur, max, fillColor, bgColor, rightLabel }) {
   const pct = Math.max(0, Math.min(100, (cur / max) * 100));
