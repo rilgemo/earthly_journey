@@ -9,6 +9,13 @@ export const AREAS = {
     ],
     actions: ["环顾四周", "走向商贩摊位", "查看告示板", "与旅人搭话"],
     travel: ["新叶镇·晨星旅店", "新叶镇·药剂店", "新叶镇·锻造铺", "新叶镇·皮革防具店", "新叶镇·城门外"],
+    localChat: [
+      { speaker: "商贩", text: "新鲜草药，今日特价！" },
+      { speaker: "旅人甲", text: "听说北边矿洞最近不太平……" },
+      { speaker: "旅人乙", text: "有人要组队去南边林地吗？" },
+      { speaker: "路人", text: "镇长说了，天黑别乱跑。" },
+      { speaker: "猫", text: "......" },
+    ],
   },
   "新叶镇·晨星旅店": {
     label: "新叶镇 · 晨星旅店",
@@ -20,6 +27,12 @@ export const AREAS = {
     ],
     actions: ["与掌柜交谈", "查看今日菜单", "在大厅休息（免费·小量回复）", "点一碗炖肉汤（5G）", "租住房间（10G·完全回复）"],
     travel: ["新叶镇·广场"],
+    localChat: [
+      { speaker: "掌柜", text: "别客气，想吃什么尽管点！" },
+      { speaker: "旅客甲", text: "这里的饭菜是镇上最好吃的……" },
+      { speaker: "旅客乙", text: "你也是来发财的吗？" },
+      { speaker: "炉火", text: "劈劈啪啪……" },
+    ],
   },
   "新叶镇·药剂店": {
     label: "新叶镇 · 翠叶药剂店",
@@ -31,6 +44,11 @@ export const AREAS = {
     ],
     actions: ["查看货架", "与店主交谈", "购买小型回复药水（15G）", "购买解毒剂（20G）"],
     travel: ["新叶镇·广场"],
+    localChat: [
+      { speaker: "店主", text: "不要乱混，有些东西会出人命。" },
+      { speaker: "顾客", text: "给我来解毒剂，去矿洞用得上。" },
+      { speaker: "研钵", text: "咕噜噜……" },
+    ],
   },
   "新叶镇·锻造铺": {
     label: "新叶镇 · 铁砧锻造铺",
@@ -42,6 +60,11 @@ export const AREAS = {
     ],
     actions: ["查看武器陈列", "查看防具陈列", "查看工具陈列", "与铁匠搭话", "靠近铁匠铺观摩锻造"],
     travel: ["新叶镇·广场"],
+    localChat: [
+      { speaker: "铁匠", text: "（叮叮当当的锤声……）" },
+      { speaker: "学徒", text: "铁匠脾气不太好，别惹他。" },
+      { speaker: "炉火", text: "呼呼呼……" },
+    ],
   },
   "新叶镇·皮革防具店": {
     label: "新叶镇 · 猎人皮革店",
@@ -53,6 +76,11 @@ export const AREAS = {
     ],
     actions: ["浏览皮革防具", "与老板交谈", "询问定制服务"],
     travel: ["新叶镇·广场"],
+    localChat: [
+      { speaker: "老板", text: "做工用心，料子实在。" },
+      { speaker: "顾客", text: "这件皮甲多少钱？" },
+      { speaker: "锥子", text: "戳戳戳……" },
+    ],
   },
   "新叶镇·城门外": {
     label: "新叶镇 · 城门外",
@@ -63,6 +91,11 @@ export const AREAS = {
     ],
     actions: ["观察周围环境", "在路边稍作休息（营地·部分回复）"],
     travel: ["新叶镇·广场", "南边林地", "北边矿洞·入口"],
+    localChat: [
+      { speaker: "卫兵", text: "别走太远，天黑前要回来。" },
+      { speaker: "商人", text: "南边林地的草药很不错。" },
+      { speaker: "风", text: "呜呜呜……" },
+    ],
   },
   "南边林地": {
     label: "南边林地",
@@ -73,6 +106,11 @@ export const AREAS = {
     ],
     actions: ["采集草药", "深入林地", "观察周围环境", "就地休息（营地·部分回复）"],
     travel: ["新叶镇·城门外"],
+    localChat: [
+      { speaker: "采集者", text: "这边野草多，适合新手。" },
+      { speaker: "松鼠", text: "吱吱吱……" },
+      { speaker: "风声", text: "沙沙沙……" },
+    ],
   },
   "北边矿洞·入口": {
     label: "北边矿洞 · 入口",
@@ -83,6 +121,11 @@ export const AREAS = {
     ],
     actions: ["检查洞壁上的刻痕", "聆听洞内动静"],
     travel: ["新叶镇·城门外", "北边矿洞·浅层"],
+    localChat: [
+      { speaker: "矿工", text: "小心里面，最近有些异常。" },
+      { speaker: "风声", text: "呜呜呜……" },
+      { speaker: "回声", text: "……" },
+    ],
   },
   "北边矿洞·浅层": {
     label: "北边矿洞 · 浅层",
@@ -94,5 +137,10 @@ export const AREAS = {
     ],
     actions: ["采集矿石", "仔细观察矿脉", "保持警戒"],
     travel: ["北边矿洞·入口"],
+    localChat: [
+      { speaker: "矿脉", text: "（隐隐发光）" },
+      { speaker: "滴水", text: "滴答……滴答……" },
+      { speaker: "未知", text: "？？？" },
+    ],
   },
 };

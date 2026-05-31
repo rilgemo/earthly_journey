@@ -11,11 +11,11 @@ Repo: https://github.com/rilgemo/earthly_journey
 
 ## File Structure
 - src/App.js — state management, game logic, layout shell
-- src/data/areas.js — area definitions (label, breadcrumb, intro, actions, travel)
+- src/data/areas.js — area definitions (label, breadcrumb, intro, actions, travel, localChat)
 - src/data/actions.js — action definitions (narrative, stCost, triggers, unlockSkill etc.)
 - src/data/skills.js — skill metadata, SKILL_TYPE_COLOR, SKILL_SLOTS, XP_PER_LEVEL
 - src/components/LeftPanel.jsx — HP/stamina bars, stats, equipment slots
-- src/components/MainPanel.jsx — narrative, action buttons, event log
+- src/components/MainPanel.jsx — narrative, action buttons, dual-tab chat panel
 - src/components/RightPanel.jsx — skill panel (equipped/unequipped), inventory
 
 ## UI Conventions
@@ -27,8 +27,12 @@ Repo: https://github.com/rilgemo/earthly_journey
 
 ### Centre Panel (MainPanel) Layout — top to bottom:
 1. Narrative text — scrollable, flex 1
-2. Action buttons — vertical stack, flows directly into narrative with no gap or divider, no section labels
-3. Event log — fixed at bottom, maxHeight 80px
+2. Action buttons — vertical stack, flows directly into narrative with 14px gap, no section labels
+3. Chat panel — dual-tab interface (本地 | 系统), maxHeight 120px
+   - 本地 tab: displays current area's localChat entries as NPC chatter
+     Format: [speaker] text (speaker in gold #b89a4a, text in default)
+   - 系统 tab: displays event log (default active tab)
+   - Each area's localChat updates when entering a new area
 
 ### Travel Button Display:
 - 前往 button labels strip the current top-level location prefix from display text
@@ -47,7 +51,12 @@ Repo: https://github.com/rilgemo/earthly_journey
 2. Undiscovered skills are completely invisible — no locked previews
 3. Skill slots are limited — equip choices create build identity
 4. Actions unlock chain-style — players only see what they have discovered
-5. Hidden skill synergies exist — no UI hints, discovered through play
+5. Hireas.js fields:
+- label, breadcrumb, intro, actions, travel (standard)
+- localChat: { speaker: string, text: string }[] — NPC dialogue per area
+  Example: { speaker: "商贩", text: "新鲜草药，今日特价！" }
+
+### adden skill synergies exist — no UI hints, discovered through play
 6. Stamina thresholds: warn <30% (×0.7 attrs), critical <10% (×0.5 attrs, block actions)
 
 ## Data Conventions
