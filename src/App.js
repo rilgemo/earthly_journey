@@ -238,9 +238,17 @@ export default function App() {
 
       {/* 顶栏 */}
       <div style={{ borderBottom: `1px solid ${C.border}`, padding: "6px 14px", display: "flex", alignItems: "center", gap: 12, background: C.panel, flexShrink: 0 }}>
-        <span style={{ color: C.accent, fontWeight: "bold", fontSize: 15, letterSpacing: 3 }}>天　赋</span>
+        <span style={{ color: C.accent, fontWeight: "bold", fontSize: 15, letterSpacing: 3 }}>Earthly</span>
         <span style={{ color: C.textDim, fontSize: 11 }}>Phase 1 · 测试版</span>
-        <span style={{ marginLeft: "auto", color: C.textDim, fontSize: 11 }}>📍 {curArea?.label}</span>
+        <span style={{ marginLeft: "auto", color: C.textDim, fontSize: 11 }}>
+          {(curArea?.breadcrumb || [curArea?.label])
+            .map((seg, i, arr) => (
+              <span key={i}>
+                <span style={{ color: i === arr.length - 1 ? C.text : C.textDim }}>{seg}</span>
+                {i < arr.length - 1 && <span style={{ margin: "0 5px", color: C.border }}>/</span>}
+              </span>
+            ))}
+        </span>
         <span style={{ color: C.textDim, fontSize: 11 }}>🕐 清晨</span>
         <span style={{ color: C.textDim, fontSize: 11 }}>☀ 晴</span>
         <span style={{ color: C.gold, fontSize: 11 }}>💰 {gold} G</span>

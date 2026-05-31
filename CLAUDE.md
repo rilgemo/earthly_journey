@@ -62,3 +62,7 @@ Repo: https://github.com/rilgemo/earthly_journey
 - Skill fusion (FUSIONS in skills.js, check on equip)
 - Save/load (localStorage, auto-save on state change)
 - Crafting/commission system (shops.js, pendingOrders state)
+
+## Pending Design Decisions
+
+- World name: Earthly ✓
