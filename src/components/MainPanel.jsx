@@ -3,7 +3,7 @@ import { C } from "../App";
 import { ACTION_DATA } from "../data/actions";
 import { AREAS } from "../data/areas";
 
-export default function MainPanel({ narrative, log, curActions, curRest, travel, stPct, onAction, onTravel }) {
+export default function MainPanel({ narrative, log, curActions, curRest, travel, stPct, onAction, onTravel, curArea }) {
   const logRef = useRef(null);
   useEffect(() => { if (logRef.current) logRef.current.scrollTop = 0; }, [log]);
 
@@ -20,7 +20,7 @@ export default function MainPanel({ narrative, log, curActions, curRest, travel,
       </div>
 
       {/* 行动 / 休息 / 前往 */}
-      <div style={{ borderTop: `1px solid ${C.border}`, padding: "10px 16px", flexShrink: 0 }}>
+      <div style={{ padding: "0 16px 10px 16px", flexShrink: 0 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {curActions.map(a => (
             <button key={a} onClick={() => onAction(a)}
@@ -65,24 +65,31 @@ export default function MainPanel({ narrative, log, curActions, curRest, travel,
             <div style={{ borderTop: `1px solid ${C.border}`, margin: "4px 0" }} />
           )}
 
-          {travel.map(key => (
-            <button key={key} onClick={() => onTravel(key)}
-              style={{
-                width: "100%",
-                padding: "5px 14px",
-                borderRadius: 4,
-                border: `1px solid ${C.accent}`,
-                background: "#3d3666",
-                color: C.accent,
-                cursor: "pointer",
-                fontSize: 13,
-                textAlign: "left",
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = "#2f2a4a"}
-              onMouseLeave={e => e.currentTarget.style.background = "#3d3666"}>
-              ▶ {AREAS[key]?.label || key}
-            </button>
-          ))}
+          {travel.map(key => {
+            const destLabel = AREAS[key]?.label || key;
+            const prefix = curArea?.breadcrumb?.[0];
+            const displayLabel = prefix && destLabel.startsWith(prefix + " · ")
+              ? destLabel.slice((prefix + " · ").length)
+              : destLabel;
+            return (
+              <button key={key} onClick={() => onTravel(key)}
+                style={{
+                  width: "100%",
+                  padding: "5px 14px",
+                  borderRadius: 4,
+                  border: `1px solid ${C.accent}`,
+                  background: "#3d3666",
+                  color: C.accent,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  textAlign: "left",
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = "#2f2a4a"}
+                onMouseLeave={e => e.currentTarget.style.background = "#3d3666"}>
+                ▶ {displayLabel}
+              </button>
+            );
+          })}
         </div>
       </div>
 

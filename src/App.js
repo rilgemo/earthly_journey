@@ -277,6 +277,7 @@ export default function App() {
           stPct={stPct}
           onAction={doAction}
           onTravel={travelTo}
+          curArea={curArea}
         />
         <RightPanel
           skills={skills}

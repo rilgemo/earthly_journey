@@ -27,8 +27,13 @@ Repo: https://github.com/rilgemo/earthly_journey
 
 ### Centre Panel (MainPanel) Layout — top to bottom:
 1. Narrative text — scrollable, flex 1
-2. Action buttons — vertical stack, immediately below narrative, no section labels
+2. Action buttons — vertical stack, flows directly into narrative with no gap or divider, no section labels
 3. Event log — fixed at bottom, maxHeight 80px
+
+### Travel Button Display:
+- 前往 button labels strip the current top-level location prefix from display text
+- Example: if current area breadcrumb is ["新叶镇", ...], destination "新叶镇 · 晨星旅店" displays as "晨星旅店"
+- Full label still used for navigation logic; only display is trimmed
 
 ### Action Button Styles:
 - 行动: border #44445a, text #d4d0c8, bg transparent
