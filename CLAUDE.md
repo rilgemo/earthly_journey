@@ -1,91 +1,163 @@
 # CLAUDE.md — Earthly Journey Dev Reference
 
-## Project
-Text-based sandbox MMORPG. Browser-based React app.
-Repo: https://github.com/rilgemo/earthly_journey
+## 1. PROJECT OVERVIEW
+Browser-based React text RPG with area exploration, action chains, stamina, skills, equipment, and unified chat.
+World name: Earthly.
+Designed for Copilot Chat / Inline Suggestions as a compact game reference.
 
-## Stack
-- React (Create React App), no external UI libraries
-- CSS-in-JS inline styles only
-- Colour tokens exported from `src/App.js` as `export const C = {...}`
+## 2. STACK & STRUCTURE
+- Tech stack: React + inline CSS-in-JS, no external UI libraries.
 
-## File Structure
-- src/App.js — state management, game logic, layout shell
-- src/data/areas.js — area definitions (label, breadcrumb, intro, actions, travel, localChat)
-- src/data/actions.js — action definitions (narrative, stCost, triggers, unlockSkill etc.)
-- src/data/skills.js — skill metadata, SKILL_TYPE_COLOR, SKILL_SLOTS, XP_PER_LEVEL
-- src/components/LeftPanel.jsx — HP/stamina bars, stats, equipment slots
-- src/components/MainPanel.jsx — narrative, action buttons, unified message feed
-- src/components/RightPanel.jsx — skill panel (equipped/unequipped), inventory
+- src/App.js — main state, game logic, colour tokens, layout shell.
+- src/data/areas.js — area metadata: label, breadcrumb, intro, actions, travel, localChat.
+- src/data/actions.js — action definitions: narrative, stCost, effects, unlocks, chat triggers.
+- src/data/skills.js — skill definitions, type metadata, slot limits, XP rules.
+- src/components/LeftPanel.jsx — HP/stamina bars, stats, status display.
+- src/components/MainPanel.jsx — narrative pane, action buttons, message feed, filters.
+- src/components/RightPanel.jsx — skills, equipment slots, inventory display.
 
-## UI Conventions
-- Three-column layout: 190px | 1fr | 220px
-- Top bar: breadcrumb navigation (e.g. 新叶镇 / 铁砧锻造铺), time, weather, gold
-- Each area in areas.js must include `breadcrumb: string[]`
- - Equipment slots displayed at top of 背包 tab in RightPanel
- - LeftPanel: status bars and stats only (equipment section removed, space reserved)
+## 3. COLOUR TOKENS
+- Exported from App.js as `export const C = {...}`
+- Import as: `import { C } from '../App'`
 
-### Centre Panel (MainPanel) Layout — top to bottom:
-1. Narrative text — scrollable, flex 1
-2. Action buttons — vertical stack, flows directly into narrative with 14px gap, no section labels
-3. Chat panel — unified scrollable message feed, fixed height ~180px
-   - Top filter buttons: [全部] [本地] [系统]
-   - 全部 shows all messages, 本地 shows npc + player only, 系统 shows system + event only
-   - Messages flow into one list, newest at the bottom
-   - Message shape: { type: 'system'|'event'|'npc'|'player', speaker?: string, text: string, id: number }
-   - system: text #7a7890
-   - event: text #c4c0b8
-   - npc: speaker #b89a4a, text #d4d0c8
-   - player: speaker #7c6fcd, text #d4d0c8
-   - Area localChat entries are injected into the feed as npc messages when entering a new area
-   - Disabled input box shown at bottom with placeholder "与附近的人说话……（即将开放）"
+```js
+C = {
+  bg: "#0e0e12", panel: "#141418", border: "#2a2a35", borderHi: "#44445a",
+  text: "#d4d0c8", textDim: "#6b6880", textHi: "#e8e4dc",
+  accent: "#7c6fcd", accentDim: "#3d3666",
+  green: "#5a9e6f", red: "#9e5a5a", gold: "#b89a4a",
+  log0: "#c4c0b8", log1: "#7a7890",
+  hp: "#8b3a3a", hpFill: "#c05050",
+  stFull: "#4a9e6f", stOk: "#8a9e3a", stWarn: "#c07830", stCrit: "#c03030",
+}
+```
 
-### Travel Button Display:
-- 前往 button labels strip the current top-level location prefix from display text
-- Example: if current area breadcrumb is ["新叶镇", ...], destination "新叶镇 · 晨星旅店" displays as "晨星旅店"
-- Full label still used for navigation logic; only display is trimmed
+## 4. DATA SCHEMAS
+```ts
+// Area object
+type Area = {
+  key: string;
+  label: string;
+  breadcrumb: string[];
+  intro: string;
+  actions: string[];
+  travel: string[];
+  localChat: { speaker: string; text: string }[];
+};
 
-### Action Button Styles:
-- 行动: border #44445a, text #d4d0c8, bg transparent
-- 休息: border #5a9e6f, text #5a9e6f, prefix ♦, bg transparent
-- 前往: bg #3d3666, border #7c6fcd, text #7c6fcd, prefix ▶
-- All: textAlign left, width 100%, borderRadius 4, padding 5px 14px, fontSize 13
-- Divider line between 行动/休息 group and 前往 group
+// Action object
+type Action = {
+  key: string;
+  label: string;
+  narrative: string;
+  stCost: 'vlow' | 'low' | 'mid' | 'high' | 'rest_tiny' | 'rest_part' | 'rest_full';
+  log?: string;
+  npcReply?: { speaker: string; text: string };
+  unlockSkill?: Skill;
+  giveItem?: { id: string; name: string; qty: number };
+  equipDrop?: { slot: string; item: EquipmentItem };
+  addActions?: Record<string, string[]>;
+  removeActions?: string[];
+  skillXp?: { name: string; xp: number };
+  cost?: { gold: number };
+  hpRestore?: number;
+  stRestore?: 'tiny' | 'small' | 'medium' | 'large';
+};
 
-## Core Design Rules
-1. Skills define all character attributes — no separate stat points
-2. Undiscovered skills are completely invisible — no locked previews
-3. Skill slots are limited — equip choices create build identity
-4. Actions unlock chain-style — players only see what they have discovered
-5. Hireas.js fields:
-- label, breadcrumb, intro, actions, travel (standard)
-- localChat: { speaker: string, text: string }[] — NPC dialogue per area
-  Example: { speaker: "商贩", text: "新鲜草药，今日特价！" }
+// Skill object
+type Skill = {
+  name: string;
+  type: string;
+  desc: string;
+  stats: Record<string, number>;
+  xp: number;
+  level: number;
+};
 
-### adden skill synergies exist — no UI hints, discovered through play
-6. Stamina thresholds: warn <30% (×0.7 attrs), critical <10% (×0.5 attrs, block actions)
+// Message object
+type Message = {
+  id: number;
+  type: 'system' | 'event' | 'npc' | 'player';
+  speaker?: string;
+  text: string;
+};
 
-## Data Conventions
-### actions.js fields:
-- stCost: 'vlow'|'low'|'mid'|'high'|'rest_tiny'|'rest_part'|'rest_full'
-- stRestore: 'tiny' (small restore alongside normal action)
-- unlockSkill: { name, type, desc, stats }
-- giveItem: { name, qty }
-- equipDrop: { slot, item: { id, name, icon, stats } }
-- addActions: { areaKey: [actionName] }
-- removeActions: [actionName]
-- skillXp: { name, xp }
-- cost: { gold }
-- hpRestore: number
-- npcReply?: { speaker: string, text: string } — optional NPC reply pushed into the unified message feed as type 'npc'
+// Equipment item object
+type EquipmentItem = {
+  id: string;
+  name: string;
+  icon: string;
+  stats: Record<string, number>;
+};
+```
 
-## Pending Systems (Phase 1)
-- Combat system (enemies.js, combat state in App.js, lock travel during combat)
-- Skill evolution (EVOLUTIONS in skills.js, trigger after XP gain)
-- Skill fusion (FUSIONS in skills.js, check on equip)
-- Save/load (localStorage, auto-save on state change)
-- Crafting/commission system (shops.js, pendingOrders state)
+## 5. CONSTANTS & ENUMS
+```ts
+const ST_COST = {
+  vlow: 2,
+  low: 5,
+  mid: 10,
+  high: 18,
+  rest_tiny: 15,
+  rest_part: 50,
+  rest_full: 100,
+};
+const SKILL_TYPES = ['战斗', '生产', '采集', '辅助', '隐藏'];
+const EQUIP_SLOTS = ['head', 'body', 'hands', 'feet', 'main', 'off', 'acc1', 'acc2'];
+const MESSAGE_TYPES = {
+  system: '#7a7890',
+  event: '#c4c0b8',
+  npc: { speaker: '#b89a4a', text: '#d4d0c8' },
+  player: '#d4d0c8',
+};
+```
 
-## Pending Design Decisions
+## 6. COMPONENT PROPS
+- LeftPanel: `{ baseStats, stamina, displayStats, debuffed, stPct, equipped, onUnequipGear, slots, skills, onUnequipSkillSlot }`
+- MainPanel: `{ narrative, messages, curActions, curRest, travel, stPct, curArea, onAction, onTravel, pushMessage }`
+- RightPanel: `{ skills, slots, gold, items, equipped, onEquipSkill, onUnequipSkillSlot, onUnequipGear }`
 
-- World name: Earthly ✓
+## 7. UI CONVENTIONS
+- Layout grid: left 190px, centre flexible, right 220px.
+- Breadcrumb logic: show current path segments; travel labels hide current top-level prefix.
+- Action button styles:
+  - 行动: border `#44445a`, text `#d4d0c8`, bg transparent.
+  - 休息: border `#5a9e6f`, text `#5a9e6f`, prefix `♦`, bg transparent.
+  - 前往: bg `#3d3666`, border `#7c6fcd`, text `#7c6fcd`, prefix `▶`.
+- Centre panel flow: narrative → actions → chat panel.
+- Chat panel: unified feed, filter buttons [全部, 本地, 系统], disabled input placeholder.
+- Message feed: newest at bottom, auto-scroll to bottom on new message.
+
+## 8. CORE DESIGN RULES
+1. Keep state flat in App.js and pass only needed props to panels.
+2. Only visible actions are rendered; hidden actions remain absent.
+3. Skills and equipment drive all stat changes.
+4. Chat feed is authoritative source for system/npc/player events.
+5. Travel and action labels may differ from internal keys.
+6. No combat UI until combat system is implemented.
+
+## 9. CURRENT STATE
+- Completed features ✓
+  - localStorage auto-save and load on start ✓
+  - Reset button in top bar ✓
+  - Unified message feed with type filters ✓
+  - NPC reply on actions (npcReply field) ✓
+  - Area localChat injected on travel ✓
+  - Dual-tab replaced by unified feed ✓
+- Pending systems (priority):
+  1. Combat system
+  2. Skill evolution / fusion
+  3. Inventory/crafting extensions
+
+## 10. PENDING DESIGN DECISIONS
+- Chat input: placeholder only until local chat is implemented.
+- Equipment slot count and slot names may expand.
+- Whether travel destinations become gated by skill checks.
+
+## 11. COMMIT CONVENTIONS
+- `feat:` new feature
+- `ui:` layout or style changes
+- `fix:` bug fixes
+- `content:` data additions (areas, actions, npc dialogue)
+- `refactor:` code restructure
+- `docs:` CLAUDE.md or README updates
