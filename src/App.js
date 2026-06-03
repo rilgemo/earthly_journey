@@ -47,6 +47,7 @@ export default function App() {
   const messageIdRef = useRef(3);
   const saveKey = "earthly_save";
   const initialSaveRef = useRef(true);
+  const lastSavedJsonRef = useRef(null);
   const [skills, setSkills] = useState([]);
   const [slots, setSlots] = useState(() => Array(SKILL_SLOTS).fill(null));
   const [baseStats, setBaseStats] = useState({ HP: { cur: 20, max: 20 }, 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
@@ -96,6 +97,7 @@ export default function App() {
       } else {
         pushMessage("system", "已读取上次的存档。");
       }
+      lastSavedJsonRef.current = raw;
     } catch (err) {
       console.warn("读取存档失败", err);
     }
@@ -117,10 +119,16 @@ export default function App() {
         equipped,
         messages: messages.slice(-50),
       };
-      localStorage.setItem(saveKey, JSON.stringify(saveData));
+      const currentJson = JSON.stringify(saveData);
+      if (currentJson === lastSavedJsonRef.current) {
+        initialSaveRef.current = false;
+        return;
+      }
+      localStorage.setItem(saveKey, currentJson);
+      lastSavedJsonRef.current = currentJson;
       if (!initialSaveRef.current) pushMessage("system", "进度已自动保存。");
       initialSaveRef.current = false;
-    }, 1000);
+    }, 120000);
     return () => clearTimeout(timer);
   }, [area, areaActions, skills, slots, baseStats, stamina, gold, items, equipped, messages, pushMessage]);
 
