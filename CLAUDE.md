@@ -148,6 +148,7 @@ const MESSAGE_TYPES = {
   1. Combat system
   2. Skill evolution / fusion
   3. Inventory/crafting extensions
+  - Save/load system ✓ (localStorage, auto-save on state change, reset button in top bar)
 
 ## 10. PENDING DESIGN DECISIONS
 - Chat input: placeholder only until local chat is implemented.

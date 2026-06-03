@@ -45,6 +45,8 @@ export default function App() {
     { id: 2, type: "event", text: "没有人告诉你该做什么。从哪里开始，由你决定。" },
   ]);
   const messageIdRef = useRef(3);
+  const saveKey = "earthly_save";
+  const initialSaveRef = useRef(true);
   const [skills, setSkills] = useState([]);
   const [slots, setSlots] = useState(() => Array(SKILL_SLOTS).fill(null));
   const [baseStats, setBaseStats] = useState({ HP: { cur: 20, max: 20 }, 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
@@ -69,6 +71,58 @@ export default function App() {
 
 
   const showNotif = useCallback(msg => { setNotif(msg); setTimeout(() => setNotif(null), 2600); }, []);
+
+  // ── Load saved state on start ─────────────────────────
+  useEffect(() => {
+    const raw = localStorage.getItem(saveKey);
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      if (data.version !== 1) return;
+      if (data.area) setArea(data.area);
+      if (data.areaActions) setAreaActions(data.areaActions);
+      if (data.skills) setSkills(data.skills);
+      if (data.slots) setSlots(data.slots);
+      if (data.baseStats) setBaseStats(data.baseStats);
+      if (typeof data.stamina === "number") setStamina(data.stamina);
+      if (typeof data.gold === "number") setGold(data.gold);
+      if (Array.isArray(data.items)) setItems(data.items);
+      if (data.equipped) setEquipped(data.equipped);
+      if (Array.isArray(data.messages)) {
+        const loaded = data.messages.slice(-50);
+        const maxId = loaded.reduce((max, msg) => Math.max(max, msg.id ?? 0), messageIdRef.current);
+        messageIdRef.current = maxId + 1;
+        setMessages([...loaded, { id: messageIdRef.current++, type: "system", text: "已读取上次的存档。" }]);
+      } else {
+        pushMessage("system", "已读取上次的存档。");
+      }
+    } catch (err) {
+      console.warn("读取存档失败", err);
+    }
+  }, [pushMessage]);
+
+  // ── Auto-save state changes ─────────────────────────
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const saveData = {
+        version: 1,
+        area,
+        areaActions,
+        skills,
+        slots,
+        baseStats,
+        stamina,
+        gold,
+        items,
+        equipped,
+        messages: messages.slice(-50),
+      };
+      localStorage.setItem(saveKey, JSON.stringify(saveData));
+      if (!initialSaveRef.current) pushMessage("system", "进度已自动保存。");
+      initialSaveRef.current = false;
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [area, areaActions, skills, slots, baseStats, stamina, gold, items, equipped, messages, pushMessage]);
 
   // ── 派生状态 ─────────────────────────────────────────
   const stPct = (stamina / ST_MAX) * 100;
@@ -260,6 +314,15 @@ export default function App() {
         <span style={{ color: C.textDim, fontSize: 11 }}>🕐 清晨</span>
         <span style={{ color: C.textDim, fontSize: 11 }}>☀ 晴</span>
         <span style={{ color: C.gold, fontSize: 11 }}>💰 {gold} G</span>
+        <button onClick={() => {
+          if (window.confirm("确定要重置游戏吗？所有进度将会清除。")) {
+            localStorage.removeItem(saveKey);
+            window.location.reload();
+          }
+        }}
+          style={{ fontSize: 11, color: "#6b6880", border: "1px solid #2a2a35", background: "transparent", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}>
+          重置
+        </button>
       </div>
 
       {/* 三栏 */}
