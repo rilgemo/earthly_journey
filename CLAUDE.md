@@ -15,7 +15,7 @@ Repo: https://github.com/rilgemo/earthly_journey
 - src/data/actions.js — action definitions (narrative, stCost, triggers, unlockSkill etc.)
 - src/data/skills.js — skill metadata, SKILL_TYPE_COLOR, SKILL_SLOTS, XP_PER_LEVEL
 - src/components/LeftPanel.jsx — HP/stamina bars, stats, equipment slots
-- src/components/MainPanel.jsx — narrative, action buttons, dual-tab chat panel
+- src/components/MainPanel.jsx — narrative, action buttons, unified message feed
 - src/components/RightPanel.jsx — skill panel (equipped/unequipped), inventory
 
 ## UI Conventions
@@ -28,11 +28,17 @@ Repo: https://github.com/rilgemo/earthly_journey
 ### Centre Panel (MainPanel) Layout — top to bottom:
 1. Narrative text — scrollable, flex 1
 2. Action buttons — vertical stack, flows directly into narrative with 14px gap, no section labels
-3. Chat panel — dual-tab interface (本地 | 系统), maxHeight 120px
-   - 本地 tab: displays current area's localChat entries as NPC chatter
-     Format: [speaker] text (speaker in gold #b89a4a, text in default)
-   - 系统 tab: displays event log (default active tab)
-   - Each area's localChat updates when entering a new area
+3. Chat panel — unified scrollable message feed, fixed height ~180px
+   - Top filter buttons: [全部] [本地] [系统]
+   - 全部 shows all messages, 本地 shows npc + player only, 系统 shows system + event only
+   - Messages flow into one list, newest at the bottom
+   - Message shape: { type: 'system'|'event'|'npc'|'player', speaker?: string, text: string, id: number }
+   - system: text #7a7890
+   - event: text #c4c0b8
+   - npc: speaker #b89a4a, text #d4d0c8
+   - player: speaker #7c6fcd, text #d4d0c8
+   - Area localChat entries are injected into the feed as npc messages when entering a new area
+   - Disabled input box shown at bottom with placeholder "与附近的人说话……（即将开放）"
 
 ### Travel Button Display:
 - 前往 button labels strip the current top-level location prefix from display text
@@ -71,6 +77,7 @@ Repo: https://github.com/rilgemo/earthly_journey
 - skillXp: { name, xp }
 - cost: { gold }
 - hpRestore: number
+- npcReply?: { speaker: string, text: string } — optional NPC reply pushed into the unified message feed as type 'npc'
 
 ## Pending Systems (Phase 1)
 - Combat system (enemies.js, combat state in App.js, lock travel during combat)

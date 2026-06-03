@@ -1,14 +1,39 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { C } from "../App";
 import { AREAS } from "../data/areas";
 
-export default function MainPanel({ narrative, log, curActions, curRest, travel, stPct, onAction, onTravel, curArea }) {
-  const [chatTab, setChatTab] = useState("系统");
-  const logRef = useRef(null);
-  useEffect(() => { if (logRef.current) logRef.current.scrollTop = 0; }, [log]);
+export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea }) {
+  const [filter, setFilter] = useState("全部");
+  const endRef = useRef(null);
 
-  const sec = { fontSize: 10, color: C.textDim, letterSpacing: 1, marginBottom: 5 };
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
+
+  const filteredMessages = useMemo(() => {
+    return messages.filter(m => {
+      if (filter === "本地") return m.type === "npc" || m.type === "player";
+      if (filter === "系统") return m.type === "system" || m.type === "event";
+      return true;
+    });
+  }, [messages, filter]);
+
   const blocked = stPct <= 10;
+  const tabButtonStyle = active => ({
+    flex: 1,
+    padding: "4px 0",
+    fontSize: 10,
+    borderRadius: 3,
+    border: `1px solid ${active ? C.accent : C.border}`,
+    background: active ? C.accentDim : "transparent",
+    color: active ? C.accent : C.textDim,
+    cursor: "pointer",
+  });
+  const messageColor = type => {
+    if (type === "system") return "#7a7890";
+    if (type === "event") return "#c4c0b8";
+    return "#d4d0c8";
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
@@ -66,11 +91,9 @@ export default function MainPanel({ narrative, log, curActions, curRest, travel,
           )}
 
           {travel.map(key => {
-            const destLabel = AREAS[key]?.label || key;
-            const prefix = curArea?.breadcrumb?.[0];
-            const displayLabel = prefix && destLabel.startsWith(prefix + " · ")
-              ? destLabel.slice((prefix + " · ").length)
-              : destLabel;
+            const destLabel = curArea?.breadcrumb?.[0] && AREAS[key]?.label?.startsWith(curArea.breadcrumb[0] + " · ")
+              ? AREAS[key].label.slice((curArea.breadcrumb[0] + " · ").length)
+              : AREAS[key]?.label || key;
             return (
               <button key={key} onClick={() => onTravel(key)}
                 style={{
@@ -86,44 +109,57 @@ export default function MainPanel({ narrative, log, curActions, curRest, travel,
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = "#2f2a4a"}
                 onMouseLeave={e => e.currentTarget.style.background = "#3d3666"}>
-                ▶ {displayLabel}
+                ▶ {destLabel}
               </button>
             );
           })}
         </div>
       </div>
-聊天面板 */}
-      <div style={{ borderTop: `1px solid ${C.border}`, padding: "7px 16px", maxHeight: 120, overflowY: "auto", display: "flex", flexDirection: "column" }} ref={logRef}>
-        <div style={{ display: "flex", gap: 4, marginBottom: 5 }}>
-          {["本地", "系统"].map(t => (
-            <button key={t} onClick={() => setChatTab(t)}
-              style={{ flex: 1, padding: "3px 0", fontSize: 10, borderRadius: 3, border: `1px solid ${chatTab === t ? C.accent : C.border}`, background: chatTab === t ? C.accentDim : "transparent", color: chatTab === t ? C.accent : C.textDim, cursor: "pointer" }}>
-              {t}
+
+      {/* 聊天面板 */}
+      <div style={{ borderTop: `1px solid ${C.border}`, padding: "7px 16px", height: 180, display: "flex", flexDirection: "column", flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+          {["全部", "本地", "系统"].map(label => (
+            <button key={label} onClick={() => setFilter(label)} style={tabButtonStyle(filter === label)}>
+              {label}
             </button>
           ))}
         </div>
 
-        {chatTab === "本地" && (
-          <div style={{ fontSize: 11, lineHeight: 1.5 }}>
-            {curArea?.localChat && curArea.localChat.length > 0
-              ? curArea.localChat.map((chat, i) => (
-                <div key={i} style={{ marginBottom: 2 }}>
-                  <span style={{ color: C.gold }}>[{chat.speaker}]</span> <span style={{ color: C.text }}>{chat.text}</span>
-                </div>
-              ))
-              : <div style={{ color: C.textDim }}>这里很安静。</div>}
-          </div>
-        )}
+        <div style={{ flex: 1, overflowY: "auto", paddingRight: 4, fontSize: 11, lineHeight: 1.6 }}>
+          {filteredMessages.length === 0 ? (
+            <div style={{ color: C.textDim }}>暂无消息。</div>
+          ) : filteredMessages.map(msg => (
+            <div key={msg.id} style={{ marginBottom: 6, color: messageColor(msg.type) }}>
+              {(msg.type === "npc" || msg.type === "player") ? (
+                <>
+                  <span style={{ color: msg.type === "npc" ? "#b89a4a" : "#7c6fcd" }}>[{msg.speaker}]</span>{" "}
+                  <span>{msg.text}</span>
+                </>
+              ) : (
+                <span>{msg.text}</span>
+              )}
+            </div>
+          ))}
+          <div ref={endRef} />
+        </div>
 
-        {chatTab === "系统" && (
-          <div style={{ fontSize: 11, lineHeight: 1.5 }}>
-            <div style={{ ...sec, marginBottom: 2, fontSize: 9 }}>── 系统日志 ──</div>
-            {log.map((l, i) => (
-              <div key={i} style={{ color: i === 0 ? C.log0 : C.log1, marginBottom: 1, paddingLeft: 4, borderLeft: i === 0 ? `2px solid ${C.accent}` : "2px solid transparent" }}>{l}</div>
-            ))}
-          </div>
-         <div key={i} style={{ fontSize: 12, color: i === 0 ? C.log0 : C.log1, paddingLeft: 6, borderLeft: i === 0 ? `2px solid ${C.accent}` : "2px solid transparent", marginBottom: 1 }}>{l}</div>
-        ))}
+        <input
+          disabled
+          placeholder="与附近的人说话……（即将开放）"
+          style={{
+            marginTop: 8,
+            width: "100%",
+            background: "#0e0e12",
+            border: "1px solid #2a2a35",
+            borderRadius: 4,
+            padding: "5px 10px",
+            color: "#6b6880",
+            fontSize: 12,
+            outline: "none",
+            cursor: "not-allowed",
+          }}
+        />
       </div>
     </div>
   );

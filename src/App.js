@@ -39,11 +39,12 @@ export default function App() {
     () => Object.fromEntries(Object.entries(AREAS).map(([k, v]) => [k, [...v.actions]]))
   );
   const [narrative, setNarrative] = useState(AREAS["新叶镇·广场"].intro);
-  const [log, setLog] = useState([
-    "你睁开眼睛。",
-    "空气中飘着泥土与柴烟的气息。你站在新叶镇的广场中央。",
-    "没有人告诉你该做什么。从哪里开始，由你决定。",
+  const [messages, setMessages] = useState([
+    { id: 0, type: "event", text: "你睁开眼睛。" },
+    { id: 1, type: "event", text: "空气中飘着泥土与柴烟的气息。你站在新叶镇的广场中央。" },
+    { id: 2, type: "event", text: "没有人告诉你该做什么。从哪里开始，由你决定。" },
   ]);
+  const messageIdRef = useRef(3);
   const [skills, setSkills] = useState([]);
   const [slots, setSlots] = useState(() => Array(SKILL_SLOTS).fill(null));
   const [baseStats, setBaseStats] = useState({ HP: { cur: 20, max: 20 }, 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
@@ -56,13 +57,17 @@ export default function App() {
   const skillsRef = useRef([]);
   useEffect(() => { skillsRef.current = skills; }, [skills]);
 
+  const pushMessage = useCallback((type, text, speaker) => {
+    setMessages(p => [...p, { id: messageIdRef.current++, type, speaker, text }].slice(-80));
+  }, []);
+
   // 自动体力恢复
   useEffect(() => {
     const t = setInterval(() => setStamina(s => Math.min(ST_MAX, s + 1)), 15000);
     return () => clearInterval(t);
   }, []);
 
-  const pushLog = useCallback((...entries) => setLog(p => [...entries, ...p].slice(0, 80)), []);
+
   const showNotif = useCallback(msg => { setNotif(msg); setTimeout(() => setNotif(null), 2600); }, []);
 
   // ── 派生状态 ─────────────────────────────────────────
@@ -108,11 +113,11 @@ export default function App() {
     setStamina(s => {
       const next = Math.max(0, s - amt);
       const np = (next / ST_MAX) * 100, pp = (s / ST_MAX) * 100;
-      if (pp > ST_WARN && np <= ST_WARN && np > ST_CRIT) pushLog("⚠ 你感到明显的疲惫，状态开始下滑……");
-      if (np <= ST_CRIT && pp > ST_CRIT) pushLog("⚠ 你几乎精疲力竭！能力大打折扣，请尽快休息。");
+      if (pp > ST_WARN && np <= ST_WARN && np > ST_CRIT) pushMessage("system", "⚠ 你感到明显的疲惫，状态开始下滑……");
+      if (np <= ST_CRIT && pp > ST_CRIT) pushMessage("system", "⚠ 你几乎精疲力竭！能力大打折扣，请尽快休息。");
       return next;
     });
-  }, [pushLog]);
+  }, [pushMessage]);
 
   const restoreSt = useCallback(type => {
     setStamina(s => type === "full" ? ST_MAX : type === "part" ? Math.min(ST_MAX, s + 50) : Math.min(ST_MAX, s + 15));
@@ -122,27 +127,28 @@ export default function App() {
   const unlockSkill = useCallback(def => {
     setSkills(prev => {
       if (prev.find(s => s.name === def.name)) return prev;
-      pushLog(`✦ 新技能已解锁：【${def.name}】（${def.type}）`);
+      pushMessage("system", `✦ 新技能已解锁：【${def.name}】（${def.type}）`);
       showNotif(`✦ 【${def.name}】已解锁！`);
       return [...prev, { ...def, xp: 0, level: 1 }];
     });
-  }, [pushLog, showNotif]);
+  }, [pushMessage, showNotif]);
 
   // ── 执行行动 ─────────────────────────────────────────
   const doAction = useCallback(name => {
     const d = ACTION_DATA[name];
-    if (!d) { pushLog(`【${name}】（尚未开发）`); return; }
+    if (!d) { pushMessage("system", `【${name}】（尚未开发）`); return; }
 
     const isRest = d.stCost?.startsWith("rest") || d.stRestore;
-    if (stPct <= ST_CRIT && !isRest) { pushLog("⚠ 你已精疲力竭，请先休息。"); return; }
+    if (stPct <= ST_CRIT && !isRest) { pushMessage("system", "⚠ 你已精疲力竭，请先休息。"); return; }
 
     if (d.cost?.gold) {
-      if (gold < d.cost.gold) { pushLog(`金币不足（需要 ${d.cost.gold} G）。`); return; }
+      if (gold < d.cost.gold) { pushMessage("system", `金币不足（需要 ${d.cost.gold} G）。`); return; }
       setGold(g => g - d.cost.gold);
     }
 
     setNarrative(d.narrative || []);
-    if (d.log) pushLog(...d.log);
+    if (d.log) d.log.forEach(logText => pushMessage("event", logText));
+    if (d.npcReply) pushMessage("npc", d.npcReply.text, d.npcReply.speaker);
 
     // 体力处理
     if (d.stCost === "rest_full") restoreSt("full");
@@ -171,24 +177,25 @@ export default function App() {
     if (d.equipDrop) {
       const { slot, item } = d.equipDrop;
       setEquipped(prev => ({ ...prev, [slot]: item }));
-      pushLog(`✦ 「${item.name}」已装备到${EQUIP_SLOTS.find(s => s.id === slot)?.label}槽位。`);
+      pushMessage("system", `✦ 「${item.name}」已装备到${EQUIP_SLOTS.find(s => s.id === slot)?.label}槽位。`);
     }
     if (d.skillXp) setSkills(prev => prev.map(s => {
       if (s.name !== d.skillXp.name) return s;
       const xp = s.xp + d.skillXp.xp, lv = Math.floor(xp / 20) + 1;
-      if (lv > s.level) pushLog(`✦ 【${s.name}】升级！Lv.${s.level} → Lv.${lv}`);
+      if (lv > s.level) pushMessage("system", `✦ 【${s.name}】升级！Lv.${s.level} → Lv.${lv}`);
       return { ...s, xp, level: lv };
     }));
-  }, [stPct, gold, pushLog, restoreSt, drainSt, unlockSkill]);
+  }, [stPct, gold, pushMessage, restoreSt, drainSt, unlockSkill]);
 
   // ── 移动区域 ─────────────────────────────────────────
   const travelTo = useCallback(key => {
     if (!AREAS[key]) return;
     setArea(key);
     setNarrative(AREAS[key].intro);
-    pushLog(`── 前往「${AREAS[key].label}」`);
+    pushMessage("event", `── 前往「${AREAS[key].label}」`);
+    AREAS[key].localChat?.forEach(chat => pushMessage("npc", chat.text, chat.speaker));
     drainSt(ST_COST.low);
-  }, [pushLog, drainSt]);
+  }, [pushMessage, drainSt]);
 
   // ── 技能装备 ─────────────────────────────────────────
   const equipSkill = useCallback((skillName, slotIdx) => {
@@ -200,26 +207,27 @@ export default function App() {
       recalc(next);
       return next;
     });
-    pushLog(`将【${skillName}】装备到技能槽位 ${slotIdx + 1}。`);
-  }, [recalc, pushLog]);
+    pushMessage("system", `将【${skillName}】装备到技能槽位 ${slotIdx + 1}。`);
+  }, [recalc, pushMessage]);
 
   const unequipSkillSlot = useCallback(i => {
     setSlots(prev => {
       const name = prev[i]; if (!name) return prev;
       const next = [...prev]; next[i] = null;
       recalc(next);
-      pushLog(`从技能槽位 ${i + 1} 卸下【${name}】。`);
       return next;
     });
-  }, [recalc, pushLog]);
+    const slotName = slots[i];
+    if (slotName) pushMessage("system", `从技能槽位 ${i + 1} 卸下【${slotName}】。`);
+  }, [recalc, pushMessage, slots]);
 
   const unequipGear = useCallback(slotId => {
     setEquipped(prev => {
       const item = prev[slotId]; if (!item) return prev;
-      pushLog(`卸下装备：${item.name}。`);
+      pushMessage("system", `卸下装备：${item.name}。`);
       return { ...prev, [slotId]: null };
     });
-  }, [pushLog]);
+  }, [pushMessage]);
 
   // ── 行动分类 ─────────────────────────────────────────
   const allCurActions = areaActions[area] || [];
@@ -270,7 +278,8 @@ export default function App() {
         />
         <MainPanel
           narrative={narrative}
-          log={log}
+          messages={messages}
+          pushMessage={pushMessage}
           curActions={curActions}
           curRest={curRest}
           travel={travel}
