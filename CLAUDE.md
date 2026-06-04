@@ -162,3 +162,52 @@ const MESSAGE_TYPES = {
 - `content:` data additions (areas, actions, npc dialogue)
 - `refactor:` code restructure
 - `docs:` CLAUDE.md or README updates
+
+## 12. WORLD TIME SYSTEM
+
+### Time Scale
+- Formula: In-Game Minutes = Real Minutes × 4
+- 15 real min = 1 in-game hour
+- 1 real hour = 4 in-game hours
+- 6 real hours = 1 in-game day
+- 1 real day = 4 in-game days
+
+### Clock Storage
+Store as total in-game minutes since epoch (Unix-style):
+  totalIngameMinutes = (Date.now() - EPOCH_MS) / 1000 / 60 * 4
+Derive:
+  timeOfDay = totalIngameMinutes % 1440        // 0–1439
+  hour = Math.floor(timeOfDay / 60)            // 0–23
+  minute = timeOfDay % 60                      // 0–59
+  dayNumber = Math.floor(totalIngameMinutes / 1440) + 1
+
+### Epoch
+Set EPOCH_MS to a fixed real-world timestamp (e.g. game launch date).
+Store in src/data/config.js as:
+  export const EPOCH_MS = new Date('2026-06-04T00:00:00Z').getTime();
+  export const TIME_MULTIPLIER = 4;
+
+### Day/Night
+  06:00–17:59 in-game → Day
+  18:00–05:59 in-game → Night
+
+### Key Rules
+- Clock runs continuously, never pauses on logout
+- Do NOT store clock in localStorage — always derive from real Date.now()
+- In-game date advances +4 per real day
+- Same real login time = same in-game time of day every day
+
+### worldTime object (derived, never stored)
+  {
+    totalMinutes: number,   // derived from Date.now()
+    day: number,
+    hour: number,
+    minute: number,
+    isDay: boolean,
+    label: string           // e.g. "第3天 清晨 06:42"
+  }
+
+### Usage
+- Computed once on mount and refreshed every real minute via setInterval
+- Passed as prop to all panels that need time context
+- NPC schedules, commission completions, offline progress all reference totalMinutes
