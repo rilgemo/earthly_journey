@@ -56,6 +56,12 @@ Open:
 http://localhost:3000
 ```
 
+Headless simulation runner (for testing the Agent Tick Loop v1):
+
+```bash
+node src/simulation/run_simulation.js
+```
+
 ## License
 
 Private project. All rights reserved.

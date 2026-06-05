@@ -26,6 +26,13 @@ This repository is an authoritative simulation engine with a React visualization
 - UI may call simulation functions but must not mutate world state directly.
 - UI must never implement decision logic, simulation rules, or agent behavior.
 
+### Entity Contract Layer
+
+- `AI/ENTITY_SCHEMA.md` defines canonical entity types and lifecycle constraints.
+- Entities are part of the simulation contract, not loose AI-generated content.
+- All entity state mutations must remain inside `tickManager()`.
+- AI may perceive entities, but entity schemas must be approved and fixed.
+
 ### Simulation Core
 
 - `/src/simulation/` is the authoritative world runtime.

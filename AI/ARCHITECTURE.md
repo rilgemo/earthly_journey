@@ -13,6 +13,7 @@ This project uses a DF x AI hybrid simulation model.
 - [EMERGENCE_TUNING.md](EMERGENCE_TUNING.md) - Control plane for tuning emergent behavior probability and stability
 - [RESOLUTION_MODEL.md](RESOLUTION_MODEL.md) - Final intent arbitration, conflict grouping, softmax selection, and reason tracing
 - [TRACE_MODEL.md](TRACE_MODEL.md) - Observability, replay, conflict graph, and emergence debugging
+- [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs
 
