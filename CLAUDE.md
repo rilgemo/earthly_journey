@@ -49,6 +49,24 @@ For implementation bridges from the current React game to the future simulation 
 - [AI/SYSTEM_PROMPT.md](AI/SYSTEM_PROMPT.md) - DF x AI hybrid rules
 - [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) - Tick flow and validation pipeline
 - [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index
+- [AI/CONTRACT_TEST_SUITE.md](AI/CONTRACT_TEST_SUITE.md) - Authoritative contract tests for runtime protection
+
+## Test Suite Authority
+
+The **Simulation Contract Test Suite v1** (see [tests/README.md](tests/README.md)) is authoritative.
+
+A runtime feature is not considered valid until protected by contract tests.
+
+Required coverage:
+- Action Registry enforcement (no unregistered actions execute)
+- Execution Contract pipeline (Intent → Contract → TickManager)
+- Trace integrity (all rejections traceable)
+- Tick determinism (fixed seed = fixed result)
+- Mana conservation (0 ≤ mana ≤ maxMana)
+- Field stability (0 ≤ fields < MAX_FIELD)
+- Smoke tests (daily sanity: 10 agents, 20 ticks, no crashes)
+
+All new features must include at least one contract test before merging to main.
 
 ## Development Guidelines for AI
 
