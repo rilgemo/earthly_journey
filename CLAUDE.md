@@ -76,6 +76,13 @@ type Action = {
   label: string;
   narrative: string;
   stCost: 'vlow' | 'low' | 'mid' | 'high' | 'rest_tiny' | 'rest_part' | 'rest_full';
+  requirements?: {
+    skill?: { name: string; level?: number };
+    item?: { id: string; qty?: number };
+    gold?: number;
+    hpAbove?: number;
+    staminaAbove?: number;
+  };
   log?: string;
   npcReply?: { speaker: string; text: string };
   unlockSkill?: Skill;
@@ -113,10 +120,12 @@ type Message = {
 ## 5. NON-NEGOTIABLE RULES (CORE DESIGN)
 
 - **Skills define all stats** — HP, attack, defense, etc. are derived from equipped skills. No separate stat point system.
+- **Max stats calculation** — `maxHp = 50 + sum(skill HP bonuses)`; `maxStamina = 100 + sum(skill stamina bonuses)`.
 - **Undiscovered = Invisible** — Locked skills and undiscovered actions must not render placeholders or hints in the UI.
 - **Skill slots matter** — Players must choose which skills to equip.
 - **Chat is authoritative** — All system, NPC, and player events appear in the unified message feed.
 - **Data-driven only** — Do not hardcode logic like `if (area === 'town')` inside components. Use data from `/src/data/`.
+- **State organization** — `App.js` is the single source of truth. When complexity grows, split into custom hooks (`usePlayer`, `useCombat`, `useWorldTime`, etc.). Do not create additional global stores.
 - **Stamina thresholds** — <30% = attributes ×0.7; <10% = ×0.5 and most actions are blocked.
 
 ## 6. UI LAYOUT & CONVENTIONS
@@ -132,9 +141,9 @@ type Message = {
 
 ### Button styles
 
-- **Action:** transparent background, `#44445a` border, `#d4d0c8` text
-- **Rest:** transparent background, `#5a9e6f` border, prefixed with `♦`
-- **Travel:** `#3d3666` background, `#7c6fcd` border, prefixed with `▶`
+- **Action:** transparent background, `C.border` border, `C.text` text
+- **Rest:** transparent background, `C.green` border, prefixed with `♦`
+- **Travel:** `C.accentDim` background, `C.accent` border, prefixed with `▶`
 
 - A divider separates Action/Rest from Travel buttons
 
