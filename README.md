@@ -8,6 +8,7 @@ The system is designed around emergent behavior, discovery-driven progression, a
 
 - Development rules and system constraints: [CLAUDE.md](CLAUDE.md)
 - Current execution state and backlog: [TODO.md](TODO.md)
+- Architecture index: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Detailed design references: [docs/](docs/)
 
 ## Core Experience
