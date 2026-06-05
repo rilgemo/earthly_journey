@@ -1,4 +1,4 @@
-# CLAUDE.md — Earthly Journey Development Guideline
+﻿# CLAUDE.md — Earthly Journey Development Guideline
 
 ## 1. PROJECT OVERVIEW
 
@@ -45,16 +45,17 @@ type Player = {
   hp: number;
   stamina: number;
   gold: number;
-  area: string;
+  currentArea: string;          // area key, e.g., 'newleaf_town/square'
   skills: Skill[];
-  equippedSkills: string[];
+  equippedSkills: string[];     // skill ids
   inventory: InventoryItem[];
   equipped: Record<string, EquipmentItem | null>;
-  discoveredActions: Record<string, string[]>;
+  discoveredActions: Record<string, string[]>;  // area key → action keys
 };
 
 type Skill = {
-  name: string;
+  id: string;                   // unique, e.g., 'forging_101'
+  name: string;                 // display name
   type: 'combat' | 'production' | 'gathering' | 'support' | 'hidden';
   desc: string;
   stats: Partial<Record<StatKey, number>>;
@@ -67,9 +68,12 @@ type Area = {
   label: string;
   breadcrumb: string[];
   intro: string;
-  actions: string[];
-  travel: string[];
-  localChat: { speaker: string; text: string }[];
+  actions: string[];            // action keys
+  travel: string[];             // area keys (destinations)
+  localChat?: {                 // static ambient messages (not NPC system)
+    speaker: string;
+    text: string;
+  }[];
 };
 
 type Action = {
@@ -78,23 +82,23 @@ type Action = {
   narrative: string;
   stCost: 'vlow' | 'low' | 'mid' | 'high' | 'rest_tiny' | 'rest_part' | 'rest_full';
   requirements?: {
-    skill?: { name: string; level?: number };
+    skill?: { id: string; level?: number };
     item?: { id: string; qty?: number };
     gold?: number;
     hpAbove?: number;
     staminaAbove?: number;
-    timePeriod?: string[];
-    area?: string[];
+    timePeriod?: string[];      // e.g., ['dawn', 'night']
+    area?: string[];            // area keys
   };
-  cooldown?: number;
+  cooldownSeconds?: number;
   log?: string;
   npcReply?: { speaker: string; text: string };
   unlockSkill?: Skill;
   giveItem?: { id: string; name: string; qty: number };
   equipDrop?: { slot: string; item: EquipmentItem };
-  addActions?: Record<string, string[]>;
-  removeActions?: string[];
-  skillXp?: { name: string; xp: number };
+  addActions?: Record<string, string[]>;   // area key → action keys
+  removeActions?: string[];                // action keys to remove
+  skillXp?: { id: string; xp: number };
   cost?: { gold: number };
   hpRestore?: number;
   stRestore?: 'tiny' | 'small' | 'medium' | 'large';
@@ -120,7 +124,7 @@ type Message = {
   text: string;
 };
 
-// ---- Future - Combat ----
+// ---- Future - Combat (reference only) ----
 type Enemy = {
   id: string;
   name: string;
@@ -129,11 +133,17 @@ type Enemy = {
   rewards?: {
     gold?: number;
     items?: InventoryItem[];
-    skillXp?: Record<string, number>;
+    skillXp?: Record<string, number>;  // skill id → xp
   };
 };
 
-// ---- Future - NPC ----
+// ---- Future - NPC (reference only) ----
+type NPCSchedule = {
+  period: 'dawn' | 'morning' | 'noon' | 'afternoon' | 'dusk' | 'night';
+  action: string;
+  location: string;
+};
+
 type NPC = {
   id: string;
   name: string;
@@ -144,8 +154,8 @@ type NPC = {
   skills: Skill[];
   inventory: InventoryItem[];
   location: string;
-  relationships: Record<string, number>;
-  schedule?: NPCSchedule;
+  relationships: Record<string, number>;  // NPC id → reputation
+  schedule?: NPCSchedule[];
   needs?: { hunger: number; sleep: number; social: number };
   age?: number;
   lifeExpectancy?: number;
@@ -161,9 +171,10 @@ type NPC = {
 - **Skill slots matter** — Players must choose which skills to equip.
 - **Chat is authoritative** — All system, NPC, and player events appear in the unified message feed.
 - **Data-driven only** — Do not hardcode logic like `if (area === 'town')` inside components. Use data from `/src/data/`.
+- **Game logic belongs in App.js or hooks** — Components are presentation-focused. Avoid conditional game logic inside JSX.
 - **State organization** — `App.js` is the single source of truth. When complexity grows, split into custom hooks (`usePlayer`, `useCombat`, `useWorldTime`, etc.). Do not create additional global stores.
 - **Stamina thresholds** — Current stamina < 30% of max = attributes ×0.7; <10% = ×0.5 and most actions are blocked.
-- **Action cooldown** — Actions may have `cooldown?: number` (in seconds) to prevent spam.
+- **Action cooldown** — Actions may have `cooldownSeconds?: number` to prevent spam.
 
 ## 6. UI LAYOUT & CONVENTIONS
 
@@ -235,6 +246,8 @@ type NPC = {
 
 ## 9. FUTURE SYSTEMS (Design References)
 
+> **Future systems are references only. They must not influence current implementations unless explicitly requested.**
+
 ### Combat System
 - Turn-based combat
 - Travel and most actions locked during combat
@@ -243,7 +256,7 @@ type NPC = {
 
 ### NPC Ecology
 - Not implemented — high-level design only
-- Goal: Simulated town economy with ~21 initial NPCs (blacksmith, farmer, merchant, innkeeper, etc.)
+- Goal: simulated town economy with ~21 initial NPCs (blacksmith, farmer, merchant, innkeeper, etc.)
 - NPCs will have full player-like attributes (skills, inventory, gold, needs)
 - Offline progress capped at `OFFLINE_PROGRESS_CAP_DAYS = 3`
 - Full simulation only for NPCs in player's loaded area; remote NPCs use simplified hourly simulation
@@ -261,6 +274,7 @@ type NPC = {
 - **Future enemies** belong in `enemies.js`
 - **Future NPCs** belong in `npcs.js`
 - **Components must not contain game content** — they render data only
+- **Game logic belongs in App.js or hooks** — Components should be presentation-focused
 
 ## 11. LONG-TERM VISION (Sandbox Living World)
 
@@ -283,3 +297,17 @@ When adding new features:
 
 When in doubt, follow the data schemas and non-negotiable rules.
 
+---
+
+## 最终修正汇总
+
+| # | 问题 | 修正 |
+|---|------|------|
+| 1 | `NPCSchedule` 未定义 | 已补充最小定义 |
+| 2 | `Player.area` 命名模糊 | 改为 `currentArea` |
+| 3 | `Skill` 无 id | 增加 `id` 字段，`equippedSkills` 存 id |
+| 4 | `removeActions` 歧义 | 注释说明 "action keys" |
+| 5 | `localChat` 过早 | 改为 optional + 注释 "static ambient messages" |
+| 6 | `cooldown` 单位不明确 | 改为 `cooldownSeconds` |
+| 7 | 缺少组件行为约束 | 增加 "Game logic belongs in App.js or hooks" |
+| 8 | Future 与 Current 分界 | 增加引用声明块 |
