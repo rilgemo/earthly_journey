@@ -1,57 +1,140 @@
 # Earthly Journey
 
-A browser-based text RPG sandbox where **discovery is the reward**.
+Earthly Journey is an agent-based simulation RPG where the world emerges from interactions between autonomous agents, including humans, animals, monsters, and the player.
 
-You enter the world with nothing — no skills, no direction, no map. Every skill you gain, every mechanic you uncover, every hidden synergy you find — all of it comes from exploring the world on your own terms.
+The system is designed around emergent behavior, not scripted progression.
 
----
+## Core Design Philosophy
 
-## What Makes This Game Different
+### 1. Agent-Centric World
 
-**Skills define your character, not stats.**
-There are no attribute points to allocate. Your character's strength, speed, and abilities are entirely determined by the skills you have equipped. Swap your skills, change your identity.
+All entities in the world are agents:
 
-**You can't see what you haven't found.**
-Locked skills are invisible. There are no hint systems, no skill trees to browse. New abilities surface naturally in the event log as you act, explore, and interact with the world.
+- NPCs are agents
+- Animals are agents
+- Monsters are agents
+- The player is an agent
 
-**Every skill has depth.**
-Even "useless" gathering or crafting skills contribute to your overall attributes. A dedicated crafter isn't weak — they're built differently. Combining unexpected skills can unlock hidden synergies that no one told you existed.
+There is no separate "game logic layer" controlling behavior. The world advances through interactions between agents.
 
-**Skill slots create real choices.**
-You can only equip a limited number of skills at a time. Choosing what to keep equipped — and what to leave behind — shapes how you grow.
+### 2. World Emergence Model
 
-**The world is shared.**
-Earthly Journey is designed as an MMO. All players inhabit the same persistent world, and the player community becomes part of how knowledge spreads.
+```text
+agent perception -> decision -> action -> world state mutation -> feedback loop
+```
 
----
+The world does not simulate agents as decorative actors.
 
-## Current State
+Instead, the world is the result of agent interactions.
 
-> Phase 1 — Core Systems (In Development)
+### 3. No Static Character Stats
 
-- [x] Three-panel UI (Status / Narrative / Skills & Inventory)
-- [x] Area-based exploration with narrative text
-- [x] Dynamic action system (actions unlock through play)
-- [x] Skill discovery and equip system
-- [x] Skill slot system with attribute contribution
-- [x] Stamina system with rest mechanics
-- [x] Equipment slots (head, body, hands, feet, main hand, off hand, accessories)
-- [x] Town facilities: Inn, Apothecary, Blacksmith, Leather Armour Shop
-- [ ] Combat system
-- [ ] Skill evolution (level-up upgrades)
-- [ ] Skill fusion (multi-skill combination unlocks)
-- [ ] Save/load system
-- [ ] Backend & multiplayer foundation
+Characters are defined entirely by their equipped skills:
 
----
+- No attribute point allocation
+- No hidden stat leveling
+- All capabilities are derived from skills
+
+### 4. Discovery-Driven Knowledge
+
+Progression is based on discovery, not previewed optimization:
+
+- Locked skills are completely invisible
+- There is no skill tree UI
+- Progression paths are not pre-revealed
+- Abilities emerge through actions and consequences
+
+### 5. Skills as Identity System
+
+Skills are not upgrades. They are identity components:
+
+- Equipping skills defines the character's role
+- Different combinations create different build identities
+- Hidden synergies emerge through experimentation
+
+### 6. Constraint-Based Build System
+
+Players can equip only a limited number of skills.
+
+This creates:
+
+- Meaningful trade-offs
+- Specialization pressure
+- Emergent character archetypes
+
+### 7. Living World Principle
+
+The world evolves continuously through agent interactions:
+
+- Resource consumption and regeneration
+- Movement and migration
+- Economic exchanges
+- Conflict and cooperation
+
+No global story system is required for the world to change.
+
+## Core System Definition
+
+### Agent System
+
+Agents are autonomous entities that can perceive the world, make decisions, perform actions, and mutate world state.
+
+The player is part of the same conceptual system as every other entity. Player interaction should extend the agent model rather than sit outside it.
+
+### Interaction Model
+
+Gameplay is expressed as agent-to-agent and agent-to-world interactions.
+
+Actions should produce consequences through shared rules, not through isolated scripted outcomes.
+
+### Simulation Loop
+
+The simulation loop is the foundation of world evolution:
+
+1. Agents perceive available context
+2. Agents evaluate possible actions
+3. Actions mutate local or global world state
+4. The UI reports consequences to the player
+5. New state becomes the input for future decisions
+
+## Current Implementation Status
+
+### Phase 1: Core Systems
+
+Active development.
+
+Implemented:
+
+- Three-panel UI architecture
+- Area-based exploration system
+- Action-driven gameplay loop
+- Skill discovery and equip system
+- Stamina system with thresholds
+- Equipment slot system
+- Unified event and message feed
+- Basic town infrastructure
+
+In progress:
+
+- None
+
+Planned:
+
+- Turn-based combat system
+- Skill evolution system
+- Skill fusion system
+- Save/load persistence layer
+
+### Future Infrastructure
+
+- Backend persistence layer
+- Multiplayer world synchronization
 
 ## Tech Stack
 
-- React (Create React App)
-- Plain CSS-in-JS (no external UI libraries)
-- GitHub for version control
-
----
+- React with Create React App
+- Inline CSS-in-JS
+- GitHub version control
 
 ## Getting Started
 
@@ -62,27 +145,57 @@ npm install
 npm start
 ```
 
-Open `http://localhost:3000` in your browser.
+Open:
 
----
+```text
+http://localhost:3000
+```
 
 ## Project Structure
 
-```
+```text
 src/
-├── App.js              # Main game component
-├── data/               # Game data (areas, actions, skills) — to be separated in Phase 2
-└── components/         # UI panels — to be separated in Phase 2
+|-- App.js          # Core simulation state and loop
+|-- data/           # Game content definitions
+|-- utils/          # World simulation utilities
+`-- components/     # Pure UI rendering layer
 ```
 
-## UI Conventions
+## UI Principles
 
-- Top bar shows breadcrumb navigation (e.g. 新叶镇 / 铁砧锻造铺)
-- Action, Rest, and Travel buttons are vertically stacked (left-aligned), not inline wrap
-- Event log is compact (maxHeight: 72px)
-- Each area in areas.js includes a breadcrumb: string[] field
+- Top bar: world context, breadcrumb, time, and economy
+- Middle: interaction space and available actions
+- Bottom: memory space and event log
+- UI never contains game logic
+- All logic lives in data modules, simulation utilities, or `App.js`
 
----
+## Development Principles
+
+- Prefer data-driven design over conditional logic
+- Keep components presentation-only
+- Make game behavior emerge from agent interaction rules
+- Avoid hardcoded world assumptions
+- Extend systems instead of special-casing behavior
+
+## Future Vision
+
+Earthly Journey aims to become a fully agent-driven living simulation world where:
+
+- NPCs develop their own histories
+- Ecosystems evolve without scripts
+- Economic systems self-balance
+- Player influence becomes part of a larger autonomous world
+
+## Documentation Roadmap
+
+As the project grows, the README should remain the entry point and the deeper design spec can move into dedicated documents:
+
+```text
+docs/
+|-- vision.md        # Worldview and design philosophy
+|-- simulation.md    # Agent system and world loop
+`-- gameplay.md      # Player-facing mechanics
+```
 
 ## License
 
