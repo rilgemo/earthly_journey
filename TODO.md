@@ -1,145 +1,150 @@
-# Earthly Journey — Development TODO
+# Earthly Journey TODO
 
-> Last updated: 2026-05-29
-> Current phase: Phase 1 — Core Systems
+This file is the execution layer for current work and backlog.
 
----
+Rules are defined in [CLAUDE.md](CLAUDE.md). Product meaning is described in [README.md](README.md).
 
-## ✅ Completed
+Last updated: 2026-05-29
 
-- [x] Three-panel layout (left: status / centre: narrative / right: skills & inventory)
-- [x] Top bar — location, time, weather, gold display
+Current phase: Phase 1 - Core Systems
+
+## Done
+
+- [x] Three-panel layout: left status, center narrative, right skills and inventory
+- [x] Top bar with location, time, weather, and gold display
 - [x] Narrative text area with event log
-- [x] Dynamic action button system (actions unlock through play, chain triggers)
-- [x] Travel system — area-to-area movement with stamina cost
-- [x] Stamina system — drain on actions, warning/critical thresholds, attribute debuff
-- [x] Rest system — inn (paid, full restore), campsite (free, partial), auto trickle recovery
-- [x] Skill discovery — triggered by exploration, interaction, items
-- [x] Skill equip/unequip via slot system (10 slots, all open in test mode)
-- [x] Skill attribute contribution — equipped skills modify character stats
-- [x] Equipment slots — head, body, hands, feet, main hand, off hand, 2× accessory
+- [x] Dynamic action button system with unlocks and chain triggers
+- [x] Travel system with area-to-area movement and stamina cost
+- [x] Stamina system with drain, warning threshold, critical threshold, and attribute debuff
+- [x] Rest system: paid inn full restore, free campsite partial restore, auto trickle recovery
+- [x] Skill discovery through exploration, interaction, and items
+- [x] Skill equip and unequip through slot system
+- [x] Skill attribute contribution through equipped skills
+- [x] Equipment slots: head, body, hands, feet, main hand, off hand, accessories
 - [x] Equipment stat bonuses apply to displayed attributes
-- [x] Town: Starting square, Inn/Restaurant, Apothecary, Blacksmith, Leather Armour Shop
-- [x] Starter narrative and world lore seeds (notice board, fountain inscription, etc.)
+- [x] Town locations: starting square, inn, restaurant, apothecary, blacksmith, leather armour shop
+- [x] Starter narrative and world lore seeds
+- [x] localStorage save/load
 
----
+## In Progress
 
-## 🔧 Phase 1 — Remaining Core Systems
+- [ ] None
+
+## Phase 1 - Remaining Core Systems
 
 ### Combat System
-- [ ] Basic combat encounter structure (turn-based, menu-driven)
+
+- [ ] Basic turn-based combat encounter structure
 - [ ] Combat actions determined by equipped skills
-- [ ] Enemy definition format (stats, loot, narrative)
-- [ ] First enemy: Wild Boar (south forest area)
-- [ ] First enemy: Cave Creature (north mine shallow layer)
-- [ ] Damage calculation using ATK / DEF
-- [ ] Status effects: physical (poison, paralysis) and mental (curse, confusion)
+- [ ] Enemy definition format: stats, loot, narrative
+- [ ] First enemy: Wild Boar in south forest area
+- [ ] First enemy: Cave Creature in north mine shallow layer
+- [ ] Damage calculation using attack and defense
+- [ ] Status effects: poison, paralysis, curse, confusion
 - [ ] Flee action
-- [ ] Victory / defeat outcomes
+- [ ] Victory and defeat outcomes
 - [ ] Lock travel buttons during combat
 
 ### Skill Evolution
-- [ ] Define evolution conditions per skill (level threshold)
-- [ ] Evolution trigger check after skill XP gain
-- [ ] Narrative hint before evolution ("you feel your understanding approaching a limit…")
-- [ ] Replace base skill with evolved skill in slot on trigger
-- [ ] First evolution path: 【採集 Lv.5】→【精準採集】
+
+- [ ] Define evolution conditions per skill
+- [ ] Check evolution trigger after skill XP gain
+- [ ] Add narrative hint before evolution
+- [ ] Replace base skill with evolved skill on trigger
+- [ ] First evolution path: Gathering Lv.5 -> Precise Gathering
 
 ### Skill Fusion
-- [ ] Define fusion recipes (skill A + skill B + conditions → new skill)
-- [ ] Fusion check: both skills must be simultaneously equipped
-- [ ] Fusion trigger: passive check on equip action
-- [ ] First fusion: 【草药知识 Lv.3】+【炼金入门 Lv.2】→【药草炼金】
+
+- [ ] Define fusion recipes
+- [ ] Require both source skills to be equipped
+- [ ] Trigger fusion check on equip action
+- [ ] First fusion: Herbal Knowledge Lv.3 + Alchemy Basics Lv.2 -> Herbal Alchemy
 
 ### Hidden Synergy System
-- [ ] Define synergy pairs and their bonus effects
-- [ ] Passive check when skill loadout changes
-- [ ] Apply hidden stat bonus silently (no UI notification)
-- [ ] Unlock hidden combat actions via synergy (e.g. 剑舞)
-- [ ] First synergy: 【剑术】+【轻步】→ SPD +15%, unlock 剑舞 action
 
-### Save System
-- [ ] Define save data schema (area, skills, slots, stats, inventory, equipment, log)
-- [ ] Auto-save to localStorage on every action
-- [ ] Load on page open
-- [ ] Manual save button (optional)
+- [ ] Define synergy pairs and bonus effects
+- [ ] Check synergy when skill loadout changes
+- [ ] Apply hidden stat bonus silently
+- [ ] Unlock hidden combat actions through synergy
+- [ ] First synergy: Swordsmanship + Light Step -> speed bonus and Sword Dance action
 
----
-
-## 🏗️ Phase 2 — Content & Systems Expansion
+## Phase 2 - Content And Systems Expansion
 
 ### Code Refactor
-- [ ] Split `App.js` into separate component files
+
+- [ ] Split `App.js` into focused component and hook files
 - [ ] Extract `data/areas.js`
 - [ ] Extract `data/actions.js`
-- [ ] Extract `data/skills.js` (with separate `skills.md` design document)
+- [ ] Extract `data/skills.js`
 - [ ] Extract `data/enemies.js`
-- [ ] Extract `data/recipes.js` (fusion recipes)
+- [ ] Extract `data/recipes.js`
 
-### Skills & Discovery
-- [ ] Expand base skill list (target: 20–30 discoverable skills)
-- [ ] Add hidden skills (developer-placed, no hints)
-- [ ] Item-triggered skill unlocks (e.g. holding a specific book → unlock skill)
-- [ ] Location-triggered skill unlocks (deep area exploration)
+### Skills And Discovery
+
+- [ ] Expand base skill list to 20-30 discoverable skills
+- [ ] Add hidden skills without UI hints
+- [ ] Add item-triggered skill unlocks
+- [ ] Add location-triggered skill unlocks
 
 ### Town Expansion
-- [ ] Blacksmith: commission crafting system (materials + gold + wait time)
-- [ ] Apothecary: sell gathered materials to NPC
-- [ ] Leather shop: custom commission system (hide materials)
-- [ ] Inn: NPC rumours that hint at hidden content
-- [ ] Town noticeboard: rotating posts, world events
+
+- [ ] Blacksmith commission crafting
+- [ ] Apothecary material selling
+- [ ] Leather shop custom commission system
+- [ ] Inn rumor system
+- [ ] Town noticeboard with rotating posts and world events
 
 ### World Expansion
-- [ ] South Forest: deeper layers, new encounters
-- [ ] North Mine: mid and deep layers, stronger enemies
-- [ ] New area: Eastern Plains
-- [ ] New area: Ruined Outpost
-- [ ] Day/night cycle (affects available actions and encounters)
-- [ ] Weather system (affects gathering quality, enemy behaviour)
+
+- [ ] South Forest deeper layers
+- [ ] North Mine mid and deep layers
+- [ ] Eastern Plains area
+- [ ] Ruined Outpost area
+- [ ] Day/night availability effects
+- [ ] Weather effects for gathering quality and enemy behavior
 
 ### Inventory
-- [ ] Item categories (materials, consumables, equipment, key items)
-- [ ] Use consumables from inventory (potions, food)
+
+- [ ] Item categories
+- [ ] Consumable item usage
 - [ ] Item descriptions and lore text
 - [ ] Inventory capacity limit
 
----
+## Phase 3 - World And Social
 
-## 🌐 Phase 3 — World & Social
-
-- [ ] Persistent backend (user accounts, shared world state)
+- [ ] Persistent backend
+- [ ] User accounts
+- [ ] Shared world state
 - [ ] Player chat system
 - [ ] Player-to-player trading
-- [ ] Guild / party foundation
+- [ ] Guild and party foundation
 - [ ] World map view
-- [ ] Shared world events (developer-triggered)
-- [ ] Player leaderboard / discovery log ("first to discover X")
+- [ ] Shared world events
+- [ ] Discovery log
 
----
-
-## ⚔️ Phase 4 — Endgame & Operations
+## Phase 4 - Endgame And Operations
 
 - [ ] PVP zones
 - [ ] Large-scale world events
-- [ ] Developer admin tools (trigger events, add content without redeploy)
-- [ ] Skill slot unlock conditions (finalize slots 4–9)
-- [ ] Slot 10 hidden unlock condition (deep exploration reward)
+- [ ] Developer admin tools
+- [ ] Skill slot unlock conditions for slots 4-9
+- [ ] Slot 10 hidden unlock condition
 
----
+## Blocked
 
-## 📋 Design Decisions Pending
+- [ ] None
 
-- [ ] World name — finalise (current placeholder: 天赋)
-- [ ] Attribute naming — finalise Chinese/English consistency
-- [ ] MP / Mana — independent attribute or skill-derived?
-- [ ] Negative skill stat penalties — keep or remove? (current: keep)
-- [ ] Skill slot unlock conditions for slots 4–9
-- [ ] Hidden synergy scope for Phase 1 vs Phase 2
+## Decisions Needed
 
----
+- [ ] Finalize world name
+- [ ] Finalize Chinese/English attribute naming consistency
+- [ ] Decide whether MP or mana is independent or skill-derived
+- [ ] Decide whether negative skill stat penalties remain
+- [ ] Finalize skill slot unlock conditions for slots 4-9
+- [ ] Define hidden synergy scope for Phase 1 versus Phase 2
 
-## 🐛 Known Issues
+## Known Issues
 
-- Stamina auto-recovery interval resets on re-render (minor, address in refactor)
-- Skill XP bar calculation tied to fixed 20 XP per level (needs scaling formula)
-- Equipment bought auto-equips immediately — need inventory-first flow in Phase 2
+- [ ] Stamina auto-recovery interval resets on re-render
+- [ ] Skill XP bar calculation is tied to fixed 20 XP per level
+- [ ] Equipment bought auto-equips immediately; Phase 2 should move to inventory-first flow

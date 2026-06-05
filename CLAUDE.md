@@ -1,5 +1,9 @@
 # Earthly Journey
 
+This file is the constraint layer for AI and developer work.
+
+It defines how Earthly Journey must be built. Product meaning belongs in [README.md](README.md). Current tasks and backlog belong in [TODO.md](TODO.md).
+
 See `/docs` for the full project specification.
 
 ## Specification Index
