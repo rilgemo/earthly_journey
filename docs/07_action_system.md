@@ -8,6 +8,10 @@ They connect area context, requirements, stamina cost, narrative output, rewards
 
 ## Action Schema
 
+The canonical action schema registry is defined in `AI/ACTION_SCHEMA_REGISTRY.md`.
+All executable action keys must be registered there before being referenced by AI intent or simulation execution.
+Action definitions in `/src/data/actions.js` must align with the registry.
+
 ```ts
 type Action = {
   key: string;

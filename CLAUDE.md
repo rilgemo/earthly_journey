@@ -27,6 +27,8 @@ See `/docs` for the full project specification.
 
 For simulation logic, agent behavior, and DF x AI tick rules, consult [AI/AGENTS.md](AI/AGENTS.md) and [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) before editing code.
 
+For implementation bridges from the current React game to the future simulation kernel, consult [docs/implementation/phase1_mapping.md](docs/implementation/phase1_mapping.md).
+
 ## Specification Index
 
 - [00_overview.md](docs/00_overview.md) - Project overview, stack, core loop, and current file structure

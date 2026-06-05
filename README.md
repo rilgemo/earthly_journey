@@ -8,11 +8,14 @@ The system is designed around emergent behavior, discovery-driven progression, a
 
 - Development rules and system constraints: [CLAUDE.md](CLAUDE.md)
 - Current execution state and backlog: [TODO.md](TODO.md)
+- Long-term evolution path: [ROADMAP.md](ROADMAP.md)
 - Architecture index: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Detailed design references: [docs/](docs/)
 - AI simulation operating spec: [AI/AGENTS.md](AI/AGENTS.md)
 - Multi-agent cognitive runtime: [AI/MULTI_AGENT_RUNTIME.md](AI/MULTI_AGENT_RUNTIME.md)
 - Emergence tuning control plane: [AI/EMERGENCE_TUNING.md](AI/EMERGENCE_TUNING.md)
+- Final intent resolution model: [AI/RESOLUTION_MODEL.md](AI/RESOLUTION_MODEL.md)
+- Trace and debug model: [AI/TRACE_MODEL.md](AI/TRACE_MODEL.md)
 
 ## Core Experience
 
@@ -35,6 +38,8 @@ Phase 1 focuses on core systems:
 - Basic town infrastructure
 
 Future systems such as combat, advanced NPC simulation, economy, persistence, and multiplayer are tracked separately in [TODO.md](TODO.md).
+
+Long-term phase direction is tracked in [ROADMAP.md](ROADMAP.md).
 
 ## Getting Started
 

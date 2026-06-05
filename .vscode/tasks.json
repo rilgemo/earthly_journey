@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "load-earthly-context",
+      "type": "shell",
+      "command": "echo Earthly Journey context loaded",
+      "problemMatcher": []
+    }
+  ]
+}
