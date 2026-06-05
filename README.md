@@ -10,6 +10,9 @@ The system is designed around emergent behavior, discovery-driven progression, a
 - Current execution state and backlog: [TODO.md](TODO.md)
 - Architecture index: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Detailed design references: [docs/](docs/)
+- AI simulation operating spec: [AI/AGENTS.md](AI/AGENTS.md)
+- Multi-agent cognitive runtime: [AI/MULTI_AGENT_RUNTIME.md](AI/MULTI_AGENT_RUNTIME.md)
+- Emergence tuning control plane: [AI/EMERGENCE_TUNING.md](AI/EMERGENCE_TUNING.md)
 
 ## Core Experience
 

@@ -1,10 +1,31 @@
 # Earthly Journey
 
-This file is the constraint layer for AI and developer work.
+This file is the code and development constraint layer.
 
 It defines how Earthly Journey must be built. Product meaning belongs in [README.md](README.md). Current tasks and backlog belong in [TODO.md](TODO.md).
 
+## System Boundary
+
+This file defines:
+
+- Code structure rules
+- React architecture rules
+- UI constraints
+- Data organization expectations
+- Development workflow guidance
+
+This file does not define:
+
+- Simulation rules
+- Agent behavior rules
+- World physics rules
+- DF x AI runtime semantics
+
+Simulation rules are defined in `/AI` only.
+
 See `/docs` for the full project specification.
+
+For simulation logic, agent behavior, and DF x AI tick rules, consult [AI/AGENTS.md](AI/AGENTS.md) and [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) before editing code.
 
 ## Specification Index
 
@@ -19,6 +40,13 @@ See `/docs` for the full project specification.
 - [08_data_schemas.md](docs/08_data_schemas.md) - Canonical data schemas
 - [09_ui_conventions.md](docs/09_ui_conventions.md) - UI layout, panel flow, colors, and rendering rules
 - [10_future_roadmap.md](docs/10_future_roadmap.md) - Implementation status, planned systems, and long-term vision
+
+## AI Simulation Kernel
+
+- [AI/AGENTS.md](AI/AGENTS.md) - AI agent operating memory
+- [AI/SYSTEM_PROMPT.md](AI/SYSTEM_PROMPT.md) - DF x AI hybrid rules
+- [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) - Tick flow and validation pipeline
+- [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index
 
 ## Development Guidelines for AI
 
