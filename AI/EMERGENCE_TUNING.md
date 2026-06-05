@@ -178,8 +178,10 @@ Each simulation tick:
 
 1. v2 Runtime produces raw agent intents.
 2. EETS modifies intent weights.
-3. Adjusted intents go to the execution layer.
-4. Results feed back into memory systems.
+3. Adjusted intents go to `RESOLUTION_MODEL`.
+4. Resolution Model selects one final intent.
+5. Execution Model validates and applies the selected intent.
+6. Results feed back into memory systems.
 
 ## Pseudocode
 
@@ -247,6 +249,6 @@ v3: Civilization formalization layer
 
 EETS may tune intent weights.
 
-EETS may not create behavior, choose final actions, or mutate state directly.
+EETS may not create behavior, choose final actions, override `RESOLUTION_MODEL`, or mutate state directly.
 
 Only the action resolution engine may execute validated actions and commit world mutations.

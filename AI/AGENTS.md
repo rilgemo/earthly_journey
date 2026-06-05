@@ -74,6 +74,8 @@ AI operating specification:
 - `/AI/EXECUTION_MODEL.md`
 - `/AI/MULTI_AGENT_RUNTIME.md`
 - `/AI/EMERGENCE_TUNING.md`
+- `/AI/RESOLUTION_MODEL.md`
+- `/AI/TRACE_MODEL.md`
 - `/docs/01_core_architecture.md`
 - `/docs/02_agent_system.md`
 - `/docs/06_world_simulation.md`

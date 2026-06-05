@@ -8,8 +8,10 @@ For each world tick:
 2. Update environment simulation.
 3. For each agent:
    - Update perception.
-   - Generate intent through AI.
-   - Validate intent against DF rules.
+   - Generate base intent through AI.
+   - Apply runtime context and EETS modifiers.
+   - Resolve one final intent through `RESOLUTION_MODEL`.
+   - Validate final intent against DF rules.
    - Execute the validated action.
    - Record outcome for memory update.
 4. Resolve conflicts.
@@ -57,10 +59,27 @@ The engine is the only execution layer.
 Execution pipeline:
 
 1. AI generates intent.
-2. Engine validates intent against DF rules.
-3. Engine resolves conflicts.
-4. Engine mutates world state.
-5. Engine sends outcome to memory update hooks.
+2. Runtime and EETS attach modifiers.
+3. Resolution Model selects one final intent.
+4. Engine validates final intent against DF rules.
+5. Engine mutates world state.
+6. Engine sends outcome to memory update hooks.
+
+## Execution Contract Layer
+
+The Execution Contract Layer is the required translation point between AI intent and simulation execution.
+It ensures that intent is normalized, mapped to an action schema, and checked before any mutation occurs.
+
+Contract checklist:
+
+- Does this output modify world state? If yes, it must go through `tickManager()`.
+- Is this output an AI intent? If yes, it must be resolved through `RESOLUTION_MODEL`.
+- Is this output UI-only? If yes, it must not contain simulation or decision logic.
+- Does this output bypass the simulation layer? If yes, it is forbidden.
+- Is the action schema explicit and validated against DF rules before execution?
+- Is the action key registered in `AI/ACTION_SCHEMA_REGISTRY.md` before use?
+
+The contract layer prevents drift by making every AI-proposed action pass through a clearly defined validation and mapping stage.
 
 ## Validation Checks
 
