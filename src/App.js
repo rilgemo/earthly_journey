@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
 import { SKILL_SLOTS } from "./data/skills";
+import { getWorldTime } from "./utils/worldTime";
 import LeftPanel from "./components/LeftPanel";
 import MainPanel from "./components/MainPanel";
 import RightPanel from "./components/RightPanel";
@@ -56,6 +57,12 @@ export default function App() {
   const [items, setItems] = useState([]);
   const [equipped, setEquipped] = useState(() => Object.fromEntries(EQUIP_SLOTS.map(s => [s.id, null])));
   const [notif, setNotif] = useState(null);
+  const [worldTime, setWorldTime] = useState(() => getWorldTime());
+
+  useEffect(() => {
+    const timer = setInterval(() => setWorldTime(getWorldTime()), 15000);
+    return () => clearInterval(timer);
+  }, []);
 
   const skillsRef = useRef([]);
   useEffect(() => { skillsRef.current = skills; }, [skills]);
@@ -319,8 +326,8 @@ export default function App() {
               </span>
             ))}
         </span>
-        <span style={{ color: C.textDim, fontSize: 11 }}>🕐 清晨</span>
-        <span style={{ color: C.textDim, fontSize: 11 }}>☀ 晴</span>
+        <span style={{ color: C.textDim, fontSize: 11 }}>{worldTime.label}</span>
+        <span style={{ color: C.textDim, fontSize: 11 }}>{worldTime.isDay ? '☀' : '🌙'}</span>
         <span style={{ color: C.gold, fontSize: 11 }}>💰 {gold} G</span>
         <button onClick={() => {
           if (window.confirm("确定要重置游戏吗？所有进度将会清除。")) {
@@ -346,6 +353,7 @@ export default function App() {
           slots={slots}
           skills={skills}
           onUnequipSkillSlot={unequipSkillSlot}
+          worldTime={worldTime}
         />
         <MainPanel
           narrative={narrative}
@@ -358,6 +366,7 @@ export default function App() {
           onAction={doAction}
           onTravel={travelTo}
           curArea={curArea}
+          worldTime={worldTime}
         />
         <RightPanel
           skills={skills}
@@ -368,6 +377,7 @@ export default function App() {
           onUnequipSkillSlot={unequipSkillSlot}
           equipped={equipped}
           onUnequipGear={unequipGear}
+          worldTime={worldTime}
         />
       </div>
     </div>
