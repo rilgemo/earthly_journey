@@ -17,6 +17,26 @@ export default function AgentPanel({ world }) {
               {agent.manaCapacity ? ` / ${agent.manaCapacity}` : ''}
             </div>
             <div>State: {agent.state || 'active'}</div>
+            {agent.selectedIntent && (
+              <div>Selected: {agent.selectedIntent}</div>
+            )}
+            {agent.needs && (
+              <div>
+                Needs: H{Math.round(agent.needs.hunger || 0)}
+                {' '}F{Math.round(agent.needs.fatigue || 0)}
+                {' '}M{Math.round(agent.needs.manaNeed || 0)}
+              </div>
+            )}
+            {agent.memories?.length > 0 && (
+              <div>Memories: {agent.memories.length}</div>
+            )}
+            {agent.intents?.length > 0 && (
+              <div>
+                Intents: {agent.intents.slice(0, 3).map(intent => (
+                  `${intent.intent}:${intent.score.toFixed(1)}`
+                )).join(', ')}
+              </div>
+            )}
           </div>
         ))}
       </div>

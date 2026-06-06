@@ -52,7 +52,11 @@ function snapshotWorld(world, agents) {
       location: agent.location,
       mana: agent.mana.current,
       manaCapacity: agent.mana.capacity,
-      state: `hunger:${agent.needs.hunger.toFixed(2)} rest:${agent.needs.rest.toFixed(2)}`
+      state: `hunger:${(agent.needs.hunger || 0).toFixed(2)} fatigue:${(agent.needs.fatigue || 0).toFixed(2)}`,
+      needs: agent.runtime?.lastNeeds || agent.needs,
+      memories: agent.runtime?.lastMemories || [],
+      intents: agent.runtime?.lastIntents || [],
+      selectedIntent: agent.runtime?.lastSelectedIntent || null
     }))
   };
 }
