@@ -85,6 +85,14 @@ Each entry should include:
   requirements:
     area: ["camp"]
   cooldownSeconds: 900
+
+- key: share_information
+  label: Share Information
+  narrative: Communicate one remembered event to a nearby agent.
+  stCost: vlow
+  requirements:
+    nearbyAgent: true
+    memory: true
 ```
 
 ## Validation Contract

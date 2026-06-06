@@ -7,7 +7,8 @@
 
 const { getNeedProfile } = require('../../src/simulation/needSystem');
 const { decayAgentMemory } = require('../../src/simulation/memoryDecay');
-const { generateIntents, resolveIntent } = require('../../src/simulation/intentGenerator');
+const { generateIntents } = require('../../src/simulation/intentGenerator');
+const { resolveIntent } = require('../../src/simulation/resolutionModel');
 const { TraceCollector } = require('../../src/simulation/traceCollector');
 
 function createWorld() {

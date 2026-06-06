@@ -56,7 +56,7 @@ describe('Test 2: Execution Contract', () => {
     });
 
     test('valid action never rejected', () => {
-      const validActions = ['forage', 'rest_camp', 'cast_spark', 'travel'];
+      const validActions = ['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information'];
       validActions.forEach(action => {
         const result = contract.executeIntent({ action });
         expect(result.actionRejected).toBe(false);

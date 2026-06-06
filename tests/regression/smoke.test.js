@@ -189,7 +189,7 @@ describe('Test 7: Smoke Test (Daily Sanity Check)', () => {
       manager.runTicks(20);
 
       const history = manager.contract.getHistory();
-      expect(history.length).toBe(20); // 20 ticks, 1 action per tick currently
+      expect(history.length).toBe(200); // 10 agents x 20 ticks, 1 action per agent per tick
 
       history.forEach(trace => {
         expect(trace).toHaveProperty('executed');

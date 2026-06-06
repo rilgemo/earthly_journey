@@ -14,6 +14,11 @@ This project uses a DF x AI hybrid simulation model.
 - [RESOLUTION_MODEL.md](RESOLUTION_MODEL.md) - Final intent arbitration, conflict grouping, softmax selection, and reason tracing
 - [TRACE_MODEL.md](TRACE_MODEL.md) - Observability, replay, conflict graph, and emergence debugging
 - [REPLAY_MODEL.md](REPLAY_MODEL.md) - Read-only time travel buffer for immutable tick snapshots
+- [INFLUENCE_FIELD.md](INFLUENCE_FIELD.md) - Additive behavioral pressure layer, not decision or execution
+- [DECISION_INSPECTOR.md](DECISION_INSPECTOR.md) - Observability-only decision analysis and immutable decision traces
+- [ELEMENTAL_FIELD_SYSTEM.md](ELEMENTAL_FIELD_SYSTEM.md) - Continuous elemental world physics, not gameplay or resources
+- [COUPLED_EMERGENCE_LAYER.md](COUPLED_EMERGENCE_LAYER.md) - Additive cross-system feedback propagation, not a decision or mutation layer
+- [STABILITY_CONTROLLER.md](STABILITY_CONTROLLER.md) - Gain-based feedback regulation, not state clamping or decision logic
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs

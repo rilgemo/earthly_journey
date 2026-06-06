@@ -1,19 +1,39 @@
-const createArea = (id, field = {}) => {
+const { createFieldDelta, createFieldState } = require('./elementalField/fieldState');
+
+const createArea = (id, field = {}, options = {}) => {
+  const initialField = createFieldState(field);
   return {
     id,
-    field: Object.assign({ fire: 0, water: 0, earth: 0, arcane: 0 }, field),
+    field: initialField,
+    baselineField: createFieldState(options.baselineField || initialField),
+    neighbors: [...(options.neighbors || [])],
     recentEvents: []
   };
 };
 
 const world = {
   areas: new Map(),
+  fieldPerturbationQueue: [],
+  fieldDynamicsConfig: {},
+  lastFieldDynamicsTrace: null,
+  emergenceHistory: {},
+  emergenceConfig: {},
+  lastEmergenceTrace: null,
+  stabilityGains: null,
+  lastStabilityTrace: null,
+  stabilityHistory: [],
   addArea(area) {
     this.areas.set(area.id, area);
   },
   getField(areaId) {
     const a = this.areas.get(areaId);
-    return a ? a.field : { fire: 0, water: 0, earth: 0, arcane: 0 };
+    return a ? a.field : createFieldState();
+  },
+  queueFieldPerturbation(request) {
+    this.fieldPerturbationQueue.push({
+      tileId: request.tileId,
+      perturbation: createFieldDelta(request.perturbation)
+    });
   },
   pushEvent(areaId, ev) {
     const a = this.areas.get(areaId);

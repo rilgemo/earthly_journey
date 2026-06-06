@@ -1,5 +1,10 @@
 import React from 'react';
 import AgentPanel from './panels/AgentPanel';
+import DecisionPanel from './panels/DecisionPanel';
+import FieldDynamicsPanel from './panels/FieldDynamicsPanel';
+import CoupledEmergencePanel from './panels/CoupledEmergencePanel';
+import StabilityPanel from './panels/StabilityPanel';
+import ScenarioSummaryPanel from './panels/ScenarioSummaryPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
@@ -36,6 +41,11 @@ export default function SimulationInspector({ world, trace, replay }) {
         <WorldPanel world={world} />
         <TracePanel trace={trace} />
         <AgentPanel world={world} />
+        <DecisionPanel world={world} />
+        <FieldDynamicsPanel world={world} />
+        <CoupledEmergencePanel world={world} />
+        <StabilityPanel world={world} />
+        <ScenarioSummaryPanel world={world} />
       </div>
     </section>
   );

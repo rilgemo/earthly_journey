@@ -1,10 +1,11 @@
 const { ensureMemory } = require('./memorySystem');
+const { isHeardMemory } = require('./socialMemory');
 
 function decayMemoryList(memories, decayRate) {
   return memories
     .map(memory => ({
       ...memory,
-      strength: Math.max(0, (memory.strength || 0) - decayRate)
+      strength: Math.max(0, (memory.strength || 0) - (isHeardMemory(memory) ? decayRate * 2 : decayRate))
     }))
     .filter(memory => memory.strength > 0);
 }

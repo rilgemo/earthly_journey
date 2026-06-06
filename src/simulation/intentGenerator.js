@@ -1,3 +1,5 @@
+const { getActionInfluence } = require('./influenceField');
+
 function evaluateFieldMatch(agent, field) {
   return ['fire', 'water', 'earth', 'arcane'].reduce((sum, key) => {
     return sum + ((agent.affinities?.[key] || 0) * (field?.[key] || 0));
@@ -19,6 +21,10 @@ function evaluateManaResonance(agent, field) {
 }
 
 function getNeedComponent(action, needProfile) {
+  if (action.type === 'communication') {
+    return needProfile.socialNeed * 0.04;
+  }
+
   if (action.type === 'rest') {
     return (needProfile.fatigue * 0.04) + (needProfile.manaNeed * 0.03);
   }
@@ -52,9 +58,13 @@ function generateIntents(agent, actions, context) {
   return actions.map(action => {
     const needScore = getNeedComponent(action, context.needs.profile);
     const memoryScore = getMemoryComponent(action, context.memories, agent.memory?.bias || {});
+    const communicationScore = action.type === 'communication'
+      ? ((context.memories.length > 0 && context.perception.nearbyAgents?.length > 0) ? 1 : -100)
+      : 0;
     const roleScore = agent.role === 'mage' && action.type === 'magic' ? 0.5 : 0;
     const environmentScore = action.type === 'magic' ? manaScore : fieldScore;
-    const total = action.baseUtility + needScore + memoryScore + roleScore + environmentScore;
+    const influenceScore = getActionInfluence(action.id, context.influenceProfile || {});
+    const total = action.baseUtility + needScore + memoryScore + roleScore + environmentScore + communicationScore + influenceScore;
 
     return {
       intent: action.id,
@@ -66,6 +76,8 @@ function generateIntents(agent, actions, context) {
         needScore,
         memoryScore,
         roleScore,
+        communicationScore,
+        influenceScore,
         fieldScore,
         manaScore,
         environmentScore
@@ -75,24 +87,15 @@ function generateIntents(agent, actions, context) {
         `need:${needScore.toFixed(2)}`,
         `memory:${memoryScore.toFixed(2)}`,
         `role:${roleScore.toFixed(2)}`,
-        `environment:${environmentScore.toFixed(2)}`
+        `environment:${environmentScore.toFixed(2)}`,
+        `influence:${influenceScore.toFixed(2)}`
       ]
     };
   });
 }
 
-function resolveIntent(intents) {
-  if (!intents.length) return null;
-
-  return intents.reduce((best, intent) => {
-    if (!best) return intent;
-    return intent.score > best.score ? intent : best;
-  }, null);
-}
-
 module.exports = {
   generateIntents,
-  resolveIntent,
   evaluateFieldMatch,
   evaluateManaResonance
 };

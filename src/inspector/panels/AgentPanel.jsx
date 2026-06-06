@@ -28,7 +28,21 @@ export default function AgentPanel({ world }) {
               </div>
             )}
             {agent.memories?.length > 0 && (
-              <div>Memories: {agent.memories.length}</div>
+              <div>
+                Memories: {agent.memories.slice(0, 3).map(memory => {
+                  const origin = memory.sourceType === 'heard'
+                    ? `heard ${memory.type} from ${memory.source}`
+                    : `observed ${memory.type}`;
+                  return `${origin} (${memory.strength.toFixed(1)})`;
+                }).join(', ')}
+              </div>
+            )}
+            {agent.topInfluences?.length > 0 && (
+              <div>
+                Influences: {agent.topInfluences.slice(0, 3).map(influence => (
+                  `${influence.key} +${influence.score.toFixed(1)}`
+                )).join(', ')}
+              </div>
             )}
             {agent.intents?.length > 0 && (
               <div>

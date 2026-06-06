@@ -26,6 +26,13 @@ const ACTIONS = [
     baseUtility: 0.8,
     requirements: {},
     effects: { }
+  },
+  {
+    id: 'share_information',
+    type: 'communication',
+    baseUtility: 0.2,
+    requirements: { nearbyAgent: true, memory: true },
+    effects: {}
   }
 ];
 

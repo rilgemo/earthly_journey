@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Action registry from AI/action_registry.json
-const ACTION_REGISTRY = ["forage", "rest_camp", "cast_spark", "travel"];
+const ACTION_REGISTRY = ["forage", "rest_camp", "cast_spark", "travel", "share_information"];
 
 /**
  * Validate if action is registered
@@ -100,7 +100,7 @@ class WorldState {
   updateField(field, delta) {
     const MAX_FIELD = 1000;
     if (this[field] !== undefined) {
-      this[field] = Math.max(0, Math.min(MAX_FIELD, this[field] + delta));
+      this[field] = Math.max(0, Math.min(MAX_FIELD - 1, this[field] + delta));
       return true;
     }
     return false;

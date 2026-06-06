@@ -44,6 +44,8 @@ function recordMemory(agent, entry, options = {}) {
   target.push({
     tick: 0,
     strength: 10,
+    source: agent.id,
+    sourceType: 'self',
     ...entry
   });
 

@@ -45,6 +45,10 @@ function snapshotWorld(world, agents) {
     tick: world.tick || 0,
     fields,
     areas,
+    fieldDynamics: world.lastFieldDynamicsTrace || null,
+    coupledEmergence: world.lastEmergenceTrace || null,
+    stability: world.lastStabilityTrace || null,
+    stabilityHistory: (world.stabilityHistory || []).slice(),
     agents: agents.map(agent => ({
       id: agent.id,
       name: agent.role || agent.id,
@@ -55,8 +59,11 @@ function snapshotWorld(world, agents) {
       state: `hunger:${(agent.needs.hunger || 0).toFixed(2)} fatigue:${(agent.needs.fatigue || 0).toFixed(2)}`,
       needs: agent.runtime?.lastNeeds || agent.needs,
       memories: agent.runtime?.lastMemories || [],
+      influenceProfile: agent.runtime?.lastInfluenceProfile || {},
+      topInfluences: agent.runtime?.lastTopInfluences || [],
       intents: agent.runtime?.lastIntents || [],
-      selectedIntent: agent.runtime?.lastSelectedIntent || null
+      selectedIntent: agent.runtime?.lastSelectedIntent || null,
+      decisionTrace: agent.runtime?.lastDecisionTrace || null
     }))
   };
 }

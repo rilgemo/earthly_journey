@@ -4,7 +4,8 @@ const ACTION_REGISTRY = Object.freeze([
   'forage',
   'rest_camp',
   'cast_spark',
-  'travel'
+  'travel',
+  'share_information'
 ]);
 
 module.exports = {

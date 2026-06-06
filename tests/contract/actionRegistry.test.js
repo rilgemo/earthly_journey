@@ -33,6 +33,10 @@ describe('Test 1: Action Registry Enforcement', () => {
       expect(isRegisteredAction('travel')).toBe(true);
     });
 
+    test('registered action "share_information" passes', () => {
+      expect(isRegisteredAction('share_information')).toBe(true);
+    });
+
     test('unregistered action "destroy_world" rejected', () => {
       expect(isRegisteredAction('destroy_world')).toBe(false);
     });
@@ -42,7 +46,7 @@ describe('Test 1: Action Registry Enforcement', () => {
     });
 
     test('ACTION_REGISTRY is frozen at runtime', () => {
-      expect(ACTION_REGISTRY).toEqual(['forage', 'rest_camp', 'cast_spark', 'travel']);
+      expect(ACTION_REGISTRY).toEqual(['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information']);
     });
 
   });
@@ -84,7 +88,7 @@ describe('Test 1: Action Registry Enforcement', () => {
     });
 
     test('all valid actions execute', () => {
-      const valid = ['forage', 'rest_camp', 'cast_spark', 'travel'];
+      const valid = ['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information'];
       valid.forEach(action => {
         const result = contract.executeIntent({ action });
         expect(result.executed).toBe(true);
