@@ -6,6 +6,9 @@ import { getWorldTime } from "./utils/worldTime";
 import LeftPanel from "./components/LeftPanel";
 import MainPanel from "./components/MainPanel";
 import RightPanel from "./components/RightPanel";
+import SimulationInspector from "./inspector/SimulationInspector";
+import { useSimulationStream } from "./inspector/hooks/useSimulationStream";
+import { createInspectorSimulationStream } from "./simulation/inspectorStream";
 
 // ── 颜色系统（exported for use in child components） ──
 export const C = {
@@ -33,6 +36,7 @@ const ST_MAX = 100;
 const ST_WARN = 30;
 const ST_CRIT = 10;
 const ST_COST = { high: 18, mid: 10, low: 5, vlow: 2 };
+const inspectorSimulator = createInspectorSimulationStream();
 
 export default function App() {
   const [area, setArea] = useState("新叶镇·广场");
@@ -58,6 +62,7 @@ export default function App() {
   const [equipped, setEquipped] = useState(() => Object.fromEntries(EQUIP_SLOTS.map(s => [s.id, null])));
   const [notif, setNotif] = useState(null);
   const [worldTime, setWorldTime] = useState(() => getWorldTime());
+  const inspector = useSimulationStream(inspectorSimulator);
 
   useEffect(() => {
     const timer = setInterval(() => setWorldTime(getWorldTime()), 15000);
@@ -380,6 +385,7 @@ export default function App() {
           worldTime={worldTime}
         />
       </div>
+      <SimulationInspector world={inspector.world} trace={inspector.trace} replay={inspector.replay} />
     </div>
   );
 }

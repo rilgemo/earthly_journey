@@ -211,4 +211,86 @@ React is only the visualization layer of this system.
 
 ---
 
+# 15. QUOTA-AWARE COPILOT WORKFLOW
+
+Use Copilot Chat / Agent mode only for:
+
+- Architecture decisions
+- Simulation model review
+- Multi-file refactors
+- Runtime authority changes
+- DF vs AI boundary discussions
+
+Prefer Inline Suggestions / Ghost Text for:
+
+- Tests
+- Schemas
+- React components
+- Registry updates
+- Tick implementation details
+- Utility functions
+
+Before asking Chat or Agent to implement routine code:
+
+1. Create the target file.
+2. Write the function, test, or component skeleton.
+3. Add TODO comments copied from project docs.
+4. Pause and let inline suggestions complete the implementation.
+5. Review against this instruction file and contract tests.
+
+For routine code, prefer comments such as:
+
+```js
+// TODO:
+// Protect tickManager as the only world mutation authority.
+// registered action -> execute -> world mutated
+// unregistered action -> no mutation
+// tick -> trace emitted
+```
+
+Do not use Agent mode for single functions, narrow tests, small schemas, or one-file UI updates unless the architecture placement is unclear.
+
+---
+
+# 16. SEMANTIC INDEX HYGIENE
+
+After major architecture, schema, or test-suite changes, rebuild the Copilot semantic index in VS Code:
+
+```text
+Ctrl + Shift + P
+Copilot: Rebuild Codebase Index
+```
+
+or, depending on installed version:
+
+```text
+Copilot: Refresh Semantic Index
+```
+
+If the Codebase Semantic Index is out of date, expect worse suggestions and higher Chat usage.
+
+---
+
+# 17. EARTHLY INLINE PROMPTING STYLE
+
+When using inline suggestions, seed Copilot with project-specific authority terms:
+
+- ACTION_REGISTRY
+- RESOLUTION_MODEL
+- EXECUTION_CONTRACT
+- tickManager
+- WORLD_STATE
+- TRACE_MODEL
+- ENTITY_SCHEMA
+
+Use pipeline comments to preserve architecture:
+
+```js
+// Intent -> Contract -> tickManager -> World State -> Trace
+```
+
+Routine implementation should be generated from local skeletons plus these comments, then verified by contract tests.
+
+---
+
 # END OF INSTRUCTIONS

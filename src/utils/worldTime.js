@@ -17,3 +17,4 @@ export function getWorldTime() {
     hour >= 21 || hour < 2  ? '深夜' : '凌晨';
   const label = `第${day}天 ${period} ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
   return { totalIngameMinutes, day, hour, minute, timeOfDay, isDay, period, label };
+}

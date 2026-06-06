@@ -1,18 +1,13 @@
 const { world } = require('./worldField');
 const { getAvailableActions } = require('./actions');
-// Load the canonical action registry (Execution Contract enforcement)
-let actionRegistryList = [];
-try {
-  actionRegistryList = require('../../AI/action_registry.json');
-} catch (e) {
-  console.warn('Action registry not found or invalid: AI/action_registry.json', e && e.message);
-}
-const actionRegistry = new Set(actionRegistryList || []);
+const { ACTION_REGISTRY } = require('./actionRegistry');
 
-function perceive(npc) {
+const actionRegistry = new Set(ACTION_REGISTRY);
+
+function perceive(npc, worldObj = world) {
   return {
-    field: world.getField(npc.location),
-    nearbyEvents: world.getRecentEvents(npc.location)
+    field: worldObj.getField(npc.location),
+    nearbyEvents: worldObj.getRecentEvents(npc.location)
   };
 }
 
@@ -86,14 +81,16 @@ function worldFeedback(npc, area) {
 }
 
 function simulateAgent(npc, worldObj) {
-  const perception = perceive(npc);
+  const perception = perceive(npc, worldObj);
   const needScore = evaluateNeeds(npc);
   const fieldMatch = evaluateFieldMatch(npc, perception.field);
   const manaRes = evaluateManaResonance(npc, perception.field);
   // Only consider actions present in the canonical registry — enforce execution contract
   const rawActions = getAvailableActions(npc);
+  const rejectedProposals = [];
   const actions = rawActions.filter(a => {
     if (!actionRegistry.has(a.id)) {
+      rejectedProposals.push(a.id);
       console.warn(`Action '${a.id}' proposed by AI/code is not registered in AI/action_registry.json — rejecting`);
       return false;
     }
@@ -110,13 +107,12 @@ function simulateAgent(npc, worldObj) {
     return (breakdowns[a.id].total > breakdowns[best.id].total) ? a : best;
   }, null) : null;
 
-  const selectedActionId = selectedAction ? selectedAction.id : null;
   const selected = selectedAction;
   const area = worldObj.areas.get(npc.location);
 
   const manaBefore = Object.assign({}, npc.mana);
-  let actionRejected = false;
-  let rejectionReason = null;
+  let actionRejected = !selected && rejectedProposals.length > 0;
+  let rejectionReason = actionRejected ? `Action '${rejectedProposals[0]}' not registered` : null;
   if (selected) {
     if (!actionRegistry.has(selected.id)) {
       // This should not happen due to filtering above, but guard defensively
@@ -151,8 +147,9 @@ function simulateAgent(npc, worldObj) {
 
 function tickManager(npcs, worldObj, traceCollector) {
   const log = [];
+  worldObj.tick = (worldObj.tick || 0) + 1;
   if (traceCollector && typeof traceCollector.beginTick === 'function') {
-    traceCollector.beginTick((worldObj.tick||0)+1, worldObj);
+    traceCollector.beginTick(worldObj.tick, worldObj);
   }
   for (const npc of npcs) {
     const agentTrace = simulateAgent(npc, worldObj);
