@@ -2,7 +2,7 @@
 
 This document describes how to evolve the current action flow into a reusable execution path.
 
-## Current Action Role
+## Current Action Function
 
 Actions currently carry:
 

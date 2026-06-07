@@ -1,6 +1,6 @@
 # Earthly Journey
 
-Earthly Journey is an agent-based simulation RPG where the world emerges from interactions between autonomous agents, including humans, animals, monsters, and the player.
+Earthly Journey is an agent-based simulation RPG where the world emerges from interactions between autonomous agents, including humanoids, animals, monsters, future non-human agents, and the player.
 
 The system is designed around emergent behavior, discovery-driven progression, and skills as identity rather than static character stats.
 
@@ -35,9 +35,9 @@ Phase 1 focuses on core systems:
 - Stamina and threshold behavior
 - Equipment slots
 - Unified message feed
-- Basic town infrastructure
+- Basic persistent activity cluster infrastructure
 
-Future systems such as combat, advanced NPC simulation, economy, persistence, and multiplayer are tracked separately in [TODO.md](TODO.md).
+Future systems such as combat, advanced agent simulation, exchange structures, persistence, and multiplayer are tracked separately in [TODO.md](TODO.md).
 
 Long-term phase direction is tracked in [ROADMAP.md](ROADMAP.md).
 

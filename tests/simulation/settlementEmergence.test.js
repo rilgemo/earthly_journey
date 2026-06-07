@@ -47,8 +47,8 @@ function intentFor(agent) {
   });
 }
 
-describe('Settlement Emergence Layer v1', () => {
-  test('dense repeated multi-agent activity forms a settlement', () => {
+describe('Persistent Activity Cluster Emergence Layer v1', () => {
+  test('dense repeated multi-agent activity forms a persistent activity cluster', () => {
     const result = detector().loadTraceHistory(persistentTicks());
 
     expect(result.settlements).toHaveLength(1);
@@ -60,13 +60,13 @@ describe('Settlement Emergence Layer v1', () => {
       .toEqual(expect.arrayContaining(['farm', 'forge']));
   });
 
-  test('no settlement forms without persistence', () => {
+  test('no activity cluster forms without persistence', () => {
     const result = detector().loadTraceHistory(persistentTicks('tile-1-1', 2));
 
     expect(result.settlements).toEqual([]);
   });
 
-  test('a single agent cannot form a settlement', () => {
+  test('a single agent cannot form an activity cluster', () => {
     const traces = Array.from({ length: 5 }, (_, index) => tick(index + 1, [
       ['solo', 'farm', 'tile-1-1'],
       ['solo', 'forge', 'tile-1-1']
@@ -75,7 +75,7 @@ describe('Settlement Emergence Layer v1', () => {
     expect(detector().loadTraceHistory(traces).settlements).toEqual([]);
   });
 
-  test('settlement decays when activity leaves the history window', () => {
+  test('activity cluster decays when activity leaves the history window', () => {
     const settlementDetector = detector({ windowSize: 3 });
     settlementDetector.loadTraceHistory(persistentTicks());
 
@@ -88,7 +88,7 @@ describe('Settlement Emergence Layer v1', () => {
     expect(result.settlements).toEqual([]);
   });
 
-  test('replay reproduces settlement snapshots deterministically', () => {
+  test('replay reproduces activity cluster snapshots deterministically', () => {
     const replay = new ReplayBuffer();
     persistentTicks().forEach(trace => replay.push({ tick: trace.tickId, trace: [trace] }));
     const first = detector();
@@ -97,7 +97,7 @@ describe('Settlement Emergence Layer v1', () => {
     expect(first.loadReplayFrames(replay.getAll())).toEqual(second.loadReplayFrames(replay.getAll()));
   });
 
-  test('settlement analytics does not influence agent decisions', () => {
+  test('activity cluster analytics does not influence agent decisions', () => {
     const agent = createNPC({ id: 'agent', location: 'tile-1-1', skills: { farming: 20 }, rng: () => 0.5 });
     const before = intentFor(agent);
 
@@ -107,7 +107,7 @@ describe('Settlement Emergence Layer v1', () => {
     expect(agent.settlement).toBeUndefined();
   });
 
-  test('settlement metrics remain bounded', () => {
+  test('activity cluster metrics remain bounded', () => {
     const settlement = detector().loadTraceHistory(persistentTicks()).settlements[0];
 
     Object.values(settlement.metrics).forEach(value => {
@@ -139,7 +139,7 @@ describe('Settlement Emergence Layer v1', () => {
     expect(split.events).toContainEqual(expect.objectContaining({ type: 'split' }));
   });
 
-  test('TraceCollector emits immutable settlement snapshots preserved by Replay Buffer', () => {
+  test('TraceCollector emits immutable activity cluster snapshots preserved by Replay Buffer', () => {
     const collector = new TraceCollector(20, 20, {
       windowSize: 3,
       activityThreshold: 4,

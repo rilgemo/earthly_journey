@@ -94,7 +94,7 @@ describe('Skill Emergence System v1', () => {
     expect(deriveIdentities(createSkills({ arcaneTheory: 30, arcaneManipulation: 25 }))).toContain('Mage');
   });
 
-  test('agents contain no profession, role, or class authority', () => {
+  test('agents contain no derived identity expression, behavioral expression, or class authority', () => {
     const subject = createNPC({ id: 'agent', skills: { farming: 20 }, rng: () => 0.5 });
 
     expect(subject.role).toBeUndefined();

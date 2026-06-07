@@ -3,11 +3,11 @@
 Root `/AGENTS.md` is the sole architecture authority. This document records
 implementation details only.
 
-World Demand v1 is the Settlement Pressure and Opportunity Layer.
+World Demand v1 is the Persistent Activity Cluster Pressure and Opportunity Layer.
 
-Demand represents unmet world and settlement needs. It contributes additive
-opportunity pressure to candidate intent scores. It does not assign actions,
-professions, identities, occupations, or quests.
+Demand represents unmet world and cluster-level pressures. It contributes
+additive opportunity pressure to candidate intent scores. Derived identity
+expressions, occupations, and quest structures are produced by other layers.
 
 ## Authority Flow
 
@@ -38,7 +38,7 @@ Every demand is a deterministic continuous value in `[0, 100]`.
 
 ## Sources
 
-Demand sources compare settlement pressure with available production,
+Demand sources compare cluster pressure with available production,
 capacity, stability, or safety signals. Demand Model applies configurable
 damping to avoid spikes and creates an immutable index with dominant demand,
 total demand, and demand entropy.
@@ -52,15 +52,13 @@ existing actions such as `farm`, `forage`, `hunt`, `forge`, `mine`, `rest`,
 Unregistered future actions such as `build`, `patrol`, `brew_potion`, or
 `gather_herbs` are not invented by this system.
 
-## Forbidden
+## Ownership and Consumption
 
-Demand must not:
+World Demand owns:
 
-- Select or execute actions
-- Guarantee candidate selection
-- Assign professions or identities
-- Create quests
-- Modify skills, perception, identity, or elemental fields
+- smoothed demand derivation from world state
+- additive opportunity signals consumed by Intent Generator
+- deterministic demand snapshots for Trace, Replay, and Inspector
 
-Trace and Replay may preserve demand snapshots. Inspector may display demand
-history as read-only observability data.
+Resolution owns final selection. tickManager owns mutation. Skill, perception,
+identity, and elemental field layers own their own state transitions.

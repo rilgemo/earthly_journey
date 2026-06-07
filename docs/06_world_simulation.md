@@ -36,4 +36,4 @@ The `worldTime` object is derived and never stored.
 
 Current implementation includes world time display and time-derived behavior.
 
-Full autonomous world simulation, NPC ecology, and economy simulation are future systems.
+Full autonomous world simulation, agent ecology, and exchange structure simulation are future systems.

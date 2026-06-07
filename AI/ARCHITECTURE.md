@@ -9,7 +9,7 @@ This project uses a DF x AI hybrid simulation model.
 - [../AGENTS.md](../AGENTS.md) - single simulation architecture authority
 - [SYSTEM_PROMPT.md](SYSTEM_PROMPT.md) - Agent execution prompt and runtime output contract
 - [EXECUTION_MODEL.md](EXECUTION_MODEL.md) - Runtime tick flow and validation pipeline
-- [MULTI_AGENT_RUNTIME.md](MULTI_AGENT_RUNTIME.md) - Multi-agent cognition, social memory, influence, and emergent roles
+- [MULTI_AGENT_RUNTIME.md](MULTI_AGENT_RUNTIME.md) - Multi-agent cognition, social memory, influence, and emergent behavioral expressions
 - [EMERGENCE_TUNING.md](EMERGENCE_TUNING.md) - Control plane for tuning emergent behavior probability and stability
 - [RESOLUTION_MODEL.md](RESOLUTION_MODEL.md) - Final intent arbitration, conflict grouping, softmax selection, and reason tracing
 - [TRACE_MODEL.md](TRACE_MODEL.md) - Observability, replay, conflict graph, and emergence debugging
@@ -24,10 +24,13 @@ This project uses a DF x AI hybrid simulation model.
 - [REALITY_VS_PERCEPTION_MODEL.md](REALITY_VS_PERCEPTION_MODEL.md) - One-way reality-to-belief interpretation boundary
 - [REALITY_PERCEPTION_DRIFT_MODEL.md](REALITY_PERCEPTION_DRIFT_MODEL.md) - Bounded cognitive drift and rumor stability diagnostics
 - [BEHAVIORAL_SIGNATURE_MODEL.md](BEHAVIORAL_SIGNATURE_MODEL.md) - Observational action-sequence analytics with no runtime influence
-- [WORLD_DEMAND_SYSTEM.md](WORLD_DEMAND_SYSTEM.md) - Smoothed settlement pressure and additive opportunity signals
+- [WORLD_DEMAND_SYSTEM.md](WORLD_DEMAND_SYSTEM.md) - Smoothed persistent activity cluster pressure and additive opportunity signals
 - [RESOURCE_GEOGRAPHY_MODEL.md](RESOURCE_GEOGRAPHY_MODEL.md) - Seeded environmental resource topology and read-only snapshots
+- [RESOURCE_FLOW_MODEL.md](RESOURCE_FLOW_MODEL.md) - Dynamic resource depletion, regeneration, and diffusion
 - [ACTION_YIELD_MODEL.md](ACTION_YIELD_MODEL.md) - Environmental action outcome magnitude, not decision logic
-- [SETTLEMENT_EMERGENCE_MODEL.md](SETTLEMENT_EMERGENCE_MODEL.md) - Read-only spatial clustering of persistent activity
+- [SETTLEMENT_EMERGENCE_MODEL.md](SETTLEMENT_EMERGENCE_MODEL.md) - Read-only persistent activity cluster observation
+- [MIGRATION_PRESSURE_MODEL.md](MIGRATION_PRESSURE_MODEL.md) - Stability imbalance field, not movement logic
+- [PROTO_ECONOMY_MODEL.md](PROTO_ECONOMY_MODEL.md) - Resource exchange emergence and reciprocity observation
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs
@@ -43,7 +46,7 @@ This project uses a DF x AI hybrid simulation model.
 
 Always consult root `/AGENTS.md` and `/AI/EXECUTION_MODEL.md` before modifying simulation logic.
 
-For multi-agent behavior, social memory, reputation, influence, or emergent roles, also consult `/AI/MULTI_AGENT_RUNTIME.md`.
+For multi-agent behavior, social memory, reputation, influence, or emergent behavioral expressions, also consult `/AI/MULTI_AGENT_RUNTIME.md`.
 
 For tuning, stability control, narrative emergence bias, or behavior probability shaping, also consult `/AI/EMERGENCE_TUNING.md`.
 
@@ -67,7 +70,7 @@ stability metrics, also consult `/AI/REALITY_PERCEPTION_DRIFT_MODEL.md`.
 For action-history analytics, behavior loops, transition metrics, or behavioral
 signatures, also consult `/AI/BEHAVIORAL_SIGNATURE_MODEL.md`.
 
-For settlement pressure, opportunity signals, demand smoothing, or demand
+For persistent activity cluster pressure, opportunity signals, demand smoothing, or demand
 trace work, also consult `/AI/WORLD_DEMAND_SYSTEM.md`.
 
 ## Influence Boundary

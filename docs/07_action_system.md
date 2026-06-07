@@ -1,6 +1,6 @@
 # 07 Action System
 
-## Action Role
+## Action Function
 
 Actions are the primary player-facing interaction unit.
 

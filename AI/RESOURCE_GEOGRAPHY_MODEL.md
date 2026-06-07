@@ -14,7 +14,7 @@ environmental potentials that exist independently from agents.
 - `arcanePotential`
 
 Values are bounded continuous environmental properties in `[0, 100]`. They are
-not inventories, stocks, item piles, or consumable settlement resources.
+not inventories, stocks, item piles, or consumable activity cluster resources.
 
 ## Generation
 
@@ -24,15 +24,17 @@ use isolated random noise per tile and does not define a hard biome system.
 
 ## Boundary
 
-Resource Geography may provide environmental context and read-only snapshots.
-Current actions do not change yield from this system yet.
+Resource Geography owns deterministic environmental resource topology and
+read-only snapshots. Current actions do not change yield from this system yet.
 
-Resource Geography must not:
+Resource Geography is consumed by:
 
-- Assign actions
-- Create settlements
-- Modify Intent Generation or Resolution Model
-- Modify skills, identity, perception, demand, or elemental fields
+- Action Yield environmental context
+- Resource Flow evolution
+- persistent activity cluster correlation analytics
+- Inspector and Replay snapshots
 
-Settlements may read resource metrics only as observational correlation. They
-must never alter geography.
+Intent, resolution, skills, identity, perception, demand, and elemental fields
+retain their own authority. Persistent activity clusters may read resource
+metrics only as observational correlation, while geography remains owned by the
+Reality Layer.

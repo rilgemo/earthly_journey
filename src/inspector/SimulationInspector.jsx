@@ -13,6 +13,9 @@ import BehaviorPanel from './panels/BehaviorPanel';
 import DemandPanel from './panels/DemandPanel';
 import SettlementPanel from './panels/SettlementPanel';
 import ResourceGeographyPanel from './panels/ResourceGeographyPanel';
+import ResourceFlowPanel from './panels/ResourceFlowPanel';
+import MigrationPressurePanel from './panels/MigrationPressurePanel';
+import ProtoEconomyPanel from './panels/ProtoEconomyPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
@@ -61,6 +64,9 @@ export default function SimulationInspector({ world, trace, replay }) {
         <BehaviorPanel world={world} />
         <DemandPanel world={world} />
         <ResourceGeographyPanel world={world} />
+        <ResourceFlowPanel world={world} />
+        <MigrationPressurePanel trace={trace} world={world} />
+        <ProtoEconomyPanel trace={trace} world={world} />
         <SettlementPanel world={world} />
       </div>
     </section>

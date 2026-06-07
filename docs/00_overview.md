@@ -5,7 +5,7 @@
 - **Type:** Single-player browser-based text RPG built with React
 - **Core Loop:** Area exploration -> action execution -> skill growth and discovery
 - **World Name:** Earthly
-- **Long-term Vision:** A sandbox living world with simulated NPC ecology and economy
+- **Long-term Vision:** A sandbox living world with simulated agent ecology and exchange structures
 
 ## Stack
 

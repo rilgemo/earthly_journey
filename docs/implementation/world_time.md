@@ -8,7 +8,7 @@ World time is derived from real time using `Date.now()` and configuration consta
 
 It is displayed in the UI and may affect available actions.
 
-## Future Role
+## Future Function
 
 World time is part of the DF layer.
 

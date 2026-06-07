@@ -1,7 +1,7 @@
-# Settlement Emergence Implementation Index
+# Persistent Activity Cluster Emergence Implementation Index
 
 Architecture authority is defined only by root [`AGENTS.md`](../../AGENTS.md).
-Detailed settlement implementation notes live in
+Detailed activity cluster implementation notes live in
 [`AI/SETTLEMENT_EMERGENCE_MODEL.md`](../../AI/SETTLEMENT_EMERGENCE_MODEL.md).
 
 Runtime modules:

@@ -9,6 +9,7 @@ const { createInfluenceField } = require('./influenceField');
 const { resolveIntent } = require('./resolutionModel');
 const { prepareInformationTransfer } = require('./communicationSystem');
 const { computeActionYield } = require('./actionYield/actionYieldEngine');
+const { runResourceFlowTick } = require('./resourceFlow/resourceFlowEngine');
 const { createDecisionTrace } = require('./decisionTrace');
 const { createFieldDelta, createFieldState } = require('./elementalField/fieldState');
 const { runFieldDynamicsTick } = require('./elementalField/fieldDynamicsTick');
@@ -344,6 +345,25 @@ function tickManager(npcs, worldObj, traceCollector) {
       action: agentTrace.actionSelected,
       score: agentTrace.scoreBreakdown ? agentTrace.scoreBreakdown.total : null
     });
+  }
+
+  if (worldObj.resourceMap) {
+    if (!worldObj.resourceBaselineMap) {
+      worldObj.resourceBaselineMap = worldObj.resourceMap;
+    }
+    const resourceFlow = runResourceFlowTick({
+      resourceMap: worldObj.resourceMap,
+      baselineMap: worldObj.resourceBaselineMap,
+      actionYieldSnapshots: agentTraces.map(agentTrace => agentTrace.actionYieldSnapshot).filter(Boolean),
+      world: worldObj,
+      config: worldObj.resourceFlowConfig || {}
+    });
+    worldObj.resourceMap = resourceFlow.resourceMap;
+    worldObj.lastResourceFlowTrace = resourceFlow.trace;
+    if (traceCollector?.current) {
+      traceCollector.current.resourceFlow = resourceFlow.trace;
+      traceCollector.current.resourceGeography = resourceFlow.trace?.finalResourceState || traceCollector.current.resourceGeography;
+    }
   }
 
   const fieldDynamicsTrace = commitFieldDynamics(worldObj);

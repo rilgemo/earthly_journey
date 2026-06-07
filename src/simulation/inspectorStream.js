@@ -58,6 +58,7 @@ function snapshotWorld(world, agents, behaviorSignatures = {}, settlementSnapsho
     behaviorSignatures,
     settlements: settlementSnapshot,
     resourceGeography: getWorldResourceSnapshot(world),
+    resourceFlow: world.lastResourceFlowTrace || null,
     agents: agents.map(agent => ({
       id: agent.id,
       name: agent.id,

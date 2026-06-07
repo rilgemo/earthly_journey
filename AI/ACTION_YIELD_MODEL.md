@@ -6,8 +6,9 @@ implementation details only.
 Action Yield is an environmental outcome resolution layer. It computes the
 magnitude of completed action outcomes from read-only environmental context.
 
-It is not an intent source, reward generator, inventory system, skill system,
-economy system, or success/failure model.
+It is consumed by Trace, Replay, Resource Flow, and exchange observation. Intent
+generation, skill growth, inventory, and success/failure authority are owned by
+their existing layers.
 
 ## Input Boundary
 
@@ -35,13 +36,14 @@ It runs after action execution authority has selected and validated an action.
 The result is written to traces for Replay and Inspector. It does not write
 items, mutate world state, alter skills, or update demand.
 
-## Forbidden Reverse Flow
+## Ownership and Consumption
 
-Action Yield must never:
+Action Yield owns:
 
-- Influence Intent Generation
-- Influence Resolution Model
-- Modify agent decisions
-- Modify skill growth rules
-- Modify identity, perception, or demand
-- Create inventory or economy behavior
+- environmental outcome magnitude for completed actions
+- deterministic yield breakdowns
+- read-only action yield trace snapshots
+
+Intent Generation owns candidate scoring. Resolution Model owns selection.
+Skill, identity, perception, demand, inventory, and resource exchange systems
+consume only the snapshots they are permitted to observe.

@@ -47,11 +47,11 @@ Perception sources:
 - Hearsay: what other agents communicated
 - Inference: what the agent concludes from available signals
 
-Hearsay allows information to propagate through society:
+Hearsay allows information to propagate through agent collective structures:
 
 - A blacksmith hears about a monster near the forest.
 - A guard hears that the player attacked a merchant.
-- A town slowly forms a shared belief about danger, trust, or scarcity.
+- A human settlement expression slowly forms a shared belief about danger, trust, or scarcity.
 
 ### 2. Social Memory Graph
 
@@ -70,7 +70,7 @@ Memory layers:
 Example:
 
 ```text
-Player kills wolf -> guard hears -> town reputation shifts
+Player kills wolf -> nearby agent hears -> social cluster reputation shifts
 ```
 
 ### 3. Influence Field
@@ -91,24 +91,24 @@ Social pressure examples:
 - Group fear of monsters
 - Agents following powerful entities
 - Agents imitating successful behavior
-- Community avoidance of dangerous places
+- Social cluster avoidance of dangerous places
 
-### 4. Emergent Role System
+### 4. Emergent Behavioral Expression System
 
-Roles are dynamic behavior patterns, not fixed labels.
+Behavioral expressions are dynamic behavior patterns, not fixed labels.
 
 ```text
-Role = weighted behavior pattern over time
+Behavioral Expression = weighted behavior pattern over time
 ```
 
 Examples:
 
 - Farmer -> warrior
-- Farmer -> trader
+- Farming expression -> repeated exchange pattern
 - Farmer -> leader
 - Farmer -> outcast
 
-Role emergence is driven by repeated behavior, social feedback, resources, memory, and world constraints.
+Behavioral expression emergence is driven by repeated behavior, social feedback, resources, memory, and world constraints.
 
 ## v2 Tick Flow
 
@@ -192,16 +192,16 @@ World = physical + social + informational system
 
 ## Future v3 Direction
 
-v3 would become a Civilization Emergence Layer:
+v3 may extend into a Collective Structure Emergence Layer:
 
 - Factions
-- Economic collapse
+- Exchange structure collapse
 - Migration
 - War systems
-- Culture formation
+- Collective memory expression formation
 
 ```text
 v1 = agents act
 v2 = agents influence each other
-v3 = agents reshape society
+v3 = agents reshape collective structures
 ```

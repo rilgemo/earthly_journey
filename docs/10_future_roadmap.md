@@ -31,7 +31,8 @@
 
 ## Future Systems
 
-Future systems are references only. They must not influence current implementations unless explicitly requested.
+Future systems are references only. Current implementations consume them only
+when explicitly requested.
 
 ### Combat System
 
@@ -40,18 +41,18 @@ Future systems are references only. They must not influence current implementati
 - Uses existing skill stats for calculations
 - Combat log appears in message feed
 
-### Economy
+### Exchange Structure
 
-- External gold injection and removal are required to prevent deadlock
-- Examples include traveling merchant, guild commissions, and Adventurer's Guild quests
-- Player starts with 50G as external injection, not part of town balance
+- External value injection and removal may be modeled as bounded exchange inputs
+- Examples include traveling agents, commissions, and requested assistance
+- Player starts with 50G as external injection, not part of human settlement expression balance
 
 ## Long-Term Vision
 
-- A dynamic town where NPCs are born, work, trade, and die
-- Player actions reshape the town across hundreds of in-game days
+- Dynamic agent collective structures where agents are born, act, exchange, and die
+- Player actions reshape persistent activity clusters across hundreds of in-game days
 - Hidden skill synergies and discoveries emerge from gameplay, not UI hints
-- Future potential: external threats, factions, city expansion, and multiple towns
+- Future potential: external threats, factions, cluster expansion, and multiple human settlement expressions
 
 ## Historical Correction Summary
 

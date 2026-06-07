@@ -1,12 +1,12 @@
-# Settlement Emergence Model
+# Persistent Activity Cluster Emergence Model
 
 Root `/AGENTS.md` is the sole architecture authority. This document records
 implementation details only.
 
-Settlement Emergence is an observational analytics layer. A settlement is a
-persistent spatial cluster of completed multi-agent activity. It is never a
-predefined map object, spawn zone, behavior authority, or city-management
-system.
+Persistent Activity Cluster Emergence owns spatial clustering observation. A
+cluster is a persistent spatial density of completed multi-agent activity. The
+current runtime keeps `settlement` file and snapshot names for compatibility,
+but the architectural concept is agent-centric and species-neutral.
 
 ## Input Flow
 
@@ -15,7 +15,7 @@ completed action traces
   -> spatial aggregation
   -> persistence and multi-agent checks
   -> cluster detection
-  -> bounded settlement metrics
+  -> bounded activity cluster metrics
   -> Trace, Replay, and Inspector
 ```
 
@@ -25,23 +25,26 @@ only as analytic correlation inputs.
 
 ## Emergence Contract
 
-A settlement requires:
+A persistent activity cluster derives from:
 
 - Activity above a configured density threshold
 - Activity across multiple ticks
 - At least two distinct agents
 - Spatially adjacent active tiles
 
-Settlements may grow, decay, split, merge, shift center, or change radius as
-the trace window changes.
+Clusters may grow, decay, split, merge, shift center, or change radius as the
+trace window changes. Human settlement expressions, animal settlement
+expressions, and species settlement expressions can all be observed through the
+same cluster model.
 
-## No Reverse Flow
+## Ownership and Consumption
 
-Settlement analytics must never:
+Persistent Activity Cluster analytics owns:
 
-- Assign agents, jobs, roles, or actions
-- Modify Intent Generation or Resolution Model
-- Modify skills, identity, perception, demand, or fields
-- Mutate world or agent state
+- cluster detection from completed traces
+- bounded density, persistence, growth, and decay metrics
+- read-only snapshots for Trace, Replay, and Inspector
 
-Settlement snapshots are read-only observations of completed behavior.
+Cluster snapshots are consumed by higher-order observability systems. Intent,
+resolution, skill, identity, perception, demand, and field systems own their
+own runtime authority.

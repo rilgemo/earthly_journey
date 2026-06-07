@@ -21,15 +21,15 @@ The runner reuses Agent Tick v2, Social Memory, Influence Field, Resolution, Ele
 ## Playable World Slice
 
 - Grid: `20 x 20`
-- Terrain: village, forest, river, mountain
+- Terrain expression seeds: human settlement expression, forest, river, mountain
 - Population: 12 NPCs, 6 animals, 2 monsters
-- NPC roles: 3 farmers, 3 hunters, 3 blacksmiths, 3 mages
+- Spawn templates: 3 farming-biased, 3 hunting-biased, 3 forging-biased, 3 arcane-biased humanoid agents
 
 Initial field baselines:
 
 | Terrain | Fields |
 | --- | --- |
-| Village | life 60, arcane 20 |
+| Human settlement expression | life 60, arcane 20 |
 | Forest | life 90, water 40 |
 | River | water 100, life 30 |
 | Mountain | earth 100, fire 20 |

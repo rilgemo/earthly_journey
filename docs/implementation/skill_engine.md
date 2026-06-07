@@ -2,7 +2,7 @@
 
 This document maps the current skill system to the future learning model.
 
-## Current Skill Role
+## Current Skill Function
 
 Skills currently define:
 
@@ -13,7 +13,7 @@ Skills currently define:
 - Equip identity
 - Slot constraints
 
-## Future Learning Role
+## Future Learning Function
 
 In the future simulation kernel:
 

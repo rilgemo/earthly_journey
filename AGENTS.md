@@ -38,8 +38,8 @@ Agents contain:
 - Intent Generation
 
 Agents do NOT contain:
-- fixed professions
-- hardcoded roles
+- fixed derived identity expressions
+- hardcoded behavioral expressions
 - forced behaviors
 
 ---
@@ -111,7 +111,7 @@ Rules:
 * Demand creates opportunity pressure only
 * Demand may influence Intent scoring additively
 * Demand MUST NOT assign actions
-* Demand MUST NOT enforce roles or professions
+* Demand MUST NOT enforce behavioral expressions or derived identity expressions
 
 ---
 
@@ -180,7 +180,7 @@ All higher-level structures must emerge from:
 * skill progression
 * environmental constraints
 
-NOT from predefined classes or roles.
+NOT from predefined classes or behavioral expressions.
 
 ---
 
@@ -192,11 +192,11 @@ The system must allow:
 * skill specialization
 * emergent occupations
 * stable misinformation (without correction bias)
-* evolving settlement pressure
-* long-term ecological simulation of society
+* evolving persistent activity cluster pressure
+* long-term ecological simulation of agent collective structures
 
 WITHOUT:
 
-* hardcoded professions
+* hardcoded derived identity expressions
 * scripted behavior trees
-* forced role assignment
+* forced behavioral expression assignment

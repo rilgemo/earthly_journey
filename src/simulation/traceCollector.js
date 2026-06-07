@@ -3,6 +3,10 @@ const { createBehavioralSignatures } = require('./behavior/behavioralSignature')
 const { cloneSnapshot } = require('./replayBuffer');
 const { getWorldResourceSnapshot } = require('./resourceGeography/resourceSnapshot');
 const { SettlementDetector } = require('./settlement/settlementDetector');
+const { createPopulationTensionMap } = require('./migrationPressure/populationTensionMap');
+const { detectExchangeEvents } = require('./protoEconomy/exchangeDetection');
+const { createReciprocityState, updateReciprocityState } = require('./protoEconomy/reciprocityDynamics');
+const { buildExchangeSnapshot } = require('./protoEconomy/exchangeTraceBuilder');
 
 class TraceCollector {
   constructor(max = 200, behaviorWindow = 100, settlementConfig = {}) {
@@ -11,6 +15,7 @@ class TraceCollector {
     this.current = null;
     this.behaviorRecorder = new BehaviorTraceRecorder(behaviorWindow);
     this.settlementDetector = new SettlementDetector(settlementConfig);
+    this.reciprocityState = createReciprocityState();
   }
 
   beginTick(tickId, world) {
@@ -38,6 +43,26 @@ class TraceCollector {
   endTick() {
     if (!this.current) return null;
     this.current.settlements = this.settlementDetector.recordTick(this.current);
+    this.current.migrationPressureSnapshot = createPopulationTensionMap({
+      trace: this.current,
+      settlements: this.current.settlements,
+      behaviorSignatures: this.getBehaviorSignatures()
+    });
+    const exchangeEvents = detectExchangeEvents({
+      trace: this.current,
+      behaviorSignatures: this.getBehaviorSignatures()
+    });
+    const reciprocity = updateReciprocityState(
+      this.reciprocityState,
+      exchangeEvents,
+      this.current.tickId
+    );
+    this.reciprocityState = reciprocity.state;
+    this.current.exchangeSnapshot = buildExchangeSnapshot({
+      trace: this.current,
+      events: exchangeEvents,
+      reciprocity
+    });
     this.traces.push(this.current);
     if (this.traces.length > this.max) this.traces.shift();
     const ret = this.current;

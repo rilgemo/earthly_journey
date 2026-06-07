@@ -8,7 +8,7 @@ Static ambient dialogue may exist through `localChat`, but it is not the NPC sys
 
 ## Agent Direction
 
-Future NPCs should become player-like agents with:
+Future non-player agents should become player-like agents with:
 
 - Skills
 - Inventory
@@ -18,7 +18,7 @@ Future NPCs should become player-like agents with:
 - Needs
 - Optional schedules
 
-Animals, monsters, humans, and the player should eventually share the same conceptual agent foundation.
+Animals, monsters, humanoids, future non-human agents, and the player should eventually share the same conceptual agent foundation.
 
 ## Future NPC Schema Reference
 
@@ -46,12 +46,12 @@ type NPC = {
 };
 ```
 
-## NPC Ecology Reference
+## Agent Ecology Reference
 
-Future NPC ecology is high-level design only.
+Future agent ecology is high-level design only.
 
-- Goal: simulated town ecology with agents whose occupations emerge from repeated behavior
-- NPCs will have full player-like attributes
+- Goal: simulated agent collective ecology with derived identity expressions emerging from repeated behavior
+- Non-player agents will have full player-like attributes
 - Offline progress is capped at `OFFLINE_PROGRESS_CAP_DAYS = 3`
-- Full simulation only runs for NPCs in the player's loaded area
-- Remote NPCs use simplified hourly simulation
+- Full simulation only runs for agents in the player's loaded area
+- Remote agents use simplified hourly simulation

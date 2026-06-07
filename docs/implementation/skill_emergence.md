@@ -32,7 +32,7 @@ RESOLUTION_MODEL -> final intent
 skills -> derived identity for observability only
 ```
 
-Agents do not store profession, job, class, or role authority.
+Agents do not store derived identity expression, job, class, or behavioral expression authority.
 
 ## Knowledge and Social Memory
 

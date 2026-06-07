@@ -2,7 +2,8 @@
 
 `COUPLED_EMERGENCE_LAYER v1` connects existing agent, social, and elemental field systems through additive feedback propagation.
 
-It does not introduce a new simulation domain. It does not select actions, execute actions, or mutate elemental fields.
+It owns cross-system perturbation proposals produced from completed activity,
+social density, and memory imprints.
 
 ## Feedback Loop
 
@@ -20,7 +21,7 @@ Coupled emergence runs last in the world tick phase. Its proposals are queued fo
 ## Couplers
 
 - Activity coupling translates aggregated activity into field perturbation proposals.
-- Social coupling translates local density, conflict density, and stable settlement presence into field perturbation proposals.
+- Social coupling translates local density, conflict density, and stable persistent activity cluster presence into field perturbation proposals.
 - Memory imprint tracks repeated local activity and emits persistent physical bias proposals.
 
 Memory imprint history belongs to the coupling layer. It does not directly modify tile field values or tile baselines.
@@ -46,13 +47,14 @@ Each proposal has:
 
 All field values are additive pressure proposals. Only Elemental Field Dynamics may process them, and only `tickManager()` may commit resulting world state.
 
-## Forbidden Behavior
+## Ownership and Consumption
 
-Coupled Emergence may not:
+Coupled Emergence owns:
 
-- Directly modify field state or field baselines
-- Select or execute actions
-- Introduce new field types
-- Create scripted game events
-- Bypass Elemental Field Dynamics
-- Bypass `tickManager()`
+- activity-to-field perturbation proposals
+- social-density-to-field perturbation proposals
+- memory-imprint perturbation proposals
+- additive next-tick pressure queues
+
+Elemental Field Dynamics consumes proposals. `tickManager()` owns the final
+world-state commit. Resolution and execution own actions.

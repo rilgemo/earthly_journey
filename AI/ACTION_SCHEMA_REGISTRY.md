@@ -96,7 +96,7 @@ Social:
 
 - `communicate`
 - `share_information`
-- `trade`
+- `trade` (registered legacy action key for repeated exchange patterns)
 - `teach`
 
 Combat:

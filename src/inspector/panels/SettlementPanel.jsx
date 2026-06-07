@@ -10,7 +10,7 @@ export default function SettlementPanel({ world }) {
 
   return (
     <div>
-      <h3 style={{ marginTop: 0 }}>Settlements</h3>
+      <h3 style={{ marginTop: 0 }}>Activity Clusters</h3>
       <div>Detected: {snapshot.settlements?.length || 0}</div>
       <div style={{ maxHeight: 360, overflow: 'auto', marginTop: 8 }}>
         {(snapshot.settlements || []).map(settlement => (

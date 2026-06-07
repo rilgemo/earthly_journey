@@ -116,7 +116,7 @@ Examples:
 
 - Successful hunt -> reinforce hunting success
 - Failed hunt with injury -> reinforce risk awareness
-- Productive trade -> reinforce trust or economic preference
+- Productive repeated exchange pattern -> reinforce trust or exchange preference
 
 Successful behavior may produce small, diminishing continuous skill growth.
 Traits affect growth rates and knowledge affects learning efficiency. Derived

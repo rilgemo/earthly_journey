@@ -3,7 +3,8 @@
 Behavioral Signature is a pure analytics model that extracts statistical
 structure from completed agent action histories.
 
-It is not a class, profession, identity, capability, or behavior authority.
+It owns observation of action-sequence statistics. Derived identity, skill
+capability, and runtime behavior authority are owned by their own layers.
 
 ## Input Boundary
 
@@ -42,14 +43,15 @@ index, frequent sequences, stable cycles, and sample size.
 - Signatures are deterministic for identical action histories.
 - Pattern extraction describes behavior and never classifies the agent.
 
-## Forbidden Reverse Flow
+## Ownership and Consumption
 
-Behavioral histories, metrics, and signatures must never be read by:
+Behavioral Signature owns:
 
-- Intent Generator
-- Resolution Model
-- Skill, identity, trait, or knowledge systems
-- Perception or belief systems
-- Elemental Field Dynamics
+- sliding action-history windows
+- transition and loop extraction
+- exploration, stability, entropy, and variation metrics
+- replay-safe signature snapshots
 
-Behavioral Signature may only be displayed, compared, replayed, or reported.
+Inspector, reports, Replay, and higher-order analytics consume signatures.
+Intent, resolution, skill, identity, trait, knowledge, perception, and elemental
+field systems own their own runtime inputs.

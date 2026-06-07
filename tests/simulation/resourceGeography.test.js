@@ -86,7 +86,7 @@ describe('Resource Geography Layer v1', () => {
     expect(metrics.resourceConcentration).toBeLessThanOrEqual(1);
   });
 
-  test('settlement analytics does not modify geography', () => {
+  test('activity cluster analytics does not modify geography', () => {
     const resourceMap = generateResourceMap({ width: 4, height: 4, seed: 5 });
     const before = JSON.parse(JSON.stringify(resourceMap));
     const detector = new SettlementDetector({ windowSize: 3, activityThreshold: 4, persistenceTicks: 3 });
@@ -103,7 +103,7 @@ describe('Resource Geography Layer v1', () => {
     expect(Object.isFrozen(resourceMap)).toBe(true);
   });
 
-  test('geography snapshots do not force settlement creation', () => {
+  test('geography snapshots do not force activity cluster creation', () => {
     const resourceMap = generateResourceMap({ width: 4, height: 4, seed: 8 });
     const detector = new SettlementDetector({ windowSize: 3, activityThreshold: 4, persistenceTicks: 3 });
     const result = detector.loadTraceHistory([

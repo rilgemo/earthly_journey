@@ -2,13 +2,13 @@
 
 This document maps the current player state to the future agent-compatible model.
 
-## Current Player Role
+## Current Player Function
 
 The player is currently the only active decision source.
 
 The UI provides action buttons, and the player chooses one directly.
 
-## Future Player Role
+## Future Player Function
 
 The player should remain a special agent:
 

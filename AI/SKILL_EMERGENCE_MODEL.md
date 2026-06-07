@@ -1,8 +1,8 @@
 # Skill Emergence Model
 
 This document defines behavior-driven capability growth for simulation agents.
-It does not define player equipment skills, RPG classes, levels, XP, perks, or
-talent trees.
+It owns continuous capability growth. Player equipment skills, RPG labels,
+levels, XP, perks, and talent trees are separate concepts outside this model.
 
 ## Runtime Authority
 
@@ -29,9 +29,10 @@ remains the only mutation authority.
 
 ## Initialization
 
-Agents begin with explicit continuous skill values. Initialization does not
-assign professions, jobs, classes, or roles. Identity is generated from skills
-for observation only and must never become behavior authority.
+Agents begin with explicit continuous skill values. Initialization may provide
+spawn templates, while derived identity expressions and behavioral expressions
+are produced from later runtime history. Identity is generated from skills for
+observation only.
 
 ## Continuous Growth
 
@@ -54,9 +55,14 @@ Each agent trace may expose:
 These fields are read-only observability data and are preserved by Replay
 Buffer snapshots.
 
-## Forbidden
+## Ownership and Consumption
 
-- Classes, levels, XP, perks, and talent trees
-- Identity-based runtime scoring
-- Knowledge that directly grants skill values
-- Skill mutation outside `tickManager()`
+Skill Emergence owns:
+
+- trait-influenced continuous skill growth
+- knowledge-assisted learning efficiency
+- post-action skill gain trace output
+- read-only derived identity inputs
+
+Intent scoring consumes skills and knowledge through additive affinity. Identity
+Lock owns the anti-influence boundary. `tickManager()` owns skill mutation.

@@ -21,7 +21,7 @@ EETS v1
 |-- 2. Memory Dynamics
 |-- 3. Social Contagion Model
 |-- 4. Decision Bias Field
-|-- 5. Economy Pressure Model
+|-- 5. Resource Exchange Pressure Model
 |-- 6. Stability Controller
 `-- 7. Narrative Emergence Bias
 ```
@@ -106,30 +106,30 @@ const DECISION = {
 Effects:
 
 - Higher survival bias creates survival-focused worlds
-- Higher cooperation creates community-focused worlds
+- Higher cooperation creates social-cluster-focused worlds
 - Higher aggression creates more volatile worlds
 - Higher curiosity creates more exploration and discovery
 
-### 5. Economy Pressure Model
+### 5. Resource Exchange Pressure Model
 
-Controls how strongly resources drive behavior.
+Controls how strongly resource asymmetry and exchange opportunity shape behavior.
 
 ```ts
-const ECONOMY = {
+const EXCHANGE = {
   scarcity_pressure: 1.4,
-  wealth_concentration: 0.7,
-  trade_frequency: 1.2,
-  labor_need: 1.5,
+  resource_concentration: 0.7,
+  exchange_frequency: 1.2,
+  contribution_need: 1.5,
 };
 ```
 
 Effects:
 
-- Class emergence
-- Profession differentiation
-- Trade frequency
+- Derived identity expression emergence
+- Behavioral expression differentiation
+- Repeated exchange pattern frequency
 - Resource competition
-- Economic cycles
+- Exchange structure cycles
 
 ### 6. Stability Controller
 
@@ -144,11 +144,11 @@ const STABILITY = {
 };
 ```
 
-Prevents:
+Regulates:
 
 - Total social collapse
 - Extreme behavior spirals
-- Economic runaway
+- Exchange structure runaway
 - Population explosion
 - All agents converging into the same behavior
 
@@ -234,7 +234,7 @@ Without EETS:
 With EETS:
 
 - Tunable DF x AI hybrid world
-- Emergent but steerable civilization
+- Emergent but steerable agent collective structure
 - Controllable storytelling engine
 
 ## Upgrade Path
@@ -242,7 +242,7 @@ With EETS:
 ```text
 v1: Parameter control layer
 v2: Multi-agent runtime
-v3: Civilization formalization layer
+v3: Collective structure formalization layer
 ```
 
 ## Boundary Rule
