@@ -2,15 +2,15 @@ import React from 'react';
 import { ACTION_PROFILES } from '../../simulation/actions/actionProfiles';
 
 function summarizeActions(trace = []) {
-  const bySpawnTemplate = {};
+  const byAgent = {};
   const actions = [];
 
   trace.forEach(tickTrace => {
     (tickTrace.agents || []).forEach(agentTrace => {
       if (!agentTrace.actionSelected) return;
-      const role = agentTrace.role || 'unknown';
-      if (!bySpawnTemplate[role]) bySpawnTemplate[role] = {};
-      bySpawnTemplate[role][agentTrace.actionSelected] = (bySpawnTemplate[role][agentTrace.actionSelected] || 0) + 1;
+      const agentId = agentTrace.agentId || 'unknown';
+      if (!byAgent[agentId]) byAgent[agentId] = {};
+      byAgent[agentId][agentTrace.actionSelected] = (byAgent[agentId][agentTrace.actionSelected] || 0) + 1;
       actions.push(agentTrace.actionSelected);
     });
   });
@@ -19,7 +19,7 @@ function summarizeActions(trace = []) {
   const combat = actions.filter(action => ACTION_PROFILES[action]?.category === 'combat').length;
 
   return {
-    bySpawnTemplate,
+    byAgent,
     actions: [...new Set(actions)],
     arcaneUsage,
     combat,
@@ -48,9 +48,9 @@ export default function ActionPanel({ trace }) {
       </div>
 
       <div style={{ marginTop: 8 }}>
-        <strong>By spawn template</strong>
-        {Object.entries(summary.bySpawnTemplate).map(([role, actions]) => (
-          <div key={role}>{role}: {Object.entries(actions).map(([action, count]) => `${action} ${count}`).join(', ')}</div>
+        <strong>By agent</strong>
+        {Object.entries(summary.byAgent).map(([agentId, actions]) => (
+          <div key={agentId}>{agentId}: {Object.entries(actions).map(([action, count]) => `${action} ${count}`).join(', ')}</div>
         ))}
       </div>
 

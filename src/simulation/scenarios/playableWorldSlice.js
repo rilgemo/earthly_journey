@@ -13,6 +13,13 @@ const TERRAIN_FIELDS = Object.freeze({
   mountain: Object.freeze({ earth: 100, fire: 20 })
 });
 
+const NPC_SKILL_SEEDS = Object.freeze([
+  Object.freeze({ farming: 20, lifeManipulation: 5 }),
+  Object.freeze({ hunting: 20, tracking: 15 }),
+  Object.freeze({ forging: 20, mining: 15, crafting: 5 }),
+  Object.freeze({ arcaneTheory: 20, arcaneManipulation: 15 })
+]);
+
 function createSeededRandom(seed = 12345) {
   let state = Number(seed) >>> 0;
 
@@ -94,16 +101,15 @@ function createScenarioWorld() {
   };
 }
 
-function createScenarioAgent({ id, type, role, location, rng }) {
-  const agent = createNPC({ id, role, location, rng });
-  agent.type = type;
+function createScenarioAgent({ id, type, location, rng, skills = {} }) {
+  const agent = createNPC({ id, type, location, rng, skills });
   agent.state = {
     hp: agent.hp,
     stamina: agent.stamina,
     skills: agent.skills
   };
-  agent.attributes = { role };
-  agent.tags = [type, role];
+  agent.attributes = {};
+  agent.tags = [type];
 
   const validation = validateEntity(agent);
   if (!validation.valid) {
@@ -119,15 +125,14 @@ function pickLocation(locations, rng) {
 
 function spawnScenarioAgents(world, rng) {
   const agents = [];
-  const npcRoles = ['farmer', 'hunter', 'blacksmith', 'mage'];
 
-  npcRoles.forEach(role => {
+  NPC_SKILL_SEEDS.forEach((skills, seedIndex) => {
     for (let index = 1; index <= 3; index += 1) {
       agents.push(createScenarioAgent({
-        id: `npc-${role}-${index}`,
+        id: `npc-${seedIndex + 1}-${index}`,
         type: 'npc',
-        role,
-        location: pickLocation(role === 'hunter' ? world.terrainLocations.forest : world.terrainLocations.village, rng),
+        skills,
+        location: pickLocation(seedIndex === 1 ? world.terrainLocations.forest : world.terrainLocations.village, rng),
         rng
       }));
     }
@@ -137,7 +142,7 @@ function spawnScenarioAgents(world, rng) {
     agents.push(createScenarioAgent({
       id: `animal-${index}`,
       type: 'animal',
-      role: 'animal',
+      skills: { hunting: 5, tracking: 10 },
       location: pickLocation(world.terrainLocations.forest, rng),
       rng
     }));
@@ -147,7 +152,7 @@ function spawnScenarioAgents(world, rng) {
     agents.push(createScenarioAgent({
       id: `monster-${index}`,
       type: 'monster',
-      role: 'monster',
+      skills: { hunting: 15, tracking: 8 },
       location: pickLocation(world.terrainLocations.mountain, rng),
       rng
     }));

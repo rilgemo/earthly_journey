@@ -16,15 +16,6 @@ const SKILL_KEYS = Object.freeze([
   'lifeManipulation'
 ]);
 
-const PROFESSION_SKILL_TEMPLATES = Object.freeze({
-  farmer: Object.freeze({ farming: 20, lifeManipulation: 5 }),
-  hunter: Object.freeze({ hunting: 20, tracking: 15 }),
-  blacksmith: Object.freeze({ forging: 20, mining: 15, crafting: 5 }),
-  mage: Object.freeze({ arcaneTheory: 20, arcaneManipulation: 15 }),
-  animal: Object.freeze({ hunting: 5, tracking: 10 }),
-  monster: Object.freeze({ hunting: 15, tracking: 8 })
-});
-
 const ACTION_SKILLS = Object.freeze({
   forage: Object.freeze(['farming', 'tracking']),
   farm: Object.freeze(['farming', 'lifeManipulation', 'waterManipulation']),
@@ -49,10 +40,6 @@ const ACTION_SKILLS = Object.freeze({
 
 function createSkills(template = {}) {
   return Object.fromEntries(SKILL_KEYS.map(skill => [skill, template[skill] || 0]));
-}
-
-function createProfessionBootstrap(profession) {
-  return createSkills(PROFESSION_SKILL_TEMPLATES[profession] || {});
 }
 
 function ensureSkills(agent) {
@@ -81,9 +68,7 @@ function getActionSkillAffinity(agent, actionId) {
 
 module.exports = {
   ACTION_SKILLS,
-  PROFESSION_SKILL_TEMPLATES,
   SKILL_KEYS,
-  createProfessionBootstrap,
   createSkills,
   ensureSkills,
   getActionSkillAffinity,

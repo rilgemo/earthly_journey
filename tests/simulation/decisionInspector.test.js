@@ -21,8 +21,8 @@ function createCandidates() {
       intent: 'cast_magic',
       category: 'magic',
       score: 42,
-      components: { base: 10, roleScore: 12, influenceScore: 20 },
-      reasonTrace: ['base:10', 'role:12', 'influence:20']
+      components: { base: 10, memoryScore: 12, influenceScore: 20 },
+      reasonTrace: ['base:10', 'memory:12', 'influence:20']
     }
   ];
 }
@@ -37,7 +37,7 @@ function createTrace() {
     candidates,
     influenceField: {
       profile: { cast_magic: 20, rest: 2 },
-      sources: { role: { cast_magic: 12 }, world: { cast_magic: 8 } },
+      sources: { memory: { cast_magic: 12 }, world: { cast_magic: 8 } },
       topInfluences: [{ key: 'cast_magic', score: 20 }]
     },
     resolutionResult: selected
@@ -57,9 +57,9 @@ describe('Decision Inspector v1', () => {
     const inspection = inspectDecision(createTrace());
 
     expect(inspection.breakdown.cast_magic.base).toBe(10);
-    expect(inspection.breakdown.cast_magic.roleScore).toBe(12);
+    expect(inspection.breakdown.cast_magic.memoryScore).toBe(12);
     expect(inspection.breakdown.cast_magic.influenceScore).toBe(20);
-    expect(inspection.influenceContributions.sources.role.cast_magic).toBe(12);
+    expect(inspection.influenceContributions.sources.memory.cast_magic).toBe(12);
   });
 
   test('selected intent matches resolution result', () => {

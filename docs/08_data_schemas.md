@@ -119,7 +119,6 @@ type NPCSchedule = {
 type NPC = {
   id: string;
   name: string;
-  role: string;
   hp: number;
   stamina: number;
   gold: number;

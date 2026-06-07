@@ -14,7 +14,7 @@ const { ReplayBuffer } = require('../../src/simulation/replayBuffer');
 function agent(overrides = {}) {
   return {
     id: 'agent-1',
-    role: 'legacy',
+    type: 'npc',
     location: 'tile',
     hp: 100,
     stamina: 100,
@@ -94,25 +94,21 @@ describe('Skill Emergence System v1', () => {
     expect(deriveIdentities(createSkills({ arcaneTheory: 30, arcaneManipulation: 25 }))).toContain('Mage');
   });
 
-  test('profession only affects spawn bootstrap', () => {
-    const farmer = createNPC({ id: 'farmer', role: 'farmer', rng: () => 0.5 });
-    const sameSkillsDifferentProfession = JSON.parse(JSON.stringify(farmer));
-    sameSkillsDifferentProfession.role = 'mage';
-    sameSkillsDifferentProfession.legacyProfession = 'mage';
+  test('agents contain no profession, role, or class authority', () => {
+    const subject = createNPC({ id: 'agent', skills: { farming: 20 }, rng: () => 0.5 });
 
-    expect(farmer.skills.farming).toBe(20);
-    expect(intentScore(farmer, 'farm').score).toBe(intentScore(sameSkillsDifferentProfession, 'farm').score);
-    expect(getAvailableActions(farmer).map(action => action.id))
-      .toEqual(getAvailableActions(sameSkillsDifferentProfession).map(action => action.id));
+    expect(subject.role).toBeUndefined();
+    expect(subject.profession).toBeUndefined();
+    expect(subject.class).toBeUndefined();
+    expect(subject.skills.farming).toBe(20);
   });
 
-  test('intent generation uses skills instead of profession', () => {
-    const skilled = agent({ role: 'unknown', skills: createSkills({ forging: 50 }) });
-    const unskilled = agent({ role: 'blacksmith', skills: createSkills({ forging: 0 }) });
+  test('intent generation uses skills', () => {
+    const skilled = agent({ skills: createSkills({ forging: 50 }) });
+    const unskilled = agent({ skills: createSkills({ forging: 0 }) });
 
     expect(intentScore(skilled, 'forge').components.skillScore)
       .toBeGreaterThan(intentScore(unskilled, 'forge').components.skillScore);
-    expect(intentScore(skilled, 'forge').components.roleScore).toBeUndefined();
   });
 
   test('trace and replay capture skill, knowledge, and identity changes', () => {
@@ -135,8 +131,8 @@ describe('Skill Emergence System v1', () => {
   });
 
   test('skill emergence is deterministic under the same seed', () => {
-    const first = createNPC({ id: 'a', role: 'farmer', location: 'tile', rng: () => 0.42 });
-    const second = createNPC({ id: 'a', role: 'farmer', location: 'tile', rng: () => 0.42 });
+    const first = createNPC({ id: 'a', location: 'tile', skills: { farming: 20 }, rng: () => 0.42 });
+    const second = createNPC({ id: 'a', location: 'tile', skills: { farming: 20 }, rng: () => 0.42 });
     first.memory.bias.farm = 100;
     second.memory.bias.farm = 100;
 

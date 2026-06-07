@@ -8,6 +8,8 @@ import ScenarioSummaryPanel from './panels/ScenarioSummaryPanel';
 import ActionPanel from './panels/ActionPanel';
 import SkillPanel from './panels/SkillPanel';
 import PerceptionDriftPanel from './panels/PerceptionDriftPanel';
+import BehaviorPanel from './panels/BehaviorPanel';
+import DemandPanel from './panels/DemandPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
@@ -52,6 +54,8 @@ export default function SimulationInspector({ world, trace, replay }) {
         <ActionPanel trace={trace} />
         <SkillPanel world={world} />
         <PerceptionDriftPanel world={world} />
+        <BehaviorPanel world={world} />
+        <DemandPanel world={world} />
       </div>
     </section>
   );

@@ -1,5 +1,8 @@
 # Identity Anti-Influence Lock
 
+Root `/AGENTS.md` is the sole architecture authority. This document records
+implementation details only.
+
 Identity is strictly read-only derived observation state.
 
 It is not an intent source, influence source, action authority, learning

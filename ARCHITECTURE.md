@@ -23,7 +23,7 @@ Simulation AI operating rules are defined in `/AI`.
 
 ## AI Simulation Kernel
 
-- [AI/AGENTS.md](AI/AGENTS.md) - AI agent operating memory
+- [AGENTS.md](AGENTS.md) - simulation architecture authority
 - [AI/SYSTEM_PROMPT.md](AI/SYSTEM_PROMPT.md) - Agent execution prompt and runtime output contract
 - [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) - Simulation tick execution model
 - [AI/MULTI_AGENT_RUNTIME.md](AI/MULTI_AGENT_RUNTIME.md) - Multi-agent cognitive runtime and social emergence layer

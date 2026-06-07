@@ -3,6 +3,7 @@ const { getKnowledgeForAction } = require('./skills/knowledgeSystem');
 const { getActionSkillAffinity, getActionSkills } = require('./skills/skillSystem');
 const { TRAIT_SKILL_AFFINITY } = require('./skills/traitSystem');
 const { assertNoIdentityLeak } = require('./identity/identityGuard');
+const { getDemandOpportunityScore } = require('./demand/demandModel');
 
 function evaluateFieldMatch(agent, field) {
   return ['fire', 'water', 'earth', 'arcane'].reduce((sum, key) => {
@@ -76,8 +77,9 @@ function generateIntents(agent, actions, context) {
     const knowledgeScore = getKnowledgeForAction(agent, action.id).length;
     const environmentScore = action.type === 'magic' ? manaScore : fieldScore;
     const influenceScore = getActionInfluence(action.id, context.influenceProfile || {});
+    const demandScore = getDemandOpportunityScore(action.id, context.demandIndex || {});
     const total = action.baseUtility + needScore + memoryScore + skillScore + traitScore
-      + knowledgeScore + environmentScore + communicationScore + influenceScore;
+      + knowledgeScore + environmentScore + communicationScore + influenceScore + demandScore;
 
     return {
       intent: action.id,
@@ -93,6 +95,7 @@ function generateIntents(agent, actions, context) {
         knowledgeScore,
         communicationScore,
         influenceScore,
+        demandScore,
         fieldScore,
         manaScore,
         environmentScore
@@ -105,7 +108,8 @@ function generateIntents(agent, actions, context) {
         `trait:${traitScore.toFixed(2)}`,
         `knowledge:${knowledgeScore.toFixed(2)}`,
         `environment:${environmentScore.toFixed(2)}`,
-        `influence:${influenceScore.toFixed(2)}`
+        `influence:${influenceScore.toFixed(2)}`,
+        `demand:${demandScore.toFixed(2)}`
       ]
     };
   });

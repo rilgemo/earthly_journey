@@ -32,7 +32,6 @@ type NPCSchedule = {
 type NPC = {
   id: string;
   name: string;
-  role: string;
   hp: number;
   stamina: number;
   gold: number;
@@ -51,7 +50,7 @@ type NPC = {
 
 Future NPC ecology is high-level design only.
 
-- Goal: simulated town economy with about 21 initial NPCs such as blacksmith, farmer, merchant, and innkeeper
+- Goal: simulated town ecology with agents whose occupations emerge from repeated behavior
 - NPCs will have full player-like attributes
 - Offline progress is capped at `OFFLINE_PROGRESS_CAP_DAYS = 3`
 - Full simulation only runs for NPCs in the player's loaded area

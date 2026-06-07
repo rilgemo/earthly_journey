@@ -1,12 +1,12 @@
 # Skill Emergence Implementation
 
-Skill Emergence v1 migrates simulation-agent behavior from profession authority
-to continuous capability authority.
+Skill Emergence v1 defines continuous capability authority for simulation
+agents.
 
 ## Runtime Flow
 
 ```text
-spawn profession template
+explicit initial skill state
   -> innate traits + initial skills
   -> skills + traits + knowledge inform intent scores
   -> RESOLUTION_MODEL selects intent
@@ -24,26 +24,15 @@ spawn profession template
 - `knowledgeSystem.js`: learned topics and learning-efficiency modifiers
 - `identityDerivation.js`: read-only identities derived from skill thresholds
 
-## Migration Boundary
-
-Before:
+## Authority Boundary
 
 ```text
-profession -> available behavior and profession-weighted intent
-```
-
-After:
-
-```text
-profession -> spawn skill template only
 traits + skills + knowledge -> additive intent affinity
 RESOLUTION_MODEL -> final intent
 skills -> derived identity for observability only
 ```
 
-The implementation deliberately keeps legacy `role`/profession metadata for
-scenario construction, display, and migration compatibility. Runtime intent,
-need, and influence scoring do not use it.
+Agents do not store profession, job, class, or role authority.
 
 ## Knowledge and Social Memory
 

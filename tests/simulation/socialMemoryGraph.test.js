@@ -12,7 +12,7 @@ const { TraceCollector } = require('../../src/simulation/traceCollector');
 function createAgent(id, location = 'meadow') {
   return {
     id,
-    role: 'villager',
+    type: 'npc',
     location,
     needs: { hunger: 10, fatigue: 10, manaNeed: 10, socialNeed: 80, safetyNeed: 20 },
     affinities: { fire: 0, water: 0, earth: 0, arcane: 0 },

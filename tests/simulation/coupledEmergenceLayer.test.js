@@ -5,7 +5,7 @@ const { imprintMemoryToFields } = require('../../src/simulation/coupledEmergence
 const { emergenceTickHook } = require('../../src/simulation/coupledEmergence/emergenceTickHook');
 const { tickManager } = require('../../src/simulation/tickManager');
 const { ACTION_PROFILES } = require('../../src/simulation/actions/actionProfiles');
-const { createProfessionBootstrap } = require('../../src/simulation/skills/skillSystem');
+const { createSkills } = require('../../src/simulation/skills/skillSystem');
 const { createTraits } = require('../../src/simulation/skills/traitSystem');
 
 function createWorld() {
@@ -29,10 +29,10 @@ function createWorld() {
   };
 }
 
-function createMage() {
+function createArcaneAgent() {
   return {
-    id: 'mage_1',
-    role: 'mage',
+    id: 'arcane_1',
+    type: 'npc',
     location: 'town',
     needs: { hunger: 0, fatigue: 0, manaNeed: 0, socialNeed: 0, safetyNeed: 0 },
     affinities: {},
@@ -45,7 +45,7 @@ function createMage() {
     memory: { shortTerm: [], longTerm: [], recentEvents: [], bias: {} },
     trustMap: {},
     traits: createTraits(() => 0.5),
-    skills: createProfessionBootstrap('mage'),
+    skills: createSkills({ arcaneTheory: 20, arcaneManipulation: 15 }),
     knowledge: [],
     identities: []
   };
@@ -113,7 +113,7 @@ describe('Coupled Emergence Layer v1', () => {
 
   test('coupling runs after field tick and queues proposals for next tick', () => {
     const world = createWorld();
-    const mage = createMage();
+    const mage = createArcaneAgent();
 
     tickManager([mage], world);
     const selectedAction = world.lastEmergenceTrace.activityCouplingLog[0].actions[0];

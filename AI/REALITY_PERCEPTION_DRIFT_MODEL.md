@@ -1,5 +1,8 @@
 # Reality vs Perception Drift Stabilization Model
 
+Root `/AGENTS.md` is the sole architecture authority. This document records
+implementation details only.
+
 This model extends the Reality vs Perception Split with controlled long-term
 cognitive drift.
 

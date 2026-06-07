@@ -6,7 +6,7 @@ This project uses a DF x AI hybrid simulation model.
 
 ## Core AI Docs
 
-- [AGENTS.md](AGENTS.md) - Codex and AI agent operating memory
+- [../AGENTS.md](../AGENTS.md) - single simulation architecture authority
 - [SYSTEM_PROMPT.md](SYSTEM_PROMPT.md) - Agent execution prompt and runtime output contract
 - [EXECUTION_MODEL.md](EXECUTION_MODEL.md) - Runtime tick flow and validation pipeline
 - [MULTI_AGENT_RUNTIME.md](MULTI_AGENT_RUNTIME.md) - Multi-agent cognition, social memory, influence, and emergent roles
@@ -23,6 +23,8 @@ This project uses a DF x AI hybrid simulation model.
 - [IDENTITY_LOCK_MODEL.md](IDENTITY_LOCK_MODEL.md) - Hard anti-influence boundary for post-tick derived identity
 - [REALITY_VS_PERCEPTION_MODEL.md](REALITY_VS_PERCEPTION_MODEL.md) - One-way reality-to-belief interpretation boundary
 - [REALITY_PERCEPTION_DRIFT_MODEL.md](REALITY_PERCEPTION_DRIFT_MODEL.md) - Bounded cognitive drift and rumor stability diagnostics
+- [BEHAVIORAL_SIGNATURE_MODEL.md](BEHAVIORAL_SIGNATURE_MODEL.md) - Observational action-sequence analytics with no runtime influence
+- [WORLD_DEMAND_SYSTEM.md](WORLD_DEMAND_SYSTEM.md) - Smoothed settlement pressure and additive opportunity signals
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs
@@ -36,7 +38,7 @@ This project uses a DF x AI hybrid simulation model.
 
 ## Rule
 
-Always consult `/AI/AGENTS.md` and `/AI/EXECUTION_MODEL.md` before modifying simulation logic.
+Always consult root `/AGENTS.md` and `/AI/EXECUTION_MODEL.md` before modifying simulation logic.
 
 For multi-agent behavior, social memory, reputation, influence, or emergent roles, also consult `/AI/MULTI_AGENT_RUNTIME.md`.
 
@@ -47,7 +49,7 @@ For final intent selection, conflict arbitration, stochastic selection, or decis
 For tick replay, decision explainability, conflict graphs, or bias attribution, also consult `/AI/TRACE_MODEL.md`.
 
 For simulation-agent traits, continuous skill growth, knowledge-assisted
-learning, profession migration, or derived identities, also consult
+learning or derived identities, also consult
 `/AI/SKILL_EMERGENCE_MODEL.md`.
 
 For any identity derivation, display, trace, or runtime boundary work, also
@@ -58,6 +60,12 @@ knowledge work, also consult `/AI/REALITY_VS_PERCEPTION_MODEL.md`.
 
 For cognitive drift, belief convergence, rumor persistence, or perception
 stability metrics, also consult `/AI/REALITY_PERCEPTION_DRIFT_MODEL.md`.
+
+For action-history analytics, behavior loops, transition metrics, or behavioral
+signatures, also consult `/AI/BEHAVIORAL_SIGNATURE_MODEL.md`.
+
+For settlement pressure, opportunity signals, demand smoothing, or demand
+trace work, also consult `/AI/WORLD_DEMAND_SYSTEM.md`.
 
 ## Influence Boundary
 

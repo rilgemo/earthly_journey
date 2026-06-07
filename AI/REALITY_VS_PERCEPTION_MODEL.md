@@ -1,5 +1,8 @@
 # Reality vs Perception Model
 
+Root `/AGENTS.md` is the sole architecture authority. This document records
+implementation details only.
+
 This model defines a strict one-way split between objective simulation truth
 and subjective social cognition.
 

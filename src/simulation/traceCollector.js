@@ -1,8 +1,13 @@
+const { BehaviorTraceRecorder } = require('./behavior/behaviorTraceRecorder');
+const { createBehavioralSignatures } = require('./behavior/behavioralSignature');
+const { cloneSnapshot } = require('./replayBuffer');
+
 class TraceCollector {
-  constructor(max = 200) {
+  constructor(max = 200, behaviorWindow = 100) {
     this.traces = [];
     this.max = max;
     this.current = null;
+    this.behaviorRecorder = new BehaviorTraceRecorder(behaviorWindow);
   }
 
   beginTick(tickId, world) {
@@ -23,6 +28,7 @@ class TraceCollector {
   recordAgent(trace) {
     if (!this.current) return;
     this.current.agents.push(trace);
+    this.behaviorRecorder.recordAgentTrace(trace, this.current.tickId);
   }
 
   endTick() {
@@ -40,6 +46,19 @@ class TraceCollector {
 
   getAll() {
     return this.traces.slice();
+  }
+
+  recordDemand(demand) {
+    if (!this.current) return;
+    this.current.demand = cloneSnapshot(demand);
+  }
+
+  getBehaviorHistory() {
+    return this.behaviorRecorder.getSnapshot();
+  }
+
+  getBehaviorSignatures() {
+    return createBehavioralSignatures(this.getBehaviorHistory());
   }
 }
 

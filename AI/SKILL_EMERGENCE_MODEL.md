@@ -27,19 +27,11 @@ processing and re-derived only after tick processing completes.
 `RESOLUTION_MODEL` remains the only final intent authority. `tickManager()`
 remains the only mutation authority.
 
-## Profession Migration
+## Initialization
 
-Profession is legacy spawn metadata only. At spawn it selects an initial skill
-template, such as farming for a farmer or forging and mining for a blacksmith.
-After initialization, runtime intent generation must not read profession.
-
-```text
-legacy profession -> initial skills -> runtime ends profession authority
-```
-
-Identity must never replace profession as a behavior authority. It is generated
-from skills and may be displayed or traced, but intent generation must not read
-it.
+Agents begin with explicit continuous skill values. Initialization does not
+assign professions, jobs, classes, or roles. Identity is generated from skills
+for observation only and must never become behavior authority.
 
 ## Continuous Growth
 
@@ -65,6 +57,6 @@ Buffer snapshots.
 ## Forbidden
 
 - Classes, levels, XP, perks, and talent trees
-- Profession or identity based runtime scoring
+- Identity-based runtime scoring
 - Knowledge that directly grants skill values
 - Skill mutation outside `tickManager()`

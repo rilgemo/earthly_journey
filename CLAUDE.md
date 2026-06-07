@@ -25,7 +25,7 @@ Simulation rules are defined in `/AI` only.
 
 See `/docs` for the full project specification.
 
-For simulation logic, agent behavior, and DF x AI tick rules, consult [AI/AGENTS.md](AI/AGENTS.md) and [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) before editing code.
+For simulation logic, agent behavior, and DF x AI tick rules, consult root [AGENTS.md](AGENTS.md) and [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) before editing code.
 
 For implementation bridges from the current React game to the future simulation kernel, consult [docs/implementation/phase1_mapping.md](docs/implementation/phase1_mapping.md).
 
@@ -45,7 +45,7 @@ For implementation bridges from the current React game to the future simulation 
 
 ## AI Simulation Kernel
 
-- [AI/AGENTS.md](AI/AGENTS.md) - AI agent operating memory
+- [AGENTS.md](AGENTS.md) - simulation architecture authority
 - [AI/SYSTEM_PROMPT.md](AI/SYSTEM_PROMPT.md) - DF x AI hybrid rules
 - [AI/EXECUTION_MODEL.md](AI/EXECUTION_MODEL.md) - Tick flow and validation pipeline
 - [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index

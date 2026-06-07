@@ -52,7 +52,7 @@ Influence keys are not actions. Action influence mappings live in influence prof
 
 Heard memories must contribute less pressure than equally strong observed memories.
 
-Legacy profession and derived identity are not Influence Field sources.
+Derived identity is not an Influence Field source.
 
 ## Boundary Rules
 

@@ -1,17 +1,22 @@
-const { createProfessionBootstrap } = require('./skills/skillSystem');
+const { createSkills } = require('./skills/skillSystem');
 const { createTraits } = require('./skills/traitSystem');
 
-const createNPC = ({ id, role = 'farmer', location = 'meadow', rng = Math.random }) => {
-  const skills = createProfessionBootstrap(role);
+const createNPC = ({
+  id,
+  type = 'npc',
+  location = 'meadow',
+  rng = Math.random,
+  skills = {},
+  traits = {}
+}) => {
   return {
     id,
-    legacyProfession: role,
-    role,
+    type,
     location,
     hp: 100,
     stamina: 100,
-    traits: createTraits(rng),
-    skills,
+    traits: createTraits(rng, traits),
+    skills: createSkills(skills),
     knowledge: [],
     needs: {
       hunger: rng() * 50,

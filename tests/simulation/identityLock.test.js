@@ -39,8 +39,8 @@ function generateForgeIntent(agent) {
 
 describe('Identity Anti-Influence Lock v1', () => {
   test('changing identity does not affect intent output', () => {
-    const first = createNPC({ id: 'first', role: 'blacksmith', location: 'tile', rng: () => 0.5 });
-    const second = createNPC({ id: 'second', role: 'blacksmith', location: 'tile', rng: () => 0.5 });
+    const first = createNPC({ id: 'first', location: 'tile', skills: { forging: 20 }, rng: () => 0.5 });
+    const second = createNPC({ id: 'second', location: 'tile', skills: { forging: 20 }, rng: () => 0.5 });
     installIdentitySnapshot(first, ['Blacksmith']);
     installIdentitySnapshot(second, ['Mage', 'Farmer']);
 
@@ -48,8 +48,8 @@ describe('Identity Anti-Influence Lock v1', () => {
   });
 
   test('resolution output is independent of observational identity', () => {
-    const first = createNPC({ id: 'first', role: 'blacksmith', location: 'tile', rng: () => 0.5 });
-    const second = createNPC({ id: 'second', role: 'blacksmith', location: 'tile', rng: () => 0.5 });
+    const first = createNPC({ id: 'first', location: 'tile', skills: { forging: 20 }, rng: () => 0.5 });
+    const second = createNPC({ id: 'second', location: 'tile', skills: { forging: 20 }, rng: () => 0.5 });
     installIdentitySnapshot(second, ['Runesmith']);
 
     expect(resolveIntent(generateForgeIntent(first)))
@@ -57,7 +57,7 @@ describe('Identity Anti-Influence Lock v1', () => {
   });
 
   test('identity is absent before resolution and derived after tick processing', () => {
-    const agent = createNPC({ id: 'agent', role: 'farmer', location: 'tile', rng: () => 0.5 });
+    const agent = createNPC({ id: 'agent', location: 'tile', skills: { farming: 20 }, rng: () => 0.5 });
     agent.skills.farming = 30;
     agent.memory.bias.farm = 100;
 
@@ -70,7 +70,7 @@ describe('Identity Anti-Influence Lock v1', () => {
 
   test('guard throws when identity is injected into intent generation', () => {
     const agent = createIdentityFreeDecisionView(
-      createNPC({ id: 'agent', role: 'farmer', location: 'tile', rng: () => 0.5 })
+      createNPC({ id: 'agent', location: 'tile', skills: { farming: 20 }, rng: () => 0.5 })
     );
     agent.identities = [];
 
@@ -88,8 +88,8 @@ describe('Identity Anti-Influence Lock v1', () => {
   });
 
   test('same seed produces the same skills and actions regardless of prior identity', () => {
-    const first = createNPC({ id: 'agent', role: 'farmer', location: 'tile', rng: () => 0.42 });
-    const second = createNPC({ id: 'agent', role: 'farmer', location: 'tile', rng: () => 0.42 });
+    const first = createNPC({ id: 'agent', location: 'tile', skills: { farming: 20 }, rng: () => 0.42 });
+    const second = createNPC({ id: 'agent', location: 'tile', skills: { farming: 20 }, rng: () => 0.42 });
     installIdentitySnapshot(first, ['Mage']);
     installIdentitySnapshot(second, ['Blacksmith', 'Runesmith']);
     first.memory.bias.farm = 100;

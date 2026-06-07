@@ -20,6 +20,7 @@ const {
   beginIdentityFreeTick,
   createIdentityFreeDecisionView
 } = require('./identity/identityLock');
+const { calculateWorldDemand } = require('./demand/demandModel');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 
@@ -29,10 +30,10 @@ function perceive(npc, worldObj = world, allNpcs = []) {
     nearbyEvents: worldObj.getRecentEvents(npc.location),
     nearbyAgents: allNpcs
       .filter(other => other.id !== npc.id && other.location === npc.location)
-      .map(other => ({ id: other.id, role: other.role, location: other.location })),
+      .map(other => ({ id: other.id, type: other.type, location: other.location })),
     self: {
       id: npc.id,
-      role: npc.role,
+      type: npc.type,
       location: npc.location,
       mana: npc.mana,
       needs: npc.needs
@@ -137,7 +138,8 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
     perception,
     memories,
     needs,
-    influenceProfile: influenceField.profile
+    influenceProfile: influenceField.profile,
+    demandIndex: worldObj.demandIndex || {}
   });
   const selectedIntent = resolveIntent(intents);
   const decisionTrace = createDecisionTrace({
@@ -234,7 +236,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
 
   return {
     agentId: npc.id,
-    role: npc.role,
+    agentType: npc.type,
     actionSelected: selected ? selected.id : null,
     scoreBreakdown: selectedIntent ? { ...selectedIntent.components, total: selectedIntent.score } : null,
     actionRegistered: selected ? actionRegistry.has(selected.id) : null,
@@ -247,6 +249,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
     needUrgency: needs.urgency,
     influenceProfile: influenceField.profile,
     influenceSources: influenceField.sources,
+    demandSnapshot: worldObj.demandIndex || null,
     topInfluences: influenceField.topInfluences,
     candidateIntents: intents.map(intent => ({
       intent: intent.intent,
@@ -307,6 +310,15 @@ function tickManager(npcs, worldObj, traceCollector) {
 
   if (traceCollector && typeof traceCollector.beginTick === 'function') {
     traceCollector.beginTick(worldObj.tick, worldObj);
+  }
+
+  const demand = calculateWorldDemand(worldObj, npcs, worldObj.demandIndex);
+  worldObj.demandIndex = demand.index;
+  if (!worldObj.demandHistory) worldObj.demandHistory = [];
+  worldObj.demandHistory.push({ tick: worldObj.tick, ...demand.index });
+  if (worldObj.demandHistory.length > 100) worldObj.demandHistory.shift();
+  if (traceCollector && typeof traceCollector.recordDemand === 'function') {
+    traceCollector.recordDemand(demand);
   }
 
   for (const npc of npcs) {

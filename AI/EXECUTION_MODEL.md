@@ -120,7 +120,7 @@ Examples:
 
 Successful behavior may produce small, diminishing continuous skill growth.
 Traits affect growth rates and knowledge affects learning efficiency. Derived
-identity and legacy profession metadata must not drive intent generation.
+identity metadata must not drive intent generation.
 
 ## Mutation Rule
 

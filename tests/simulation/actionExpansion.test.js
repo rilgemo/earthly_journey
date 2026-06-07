@@ -9,7 +9,7 @@ const { generateIntents } = require('../../src/simulation/intentGenerator');
 const { tickManager } = require('../../src/simulation/tickManager');
 const { createArea } = require('../../src/simulation/worldField');
 const { createPlayableWorldSlice } = require('../../src/simulation/scenarios/playableWorldSlice');
-const { createProfessionBootstrap } = require('../../src/simulation/skills/skillSystem');
+const { createSkills } = require('../../src/simulation/skills/skillSystem');
 const { createTraits } = require('../../src/simulation/skills/traitSystem');
 
 const EXPECTED_ACTIONS = [
@@ -20,10 +20,17 @@ const EXPECTED_ACTIONS = [
   'attack', 'defend', 'flee'
 ];
 
-function createAgent(role) {
+const SKILL_SEEDS = {
+  cultivation: { farming: 20, lifeManipulation: 5 },
+  tracking: { hunting: 20, tracking: 15 },
+  crafting: { forging: 20, mining: 15, crafting: 5 },
+  arcane: { arcaneTheory: 20, arcaneManipulation: 15 }
+};
+
+function createAgent(seedName) {
   const agent = {
-    id: `${role}-1`,
-    role,
+    id: `${seedName}-1`,
+    type: 'npc',
     location: 'tile',
     hp: 100,
     stamina: 100,
@@ -38,7 +45,7 @@ function createAgent(role) {
     memory: { shortTerm: [], longTerm: [], recentEvents: [], bias: {} },
     trustMap: {}
   };
-  agent.skills = createProfessionBootstrap(role);
+  agent.skills = createSkills(SKILL_SEEDS[seedName] || {});
   agent.traits = createTraits(() => 0.5);
   agent.knowledge = [];
   return agent;
@@ -60,8 +67,8 @@ function createWorld(field = {}) {
   };
 }
 
-function intentsForBootstrap(role) {
-  const agent = createAgent(role);
+function intentsForSkills(seedName) {
+  const agent = createAgent(seedName);
   const actions = getAvailableActions(agent);
   const influence = createInfluenceField({
     field: {},
@@ -110,33 +117,33 @@ describe('Action Space Expansion v1', () => {
     expect(new Set(signatures).size).toBe(signatures.length);
   });
 
-  test('profession bootstrap only seeds skills that bias matching actions', () => {
-    const score = (role, actionId) => intentsForBootstrap(role)
+  test('explicit continuous skills bias matching actions', () => {
+    const score = (seedName, actionId) => intentsForSkills(seedName)
       .find(intent => intent.intent === actionId).components.skillScore;
 
-    expect(score('farmer', 'farm')).toBeGreaterThan(score('mage', 'farm'));
-    expect(score('hunter', 'hunt')).toBeGreaterThan(score('farmer', 'hunt'));
-    expect(score('blacksmith', 'forge')).toBeGreaterThan(score('hunter', 'forge'));
-    expect(score('mage', 'study_arcane')).toBeGreaterThan(score('blacksmith', 'study_arcane'));
+    expect(score('cultivation', 'farm')).toBeGreaterThan(score('arcane', 'farm'));
+    expect(score('tracking', 'hunt')).toBeGreaterThan(score('cultivation', 'hunt'));
+    expect(score('crafting', 'forge')).toBeGreaterThan(score('tracking', 'forge'));
+    expect(score('arcane', 'study_arcane')).toBeGreaterThan(score('crafting', 'study_arcane'));
   });
 
   test('mage cast_magic increases arcane instability through tickManager', () => {
     const world = createWorld({ arcane: 10 });
-    tickManager([createAgent('mage')], world);
+    tickManager([createAgent('arcane')], world);
 
     expect(world.areas.get('tile').field.arcane).toBeGreaterThan(10);
   });
 
   test('farmer farm increases life stability through tickManager', () => {
     const world = createWorld({ life: 10 });
-    tickManager([createAgent('farmer')], world);
+    tickManager([createAgent('cultivation')], world);
 
     expect(world.areas.get('tile').field.life).toBeGreaterThan(10);
   });
 
   test('hunter hunt reduces life field through tickManager', () => {
     const world = createWorld({ life: 10 });
-    tickManager([createAgent('hunter')], world);
+    tickManager([createAgent('tracking')], world);
 
     expect(world.areas.get('tile').field.life).toBeLessThan(10);
   });
@@ -145,14 +152,14 @@ describe('Action Space Expansion v1', () => {
     const world = createWorld({ life: 10 });
     const before = { ...world.areas.get('tile').field };
 
-    getAvailableActions(createAgent('farmer'));
+    getAvailableActions(createAgent('cultivation'));
 
     expect(world.areas.get('tile').field).toEqual(before);
     expect(ACTION_PROFILES.farm.execute).toBeUndefined();
     expect(ACTION_PROFILES.farm.mutate).toBeUndefined();
   });
 
-  test('expanded profession behavior is deterministic under the same seed', () => {
+  test('expanded skill-driven behavior is deterministic under the same seed', () => {
     const first = createPlayableWorldSlice({ seed: 12345 });
     const second = createPlayableWorldSlice({ seed: 12345 });
 

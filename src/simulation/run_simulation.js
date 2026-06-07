@@ -10,9 +10,9 @@ world.addArea(meadow);
 world.addArea(town);
 
 const npcs = [
-  createNPC({ id: 'npc_1', role: 'farmer', location: 'meadow' }),
-  createNPC({ id: 'npc_2', role: 'mage', location: 'meadow' }),
-  createNPC({ id: 'npc_3', role: 'blacksmith', location: 'town' })
+  createNPC({ id: 'npc_1', location: 'meadow', skills: { farming: 20, lifeManipulation: 5 } }),
+  createNPC({ id: 'npc_2', location: 'meadow', skills: { arcaneTheory: 20, arcaneManipulation: 15 } }),
+  createNPC({ id: 'npc_3', location: 'town', skills: { forging: 20, mining: 15, crafting: 5 } })
 ];
 
 console.log('Starting simulation tick loop (v1)');

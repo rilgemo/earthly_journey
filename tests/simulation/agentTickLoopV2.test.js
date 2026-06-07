@@ -33,7 +33,7 @@ function createWorld() {
 function createAgent() {
   return {
     id: 'npc_001',
-    role: 'mage',
+    type: 'npc',
     location: 'meadow',
     needs: { hunger: 20, fatigue: 30, manaNeed: 70, socialNeed: 10, safetyNeed: 40 },
     affinities: { fire: 0, water: 0, earth: 0, arcane: 1 },
