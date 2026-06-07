@@ -13,6 +13,7 @@ This project uses a DF x AI hybrid simulation model.
 - [EMERGENCE_TUNING.md](EMERGENCE_TUNING.md) - Control plane for tuning emergent behavior probability and stability
 - [RESOLUTION_MODEL.md](RESOLUTION_MODEL.md) - Final intent arbitration, conflict grouping, softmax selection, and reason tracing
 - [TRACE_MODEL.md](TRACE_MODEL.md) - Observability, replay, conflict graph, and emergence debugging
+- [AGENT_TYPOLOGY_MODEL.md](AGENT_TYPOLOGY_MODEL.md) - Causal participation profiles for agent weighting behavior
 - [REPLAY_MODEL.md](REPLAY_MODEL.md) - Read-only time travel buffer for immutable tick snapshots
 - [INFLUENCE_FIELD.md](INFLUENCE_FIELD.md) - Additive behavioral pressure layer, not decision or execution
 - [DECISION_INSPECTOR.md](DECISION_INSPECTOR.md) - Observability-only decision analysis and immutable decision traces
@@ -53,6 +54,8 @@ For tuning, stability control, narrative emergence bias, or behavior probability
 For final intent selection, conflict arbitration, stochastic selection, or decision traceability, also consult `/AI/RESOLUTION_MODEL.md`.
 
 For tick replay, decision explainability, conflict graphs, or bias attribution, also consult `/AI/TRACE_MODEL.md`.
+
+For agent causal participation profiles, weighting modifiers, or typology trace output, also consult `/AI/AGENT_TYPOLOGY_MODEL.md`.
 
 For simulation-agent traits, continuous skill growth, knowledge-assisted
 learning or derived identities, also consult

@@ -23,6 +23,7 @@ const {
   createIdentityFreeDecisionView
 } = require('./identity/identityLock');
 const { calculateWorldDemand } = require('./demand/demandModel');
+const { buildAgentTypologySnapshot } = require('./agentTypology/typeTraceBuilder');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 
@@ -98,7 +99,7 @@ function filterRegisteredActions(actions) {
   return { registeredActions, rejectedProposals };
 }
 
-function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter, skillGain, knowledgeLearned, identityChanges) {
+function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter, skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot) {
   npc.runtime = {
     lastNeeds: needs.profile,
     lastNeedUrgency: needs.urgency,
@@ -116,7 +117,8 @@ function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, se
     lastNeedAfter: needAfter,
     lastSkillGain: skillGain,
     lastKnowledgeLearned: knowledgeLearned,
-    lastIdentityChanges: identityChanges
+    lastIdentityChanges: identityChanges,
+    lastAgentTypologySnapshot: agentTypologySnapshot
   };
 }
 
@@ -144,6 +146,11 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
     demandIndex: worldObj.demandIndex || {}
   });
   const selectedIntent = resolveIntent(intents);
+  const agentTypologySnapshot = buildAgentTypologySnapshot(npc, intents.map(intent => ({
+    action: intent.intent,
+    category: intent.category,
+    modifier: intent.components?.typologyModifier ?? 1
+  })));
   const decisionTrace = createDecisionTrace({
     agentId: npc.id,
     tick: worldObj.tick || 0,
@@ -241,7 +248,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   const needAfter = advanceNeeds(npc);
   createRuntimeSnapshot(
     npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter,
-    skillGain, knowledgeLearned, identityChanges
+    skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot
   );
 
   return {
@@ -282,6 +289,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
     knowledgeLearned,
     identityChanges,
     communicationTrace,
+    agentTypologySnapshot,
     manaBefore,
     manaAfter,
     position: npc.location

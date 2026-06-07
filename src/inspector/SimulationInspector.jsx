@@ -1,5 +1,6 @@
 import React from 'react';
 import AgentPanel from './panels/AgentPanel';
+import AgentTypologyPanel from './panels/AgentTypologyPanel';
 import DecisionPanel from './panels/DecisionPanel';
 import FieldDynamicsPanel from './panels/FieldDynamicsPanel';
 import CoupledEmergencePanel from './panels/CoupledEmergencePanel';
@@ -53,6 +54,7 @@ export default function SimulationInspector({ world, trace, replay, semanticRepo
         <WorldPanel world={world} />
         <TracePanel trace={trace} />
         <AgentPanel world={world} />
+        <AgentTypologyPanel trace={trace} world={world} />
         <DecisionPanel world={world} />
         <FieldDynamicsPanel world={world} />
         <CoupledEmergencePanel world={world} />

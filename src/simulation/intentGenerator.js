@@ -4,6 +4,7 @@ const { getActionSkillAffinity, getActionSkills } = require('./skills/skillSyste
 const { TRAIT_SKILL_AFFINITY } = require('./skills/traitSystem');
 const { assertNoIdentityLeak } = require('./identity/identityGuard');
 const { getDemandOpportunityScore } = require('./demand/demandModel');
+const { resolveTypologyWeights } = require('./agentTypology/typologyResolver');
 
 function evaluateFieldMatch(agent, field) {
   return ['fire', 'water', 'earth', 'arcane'].reduce((sum, key) => {
@@ -78,8 +79,11 @@ function generateIntents(agent, actions, context) {
     const environmentScore = action.type === 'magic' ? manaScore : fieldScore;
     const influenceScore = getActionInfluence(action.id, context.influenceProfile || {});
     const demandScore = getDemandOpportunityScore(action.id, context.demandIndex || {});
-    const total = action.baseUtility + needScore + memoryScore + skillScore + traitScore
+    const preTypologyTotal = action.baseUtility + needScore + memoryScore + skillScore + traitScore
       + knowledgeScore + environmentScore + communicationScore + influenceScore + demandScore;
+    const typology = resolveTypologyWeights(agent, action, context);
+    const typologyScore = preTypologyTotal * (typology.scoreModifier - 1);
+    const total = preTypologyTotal + typologyScore;
 
     return {
       intent: action.id,
@@ -98,7 +102,10 @@ function generateIntents(agent, actions, context) {
         demandScore,
         fieldScore,
         manaScore,
-        environmentScore
+        environmentScore,
+        typologyScore,
+        typologyModifier: typology.scoreModifier,
+        typologyType: typology.typeId
       },
       reasonTrace: [
         `base:${action.baseUtility.toFixed(2)}`,
@@ -109,7 +116,8 @@ function generateIntents(agent, actions, context) {
         `knowledge:${knowledgeScore.toFixed(2)}`,
         `environment:${environmentScore.toFixed(2)}`,
         `influence:${influenceScore.toFixed(2)}`,
-        `demand:${demandScore.toFixed(2)}`
+        `demand:${demandScore.toFixed(2)}`,
+        `typology:${typology.scoreModifier.toFixed(2)}`
       ]
     };
   });
