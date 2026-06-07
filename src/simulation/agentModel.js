@@ -1,11 +1,18 @@
+const { createProfessionBootstrap } = require('./skills/skillSystem');
+const { createTraits } = require('./skills/traitSystem');
+
 const createNPC = ({ id, role = 'farmer', location = 'meadow', rng = Math.random }) => {
+  const skills = createProfessionBootstrap(role);
   return {
     id,
+    legacyProfession: role,
     role,
     location,
     hp: 100,
     stamina: 100,
-    skills: [],
+    traits: createTraits(rng),
+    skills,
+    knowledge: [],
     needs: {
       hunger: rng() * 50,
       fatigue: rng() * 50,

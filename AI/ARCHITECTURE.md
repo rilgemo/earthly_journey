@@ -19,6 +19,8 @@ This project uses a DF x AI hybrid simulation model.
 - [ELEMENTAL_FIELD_SYSTEM.md](ELEMENTAL_FIELD_SYSTEM.md) - Continuous elemental world physics, not gameplay or resources
 - [COUPLED_EMERGENCE_LAYER.md](COUPLED_EMERGENCE_LAYER.md) - Additive cross-system feedback propagation, not a decision or mutation layer
 - [STABILITY_CONTROLLER.md](STABILITY_CONTROLLER.md) - Gain-based feedback regulation, not state clamping or decision logic
+- [SKILL_EMERGENCE_MODEL.md](SKILL_EMERGENCE_MODEL.md) - Trait, skill, knowledge, and derived identity authority
+- [IDENTITY_LOCK_MODEL.md](IDENTITY_LOCK_MODEL.md) - Hard anti-influence boundary for post-tick derived identity
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs
@@ -41,6 +43,13 @@ For tuning, stability control, narrative emergence bias, or behavior probability
 For final intent selection, conflict arbitration, stochastic selection, or decision traceability, also consult `/AI/RESOLUTION_MODEL.md`.
 
 For tick replay, decision explainability, conflict graphs, or bias attribution, also consult `/AI/TRACE_MODEL.md`.
+
+For simulation-agent traits, continuous skill growth, knowledge-assisted
+learning, profession migration, or derived identities, also consult
+`/AI/SKILL_EMERGENCE_MODEL.md`.
+
+For any identity derivation, display, trace, or runtime boundary work, also
+consult `/AI/IDENTITY_LOCK_MODEL.md`.
 
 ## Influence Boundary
 

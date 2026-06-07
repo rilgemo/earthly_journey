@@ -2,7 +2,7 @@
 
 `INFLUENCE_FIELD v1` is an additive behavioral pressure layer.
 
-It aggregates environmental, memory, social, need, and role pressure into a normalized influence profile.
+It aggregates environmental, memory, social, and need pressure into a normalized influence profile.
 
 It is not a decision layer and it is not an execution layer.
 
@@ -12,8 +12,6 @@ It is not a decision layer and it is not an execution layer.
 Memory
 +
 Needs
-+
-Role
 +
 Influence Field
   -> Intent Generator
@@ -51,9 +49,10 @@ Influence keys are not actions. Action influence mappings live in influence prof
 - Observed personal memories
 - Heard social memories
 - Evaluated needs
-- Agent role
 
 Heard memories must contribute less pressure than equally strong observed memories.
+
+Legacy profession and derived identity are not Influence Field sources.
 
 ## Boundary Rules
 

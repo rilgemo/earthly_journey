@@ -13,6 +13,13 @@ const { createFieldDelta, createFieldState } = require('./elementalField/fieldSt
 const { runFieldDynamicsTick } = require('./elementalField/fieldDynamicsTick');
 const { emergenceTickHook } = require('./coupledEmergence/emergenceTickHook');
 const { createStabilityGains, runStabilityController } = require('./stability/stabilityController');
+const { applySkillGain } = require('./skills/skillGain');
+const { learnKnowledge, learnKnowledgeFromMemories } = require('./skills/knowledgeSystem');
+const {
+  applyPostTickIdentity,
+  beginIdentityFreeTick,
+  createIdentityFreeDecisionView
+} = require('./identity/identityLock');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 
@@ -88,7 +95,7 @@ function filterRegisteredActions(actions) {
   return { registeredActions, rejectedProposals };
 }
 
-function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter) {
+function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter, skillGain, knowledgeLearned, identityChanges) {
   npc.runtime = {
     lastNeeds: needs.profile,
     lastNeedUrgency: needs.urgency,
@@ -103,13 +110,18 @@ function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, se
     })),
     lastSelectedIntent: selectedIntent ? selectedIntent.intent : null,
     lastDecisionTrace: decisionTrace,
-    lastNeedAfter: needAfter
+    lastNeedAfter: needAfter,
+    lastSkillGain: skillGain,
+    lastKnowledgeLearned: knowledgeLearned,
+    lastIdentityChanges: identityChanges
   };
 }
 
 function simulateAgent(npc, worldObj, allNpcs = []) {
   ensureMemory(npc);
 
+  const decisionAgent = createIdentityFreeDecisionView(npc);
+  const knowledgeLearned = learnKnowledgeFromMemories(npc);
   const memoryDecay = decayAgentMemory(npc);
   const perception = perceive(npc, worldObj, allNpcs);
   const memories = recallMemories(npc, { location: npc.location });
@@ -117,12 +129,11 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   const influenceField = createInfluenceField({
     field: perception.field,
     memories,
-    needs: needs.profile,
-    role: npc.role
+    needs: needs.profile
   });
-  const rawActions = getAvailableActions(npc);
+  const rawActions = getAvailableActions(decisionAgent);
   const { registeredActions, rejectedProposals } = filterRegisteredActions(rawActions);
-  const intents = generateIntents(npc, registeredActions, {
+  const intents = generateIntents(decisionAgent, registeredActions, {
     perception,
     memories,
     needs,
@@ -141,6 +152,8 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   let actionRejected = !selected && rejectedProposals.length > 0;
   let rejectionReason = actionRejected ? `Action '${rejectedProposals[0]}' not registered` : null;
   const memoryUpdates = [];
+  let skillGain = [];
+  let identityChanges = { before: [], after: [], added: [], removed: [] };
   let communicationTrace = null;
 
   if (selected) {
@@ -149,10 +162,17 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
       rejectionReason = 'action-not-registered';
       console.warn(`Rejected execution of unregistered action '${selected.id}' for ${npc.id}`);
     } else {
-      if (selected.id === 'share_information' || selected.id === 'communicate') {
+      if (selected.id === 'share_information' || selected.id === 'communicate' || selected.id === 'teach') {
         const targetInfo = perception.nearbyAgents[0];
         const receiver = targetInfo ? allNpcs.find(agent => agent.id === targetInfo.id) : null;
-        const transfer = prepareInformationTransfer(npc, receiver, { tick: worldObj.tick || 0 });
+        const teachMemory = selected.id === 'teach'
+          ? [...(npc.memory.shortTerm || []), ...(npc.memory.longTerm || [])]
+            .find(memory => String(memory.type || '').includes('knowledge'))
+          : undefined;
+        const transfer = prepareInformationTransfer(npc, receiver, {
+          tick: worldObj.tick || 0,
+          memory: teachMemory
+        });
 
         if (transfer) {
           recordMemory(receiver, transfer.heardMemory);
@@ -179,12 +199,38 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
 
       recordActionOutcome(npc, selected.id, worldObj.tick || 0, 8);
       memoryUpdates.push({ type: 'success', action: selected.id, value: 8 });
+      skillGain = applySkillGain(npc, selected.id);
+
+      if (selected.id === 'study_arcane') {
+        const learned = learnKnowledge(npc, {
+          key: 'arcane:fundamental-patterns',
+          topic: 'fundamental arcane patterns',
+          action: 'study_arcane',
+          actions: ['study_arcane', 'cast_magic'],
+          tick: worldObj.tick || 0
+        });
+        if (learned) {
+          knowledgeLearned.push(learned);
+          recordMemory(npc, {
+            type: 'knowledge',
+            knowledgeKey: learned.key,
+            target: learned.topic,
+            action: learned.action,
+            strength: 20,
+            tick: worldObj.tick || 0
+          });
+        }
+      }
+
     }
   }
 
   const manaAfter = Object.assign({}, npc.mana);
   const needAfter = advanceNeeds(npc);
-  createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter);
+  createRuntimeSnapshot(
+    npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter,
+    skillGain, knowledgeLearned, identityChanges
+  );
 
   return {
     agentId: npc.id,
@@ -218,6 +264,9 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
     } : null,
     decisionTrace,
     memoryUpdates,
+    skillGain,
+    knowledgeLearned,
+    identityChanges,
     communicationTrace,
     manaBefore,
     manaAfter,
@@ -253,6 +302,7 @@ function commitFieldDynamics(worldObj) {
 function tickManager(npcs, worldObj, traceCollector) {
   const log = [];
   const agentTraces = [];
+  const previousIdentities = new Map(npcs.map(npc => [npc.id, beginIdentityFreeTick(npc)]));
   worldObj.tick = (worldObj.tick || 0) + 1;
 
   if (traceCollector && typeof traceCollector.beginTick === 'function') {
@@ -326,6 +376,13 @@ function tickManager(npcs, worldObj, traceCollector) {
   if (traceCollector?.current) {
     traceCollector.current.stability = stabilityTrace;
   }
+
+  npcs.forEach((npc, index) => {
+    const identityChanges = applyPostTickIdentity(npc, previousIdentities.get(npc.id));
+    const agentTrace = agentTraces[index];
+    if (agentTrace) agentTrace.identityChanges = identityChanges;
+    if (npc.runtime) npc.runtime.lastIdentityChanges = identityChanges;
+  });
 
   if (traceCollector && typeof traceCollector.endTick === 'function') {
     traceCollector.endTick();

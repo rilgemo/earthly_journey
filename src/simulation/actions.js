@@ -1,8 +1,4 @@
-const {
-  ACTION_PROFILES,
-  UNIVERSAL_ACTIONS,
-  getProfessionActions
-} = require('./actions/actionProfiles');
+const { ACTION_PROFILES } = require('./actions/actionProfiles');
 
 const ACTIONS = Object.freeze(
   Object.values(ACTION_PROFILES).map(profile => Object.freeze({
@@ -21,10 +17,7 @@ const ACTIONS = Object.freeze(
 const ACTIONS_BY_ID = new Map(ACTIONS.map(action => [action.id, action]));
 
 function getAvailableActions(agent) {
-  const allowed = new Set([...UNIVERSAL_ACTIONS, ...getProfessionActions(agent.role)]);
-
   return ACTIONS.filter(action => {
-    if (!allowed.has(action.id)) return false;
     if (action.profile.manaCost > 0 && agent.mana.current < action.profile.manaCost) return false;
     return true;
   });

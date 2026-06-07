@@ -22,16 +22,6 @@ const NEED_INFLUENCE_PROFILES = Object.freeze({
   safetyNeed: Object.freeze({ safety: 0.15 })
 });
 
-const ROLE_INFLUENCE_PROFILES = Object.freeze({
-  blacksmith: Object.freeze({ forge: 12, mine: 8, craft_item: 8 }),
-  apothecary: Object.freeze({ alchemy: 12, brew: 12 }),
-  mage: Object.freeze({ cast_magic: 12, study_arcane: 8, meditate: 6 }),
-  farmer: Object.freeze({ farm: 12, forage: 8, gather_water: 6 }),
-  hunter: Object.freeze({ hunt: 12, forage: 6, attack: 5, move: 4 }),
-  animal: Object.freeze({ forage: 4, move: 4, safety: 4 }),
-  monster: Object.freeze({ hunt: 8, attack: 8, safety: 4 })
-});
-
 const ACTION_INFLUENCE_PROFILES = Object.freeze({
   forage: Object.freeze(['forage', 'gather_herbs', 'resource']),
   rest: Object.freeze(['rest', 'safety']),
@@ -60,6 +50,5 @@ module.exports = {
   WORLD_FIELD_INFLUENCE_PROFILES,
   MEMORY_INFLUENCE_PROFILES,
   NEED_INFLUENCE_PROFILES,
-  ROLE_INFLUENCE_PROFILES,
   ACTION_INFLUENCE_PROFILES
 };

@@ -1,4 +1,7 @@
-function resolveIntent(intents) {
+const { assertNoIdentityLeak } = require('./identity/identityGuard');
+
+function resolveIntent(intents, context = {}) {
+  assertNoIdentityLeak({ intents, context });
   if (!intents.length) return null;
 
   return intents.reduce((best, intent) => {

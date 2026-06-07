@@ -17,6 +17,7 @@ For each world tick:
 4. Resolve conflicts.
 5. Commit world state.
 6. Update memory systems.
+7. Derive and freeze read-only identity observations.
 
 ## Layer Responsibilities
 
@@ -38,7 +39,9 @@ AI owns intention:
 - Needs
 - Memory
 - Personality
-- Skillset
+- Traits
+- Continuous skills
+- Knowledge
 - Utility model
 
 AI output is an intent, not a direct mutation.
@@ -115,7 +118,9 @@ Examples:
 - Failed hunt with injury -> reinforce risk awareness
 - Productive trade -> reinforce trust or economic preference
 
-Skill XP is a structured form of memory reinforcement.
+Successful behavior may produce small, diminishing continuous skill growth.
+Traits affect growth rates and knowledge affects learning efficiency. Derived
+identity and legacy profession metadata must not drive intent generation.
 
 ## Mutation Rule
 

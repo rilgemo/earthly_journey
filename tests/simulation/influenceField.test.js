@@ -7,9 +7,10 @@
 const {
   getWorldFieldInfluence,
   getObservedMemoryInfluence,
-  getSocialInfluence,
-  getRoleInfluence
+  getSocialInfluence
 } = require('../../src/simulation/influenceSources');
+const { createSkills } = require('../../src/simulation/skills/skillSystem');
+const { createTraits } = require('../../src/simulation/skills/traitSystem');
 const { createInfluenceField, getActionInfluence } = require('../../src/simulation/influenceField');
 const { generateIntents } = require('../../src/simulation/intentGenerator');
 const { resolveIntent } = require('../../src/simulation/resolutionModel');
@@ -25,7 +26,10 @@ function createAgent(role = 'mage') {
       stability: 0.8,
       affinity: { fire: 0, water: 0, earth: 0, arcane: 1 }
     },
-    memory: { bias: {} }
+    memory: { bias: {} },
+    skills: createSkills({ arcaneManipulation: 20 }),
+    traits: createTraits(() => 0.5),
+    knowledge: []
   };
 }
 
@@ -61,11 +65,6 @@ describe('Influence Field v1', () => {
     expect(heard.safety).toBe(5);
   });
 
-  test('role influence uses role profile', () => {
-    expect(getRoleInfluence('blacksmith').forge).toBeGreaterThan(0);
-    expect(getRoleInfluence('mage').cast_magic).toBeGreaterThan(0);
-  });
-
   test('influence aggregation combines all source pressures', () => {
     const influence = createInfluenceField({
       field: { fire: 5, water: 0, arcane: 5 },
@@ -74,7 +73,6 @@ describe('Influence Field v1', () => {
         { type: 'heard_magic', sourceType: 'heard', strength: 8 }
       ],
       needs: { hunger: 20, fatigue: 30, manaNeed: 40, socialNeed: 0, safetyNeed: 10 },
-      role: 'mage'
     });
 
     expect(influence.profile.cast_magic).toBeGreaterThan(5);
@@ -88,7 +86,7 @@ describe('Influence Field v1', () => {
     const world = { fields: { fire: 10, water: 2, arcane: 4 } };
     const before = JSON.parse(JSON.stringify(world));
 
-    const influence = createInfluenceField({ field: world.fields, role: 'blacksmith' });
+    const influence = createInfluenceField({ field: world.fields });
 
     expect(world).toEqual(before);
     expect(influence).not.toHaveProperty('selectedAction');
@@ -106,7 +104,6 @@ describe('Influence Field v1', () => {
       field: { fire: 0, water: 0, arcane: 10 },
       memories: [],
       needs: { hunger: 0, fatigue: 0, manaNeed: 0, socialNeed: 0, safetyNeed: 0 },
-      role: 'mage'
     });
 
     const intents = generateIntents(agent, actions, {

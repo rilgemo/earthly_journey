@@ -1,10 +1,10 @@
-const ROLE_WEIGHTS = {
-  farmer: { hunger: 1.1, fatigue: 0.8, manaNeed: 0.4, socialNeed: 0.2, safetyNeed: 0.8 },
-  mage: { hunger: 0.7, fatigue: 0.7, manaNeed: 1.4, socialNeed: 0.2, safetyNeed: 0.7 },
-  blacksmith: { hunger: 0.8, fatigue: 1.1, manaNeed: 0.3, socialNeed: 0.2, safetyNeed: 0.6 },
-  wolf: { hunger: 1.6, fatigue: 0.5, manaNeed: 0.1, socialNeed: 0.1, safetyNeed: 1.0 },
-  default: { hunger: 1, fatigue: 1, manaNeed: 1, socialNeed: 0.5, safetyNeed: 0.8 }
-};
+const NEED_WEIGHTS = Object.freeze({
+  hunger: 1,
+  fatigue: 1,
+  manaNeed: 1,
+  socialNeed: 0.5,
+  safetyNeed: 0.8
+});
 
 function toNeedScale(value) {
   if (typeof value !== 'number' || Number.isNaN(value)) return 0;
@@ -31,7 +31,7 @@ function getNeedProfile(agent) {
 
 function evaluateNeeds(agent) {
   const profile = getNeedProfile(agent);
-  const weights = ROLE_WEIGHTS[agent.role] || ROLE_WEIGHTS.default;
+  const weights = NEED_WEIGHTS;
   const weighted = Object.entries(profile).reduce((sum, [need, value]) => {
     return sum + (value * (weights[need] || 1));
   }, 0);

@@ -64,7 +64,12 @@ function snapshotWorld(world, agents) {
       topInfluences: agent.runtime?.lastTopInfluences || [],
       intents: agent.runtime?.lastIntents || [],
       selectedIntent: agent.runtime?.lastSelectedIntent || null,
-      decisionTrace: agent.runtime?.lastDecisionTrace || null
+      decisionTrace: agent.runtime?.lastDecisionTrace || null,
+      traits: { ...(agent.traits || {}) },
+      skills: { ...(agent.skills || {}) },
+      skillGain: agent.runtime?.lastSkillGain || [],
+      knowledgeCount: agent.knowledge?.length || 0,
+      identities: [...(agent.identities || [])]
     }))
   };
 }

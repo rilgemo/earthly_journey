@@ -52,9 +52,11 @@ Agents evolve through:
 
 - Experience accumulation
 - Reinforcement signals
-- Skill-like behavior adaptation
+- Continuous skill emergence from repeated behavior
 
-Skill XP is a structured form of memory reinforcement.
+Simulation-agent skills are continuous values, not XP or levels. Traits affect
+growth, knowledge improves learning efficiency, and identities are derived from
+skills. Profession is a spawn bootstrap only and must not drive runtime behavior.
 
 ## Code Guidelines
 
@@ -76,6 +78,7 @@ AI operating specification:
 - `/AI/EMERGENCE_TUNING.md`
 - `/AI/RESOLUTION_MODEL.md`
 - `/AI/TRACE_MODEL.md`
+- `/AI/SKILL_EMERGENCE_MODEL.md`
 - `/docs/01_core_architecture.md`
 - `/docs/02_agent_system.md`
 - `/docs/06_world_simulation.md`

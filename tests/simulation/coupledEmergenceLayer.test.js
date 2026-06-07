@@ -4,7 +4,9 @@ const { coupleSocialDensityToFields } = require('../../src/simulation/coupledEme
 const { imprintMemoryToFields } = require('../../src/simulation/coupledEmergence/memoryFieldImprint');
 const { emergenceTickHook } = require('../../src/simulation/coupledEmergence/emergenceTickHook');
 const { tickManager } = require('../../src/simulation/tickManager');
-const { ACTION_PROFILES, PROFESSION_ACTIONS } = require('../../src/simulation/actions/actionProfiles');
+const { ACTION_PROFILES } = require('../../src/simulation/actions/actionProfiles');
+const { createProfessionBootstrap } = require('../../src/simulation/skills/skillSystem');
+const { createTraits } = require('../../src/simulation/skills/traitSystem');
 
 function createWorld() {
   const area = createArea('town', { fire: 1 }, {
@@ -41,7 +43,11 @@ function createMage() {
       affinity: { arcane: 1 }
     },
     memory: { shortTerm: [], longTerm: [], recentEvents: [], bias: {} },
-    trustMap: {}
+    trustMap: {},
+    traits: createTraits(() => 0.5),
+    skills: createProfessionBootstrap('mage'),
+    knowledge: [],
+    identities: []
   };
 }
 
@@ -117,7 +123,7 @@ describe('Coupled Emergence Layer v1', () => {
       tileId: 'town',
       source: 'activity'
     });
-    expect(PROFESSION_ACTIONS.mage).toContain(selectedAction);
+    expect(['cast_magic', 'channel_arcane', 'study_arcane', 'meditate']).toContain(selectedAction);
     expect(world.fieldPerturbationQueue[0].perturbation.arcane).toBe(queuedArcane);
     const firstFinalArcane = world.lastFieldDynamicsTrace.finalFieldState.town.arcane;
 

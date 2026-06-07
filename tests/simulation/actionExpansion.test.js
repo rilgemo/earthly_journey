@@ -3,14 +3,14 @@ const registryJson = require('../../AI/action_registry.json');
 const { ACTIONS, getAvailableActions } = require('../../src/simulation/actions');
 const {
   ACTION_PROFILES,
-  PROFESSION_ACTIONS
 } = require('../../src/simulation/actions/actionProfiles');
 const { createInfluenceField } = require('../../src/simulation/influenceField');
 const { generateIntents } = require('../../src/simulation/intentGenerator');
-const { resolveIntent } = require('../../src/simulation/resolutionModel');
 const { tickManager } = require('../../src/simulation/tickManager');
 const { createArea } = require('../../src/simulation/worldField');
 const { createPlayableWorldSlice } = require('../../src/simulation/scenarios/playableWorldSlice');
+const { createProfessionBootstrap } = require('../../src/simulation/skills/skillSystem');
+const { createTraits } = require('../../src/simulation/skills/traitSystem');
 
 const EXPECTED_ACTIONS = [
   'forage', 'rest', 'move',
@@ -21,7 +21,7 @@ const EXPECTED_ACTIONS = [
 ];
 
 function createAgent(role) {
-  return {
+  const agent = {
     id: `${role}-1`,
     role,
     location: 'tile',
@@ -38,6 +38,10 @@ function createAgent(role) {
     memory: { shortTerm: [], longTerm: [], recentEvents: [], bias: {} },
     trustMap: {}
   };
+  agent.skills = createProfessionBootstrap(role);
+  agent.traits = createTraits(() => 0.5);
+  agent.knowledge = [];
+  return agent;
 }
 
 function createWorld(field = {}) {
@@ -56,23 +60,20 @@ function createWorld(field = {}) {
   };
 }
 
-function selectForRole(role) {
+function intentsForBootstrap(role) {
   const agent = createAgent(role);
   const actions = getAvailableActions(agent);
   const influence = createInfluenceField({
-    role,
     field: {},
     memories: [],
     needs: agent.needs
   });
-  const intents = generateIntents(agent, actions, {
+  return generateIntents(agent, actions, {
     perception: { field: {}, nearbyAgents: [] },
     memories: [],
     needs: { profile: agent.needs },
     influenceProfile: influence.profile
   });
-
-  return resolveIntent(intents).intent;
 }
 
 describe('Action Space Expansion v1', () => {
@@ -109,11 +110,14 @@ describe('Action Space Expansion v1', () => {
     expect(new Set(signatures).size).toBe(signatures.length);
   });
 
-  test('professions bias role-specific action selection', () => {
-    expect(PROFESSION_ACTIONS.farmer).toContain(selectForRole('farmer'));
-    expect(PROFESSION_ACTIONS.hunter).toContain(selectForRole('hunter'));
-    expect(PROFESSION_ACTIONS.blacksmith).toContain(selectForRole('blacksmith'));
-    expect(PROFESSION_ACTIONS.mage).toContain(selectForRole('mage'));
+  test('profession bootstrap only seeds skills that bias matching actions', () => {
+    const score = (role, actionId) => intentsForBootstrap(role)
+      .find(intent => intent.intent === actionId).components.skillScore;
+
+    expect(score('farmer', 'farm')).toBeGreaterThan(score('mage', 'farm'));
+    expect(score('hunter', 'hunt')).toBeGreaterThan(score('farmer', 'hunt'));
+    expect(score('blacksmith', 'forge')).toBeGreaterThan(score('hunter', 'forge'));
+    expect(score('mage', 'study_arcane')).toBeGreaterThan(score('blacksmith', 'study_arcane'));
   });
 
   test('mage cast_magic increases arcane instability through tickManager', () => {

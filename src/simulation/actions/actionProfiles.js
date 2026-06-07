@@ -24,17 +24,6 @@ const ACTION_PROFILES = Object.freeze({
   flee: profile('flee', 'combat', { air: 0.08 }, 0, 0.4, 8, 0, 'safety')
 });
 
-const PROFESSION_ACTIONS = Object.freeze({
-  farmer: Object.freeze(['farm', 'forage', 'gather_water']),
-  hunter: Object.freeze(['hunt', 'forage', 'move', 'attack']),
-  blacksmith: Object.freeze(['forge', 'mine', 'craft_item']),
-  mage: Object.freeze(['cast_magic', 'study_arcane', 'meditate']),
-  animal: Object.freeze(['forage', 'move', 'flee']),
-  monster: Object.freeze(['hunt', 'move', 'attack', 'defend'])
-});
-
-const UNIVERSAL_ACTIONS = Object.freeze(['rest', 'move', 'communicate', 'share_information']);
-
 function profile(actionId, category, fieldAffinity, socialWeight, riskLevel, staminaCost, manaCost, expectedOutcomeBias) {
   return Object.freeze({
     actionId,
@@ -48,18 +37,6 @@ function profile(actionId, category, fieldAffinity, socialWeight, riskLevel, sta
   });
 }
 
-function getProfessionActions(role) {
-  return PROFESSION_ACTIONS[role] || ['forage', 'rest', 'move', 'communicate'];
-}
-
-function getProfessionBias(role, actionId) {
-  return getProfessionActions(role).includes(actionId) ? 6 : 0;
-}
-
 module.exports = {
-  ACTION_PROFILES,
-  PROFESSION_ACTIONS,
-  UNIVERSAL_ACTIONS,
-  getProfessionActions,
-  getProfessionBias
+  ACTION_PROFILES
 };

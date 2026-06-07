@@ -4,17 +4,15 @@ const {
   getWorldFieldInfluence,
   getObservedMemoryInfluence,
   getSocialInfluence,
-  getNeedInfluence,
-  getRoleInfluence
+  getNeedInfluence
 } = require('./influenceSources');
 
-function createInfluenceField({ field = {}, memories = [], needs = {}, role } = {}) {
+function createInfluenceField({ field = {}, memories = [], needs = {} } = {}) {
   const sources = {
     world: getWorldFieldInfluence(field),
     memory: getObservedMemoryInfluence(memories),
     social: getSocialInfluence(memories),
-    needs: getNeedInfluence(needs),
-    role: getRoleInfluence(role)
+    needs: getNeedInfluence(needs)
   };
 
   const profile = Object.values(sources).reduce((result, source) => {

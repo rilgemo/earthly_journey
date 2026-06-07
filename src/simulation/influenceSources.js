@@ -1,8 +1,7 @@
 const {
   WORLD_FIELD_INFLUENCE_PROFILES,
   MEMORY_INFLUENCE_PROFILES,
-  NEED_INFLUENCE_PROFILES,
-  ROLE_INFLUENCE_PROFILES
+  NEED_INFLUENCE_PROFILES
 } = require('./influenceProfiles');
 const { isHeardMemory } = require('./socialMemory');
 
@@ -49,15 +48,10 @@ function getNeedInfluence(needProfile = {}) {
   }, {});
 }
 
-function getRoleInfluence(role) {
-  return { ...(ROLE_INFLUENCE_PROFILES[role] || {}) };
-}
-
 module.exports = {
   mergeInfluence,
   getWorldFieldInfluence,
   getObservedMemoryInfluence,
   getSocialInfluence,
-  getNeedInfluence,
-  getRoleInfluence
+  getNeedInfluence
 };
