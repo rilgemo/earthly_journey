@@ -4,6 +4,7 @@ import AgentTypologyPanel from './panels/AgentTypologyPanel';
 import DecisionPanel from './panels/DecisionPanel';
 import FieldDynamicsPanel from './panels/FieldDynamicsPanel';
 import CoupledEmergencePanel from './panels/CoupledEmergencePanel';
+import IntentDebugPanel from './panels/IntentDebugPanel';
 import StabilityPanel from './panels/StabilityPanel';
 import ScenarioSummaryPanel from './panels/ScenarioSummaryPanel';
 import ActionPanel from './panels/ActionPanel';
@@ -56,6 +57,7 @@ export default function SimulationInspector({ world, trace, replay, semanticRepo
         <AgentPanel world={world} />
         <AgentTypologyPanel trace={trace} world={world} />
         <DecisionPanel world={world} />
+        <IntentDebugPanel trace={trace} world={world} />
         <FieldDynamicsPanel world={world} />
         <CoupledEmergencePanel world={world} />
         <StabilityPanel world={world} />

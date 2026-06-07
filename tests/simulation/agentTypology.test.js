@@ -83,8 +83,7 @@ describe('Agent Typology System v1', () => {
   test('typology does not modify runtime execution order', () => {
     const source = simulateAgent.toString();
 
-    expect(source.indexOf('generateIntents')).toBeLessThan(source.indexOf('resolveIntent'));
-    expect(source.indexOf('resolveIntent')).toBeLessThan(source.indexOf('applyActionEffects'));
+    expect(source.indexOf('intentPipeline.execute')).toBeLessThan(source.indexOf('applyActionEffects'));
     expect(source.indexOf('applyActionEffects')).toBeLessThan(source.indexOf('recordActionOutcome'));
   });
 

@@ -4,9 +4,8 @@ const { ACTION_REGISTRY } = require('./actionRegistry');
 const { decayAgentMemory } = require('./memoryDecay');
 const { ensureMemory, recallMemories, recordActionOutcome, recordMemory } = require('./memorySystem');
 const { advanceNeeds, evaluateNeeds } = require('./needSystem');
-const { generateIntents } = require('./intentGenerator');
+const intentPipeline = require('./intent/intentPipeline');
 const { createInfluenceField } = require('./influenceField');
-const { resolveIntent } = require('./resolutionModel');
 const { prepareInformationTransfer } = require('./communicationSystem');
 const { computeActionYield } = require('./actionYield/actionYieldEngine');
 const { runResourceFlowTick } = require('./resourceFlow/resourceFlowEngine');
@@ -99,7 +98,7 @@ function filterRegisteredActions(actions) {
   return { registeredActions, rejectedProposals };
 }
 
-function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter, skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot) {
+function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter, skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot, intentTrace) {
   npc.runtime = {
     lastNeeds: needs.profile,
     lastNeedUrgency: needs.urgency,
@@ -118,7 +117,8 @@ function createRuntimeSnapshot(npc, needs, memories, influenceField, intents, se
     lastSkillGain: skillGain,
     lastKnowledgeLearned: knowledgeLearned,
     lastIdentityChanges: identityChanges,
-    lastAgentTypologySnapshot: agentTypologySnapshot
+    lastAgentTypologySnapshot: agentTypologySnapshot,
+    lastIntentTrace: intentTrace
   };
 }
 
@@ -138,14 +138,15 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   });
   const rawActions = getAvailableActions(decisionAgent);
   const { registeredActions, rejectedProposals } = filterRegisteredActions(rawActions);
-  const intents = generateIntents(decisionAgent, registeredActions, {
+  const pipelineResult = intentPipeline.execute(decisionAgent, registeredActions, {
     perception,
     memories,
     needs,
     influenceProfile: influenceField.profile,
     demandIndex: worldObj.demandIndex || {}
   });
-  const selectedIntent = resolveIntent(intents);
+  const intents = pipelineResult.enrichedIntents;
+  const selectedIntent = pipelineResult.finalIntent;
   const agentTypologySnapshot = buildAgentTypologySnapshot(npc, intents.map(intent => ({
     action: intent.intent,
     category: intent.category,
@@ -248,7 +249,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   const needAfter = advanceNeeds(npc);
   createRuntimeSnapshot(
     npc, needs, memories, influenceField, intents, selectedIntent, decisionTrace, needAfter,
-    skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot
+    skillGain, knowledgeLearned, identityChanges, agentTypologySnapshot, pipelineResult.intentTrace
   );
 
   return {
@@ -283,6 +284,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
         .map(intent => ({ action: intent.intent, reason: `lower score ${intent.score.toFixed(2)}` }))
     } : null,
     decisionTrace,
+    intentTrace: pipelineResult.intentTrace,
     actionYieldSnapshot,
     memoryUpdates,
     skillGain,

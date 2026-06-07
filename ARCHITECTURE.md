@@ -31,6 +31,7 @@ Simulation AI operating rules are defined in `/AI`.
 - [AI/RESOLUTION_MODEL.md](AI/RESOLUTION_MODEL.md) - Final intent arbitration and explainable decision selection
 - [AI/TRACE_MODEL.md](AI/TRACE_MODEL.md) - Observability, replay, and emergence debugging
 - [AI/AGENT_TYPOLOGY_MODEL.md](AI/AGENT_TYPOLOGY_MODEL.md) - Agent causal participation profiles and typology weighting
+- [AI/INTENT_PURITY_BOUNDARY.md](AI/INTENT_PURITY_BOUNDARY.md) - Pure scoring and controlled enrichment boundary for intents
 - [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index
 
 ## Authority Boundary
