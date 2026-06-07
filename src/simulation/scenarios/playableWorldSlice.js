@@ -1,6 +1,7 @@
 const { createNPC } = require('../agentModel');
 const { validateEntity } = require('../entitySchema');
 const { createFieldState } = require('../elementalField/fieldState');
+const { generateResourceMap } = require('../resourceGeography/resourceGenerator');
 const { createArea } = require('../worldField');
 
 const SCENARIO_NAME = 'Playable World Slice v1';
@@ -40,7 +41,7 @@ function tileId(x, y) {
   return `tile-${x}-${y}`;
 }
 
-function createScenarioWorld() {
+function createScenarioWorld(seed = 12345) {
   const areas = new Map();
   const terrainLocations = {
     village: [],
@@ -75,6 +76,7 @@ function createScenarioWorld() {
     width: WORLD_SIZE,
     height: WORLD_SIZE,
     areas,
+    resourceMap: generateResourceMap({ width: WORLD_SIZE, height: WORLD_SIZE, seed }),
     terrainLocations,
     fieldPerturbationQueue: [],
     fieldDynamicsConfig: {
@@ -163,7 +165,7 @@ function spawnScenarioAgents(world, rng) {
 
 function createPlayableWorldSlice({ seed = 12345 } = {}) {
   const rng = createSeededRandom(seed);
-  const world = createScenarioWorld();
+  const world = createScenarioWorld(seed);
   const agents = spawnScenarioAgents(world, rng);
 
   return {

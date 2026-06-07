@@ -3,11 +3,14 @@ const { createNPC } = require('./agentModel');
 const { tickManager } = require('./tickManager');
 const { TraceCollector } = require('./traceCollector');
 const { ReplayBuffer } = require('./replayBuffer');
+const { generateResourceMap } = require('./resourceGeography/resourceGenerator');
+const { getWorldResourceSnapshot } = require('./resourceGeography/resourceSnapshot');
 
 function createInspectorWorld() {
   const world = {
     tick: 0,
     areas: new Map(),
+    resourceMap: generateResourceMap({ width: 3, height: 1, seed: 7 }),
     addArea(area) {
       this.areas.set(area.id, area);
     },
@@ -54,6 +57,7 @@ function snapshotWorld(world, agents, behaviorSignatures = {}, settlementSnapsho
     demandHistory: (world.demandHistory || []).slice(),
     behaviorSignatures,
     settlements: settlementSnapshot,
+    resourceGeography: getWorldResourceSnapshot(world),
     agents: agents.map(agent => ({
       id: agent.id,
       name: agent.id,

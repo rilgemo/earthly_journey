@@ -25,6 +25,8 @@ This project uses a DF x AI hybrid simulation model.
 - [REALITY_PERCEPTION_DRIFT_MODEL.md](REALITY_PERCEPTION_DRIFT_MODEL.md) - Bounded cognitive drift and rumor stability diagnostics
 - [BEHAVIORAL_SIGNATURE_MODEL.md](BEHAVIORAL_SIGNATURE_MODEL.md) - Observational action-sequence analytics with no runtime influence
 - [WORLD_DEMAND_SYSTEM.md](WORLD_DEMAND_SYSTEM.md) - Smoothed settlement pressure and additive opportunity signals
+- [RESOURCE_GEOGRAPHY_MODEL.md](RESOURCE_GEOGRAPHY_MODEL.md) - Seeded environmental resource topology and read-only snapshots
+- [ACTION_YIELD_MODEL.md](ACTION_YIELD_MODEL.md) - Environmental action outcome magnitude, not decision logic
 - [SETTLEMENT_EMERGENCE_MODEL.md](SETTLEMENT_EMERGENCE_MODEL.md) - Read-only spatial clustering of persistent activity
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 

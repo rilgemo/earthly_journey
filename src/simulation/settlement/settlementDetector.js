@@ -76,7 +76,9 @@ class SettlementDetector {
       }
     });
 
-    const demandIndex = this.history[this.history.length - 1]?.demand?.index || {};
+    const latestTrace = this.history[this.history.length - 1] || {};
+    const demandIndex = latestTrace.demand?.index || {};
+    const resourceMetrics = latestTrace.resourceGeography?.metrics || null;
     const detected = clusterTiles(activeTiles, this.config.neighborDistance).map((tiles, index) => {
       const entries = tiles.flatMap(tileId => activeTiles[tileId]);
       const centerPoint = calculateCenterPoint(tiles);
@@ -111,9 +113,10 @@ class SettlementDetector {
     this.previousSettlements = cloneSnapshot(evolved.settlements);
     return freezeSnapshot({
       tick: this.history[this.history.length - 1]?.tickId || 0,
-      settlements: evolved.settlements,
-      clusterHeatmap: heatmap,
-      events: evolved.events
+        settlements: evolved.settlements,
+        clusterHeatmap: heatmap,
+        resourceMetrics,
+        events: evolved.events
     });
   }
 

@@ -6,11 +6,13 @@ import CoupledEmergencePanel from './panels/CoupledEmergencePanel';
 import StabilityPanel from './panels/StabilityPanel';
 import ScenarioSummaryPanel from './panels/ScenarioSummaryPanel';
 import ActionPanel from './panels/ActionPanel';
+import ActionYieldPanel from './panels/ActionYieldPanel';
 import SkillPanel from './panels/SkillPanel';
 import PerceptionDriftPanel from './panels/PerceptionDriftPanel';
 import BehaviorPanel from './panels/BehaviorPanel';
 import DemandPanel from './panels/DemandPanel';
 import SettlementPanel from './panels/SettlementPanel';
+import ResourceGeographyPanel from './panels/ResourceGeographyPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
@@ -53,10 +55,12 @@ export default function SimulationInspector({ world, trace, replay }) {
         <StabilityPanel world={world} />
         <ScenarioSummaryPanel world={world} />
         <ActionPanel trace={trace} />
+        <ActionYieldPanel trace={trace} />
         <SkillPanel world={world} />
         <PerceptionDriftPanel world={world} />
         <BehaviorPanel world={world} />
         <DemandPanel world={world} />
+        <ResourceGeographyPanel world={world} />
         <SettlementPanel world={world} />
       </div>
     </section>

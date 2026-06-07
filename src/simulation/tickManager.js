@@ -8,6 +8,7 @@ const { generateIntents } = require('./intentGenerator');
 const { createInfluenceField } = require('./influenceField');
 const { resolveIntent } = require('./resolutionModel');
 const { prepareInformationTransfer } = require('./communicationSystem');
+const { computeActionYield } = require('./actionYield/actionYieldEngine');
 const { createDecisionTrace } = require('./decisionTrace');
 const { createFieldDelta, createFieldState } = require('./elementalField/fieldState');
 const { runFieldDynamicsTick } = require('./elementalField/fieldDynamicsTick');
@@ -157,6 +158,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   let skillGain = [];
   let identityChanges = { before: [], after: [], added: [], removed: [] };
   let communicationTrace = null;
+  let actionYieldSnapshot = null;
 
   if (selected) {
     if (!actionRegistry.has(selected.id)) {
@@ -198,6 +200,13 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
         updateManaAfterAction(npc, selected, perception.field);
         queueWorldFeedback(npc, worldObj);
       }
+
+      actionYieldSnapshot = computeActionYield(selected, {
+        world: worldObj,
+        tileId: npc.location,
+        field: perception.field,
+        actionHistory: npc.memory?.recentEvents || []
+      });
 
       recordActionOutcome(npc, selected.id, worldObj.tick || 0, 8);
       memoryUpdates.push({ type: 'success', action: selected.id, value: 8 });
@@ -266,6 +275,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
         .map(intent => ({ action: intent.intent, reason: `lower score ${intent.score.toFixed(2)}` }))
     } : null,
     decisionTrace,
+    actionYieldSnapshot,
     memoryUpdates,
     skillGain,
     knowledgeLearned,

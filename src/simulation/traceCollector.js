@@ -1,6 +1,7 @@
 const { BehaviorTraceRecorder } = require('./behavior/behaviorTraceRecorder');
 const { createBehavioralSignatures } = require('./behavior/behavioralSignature');
 const { cloneSnapshot } = require('./replayBuffer');
+const { getWorldResourceSnapshot } = require('./resourceGeography/resourceSnapshot');
 const { SettlementDetector } = require('./settlement/settlementDetector');
 
 class TraceCollector {
@@ -21,6 +22,7 @@ class TraceCollector {
       },
       agents: []
     };
+    this.current.resourceGeography = getWorldResourceSnapshot(world);
     // shallow copy of fields per area
     for (const [id, area] of world.areas.entries()) {
       this.current.worldSnapshot[id] = { field: Object.assign({}, area.field) };
