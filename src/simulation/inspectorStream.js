@@ -27,7 +27,7 @@ function createInspectorWorld() {
   return world;
 }
 
-function snapshotWorld(world, agents, behaviorSignatures = {}) {
+function snapshotWorld(world, agents, behaviorSignatures = {}, settlementSnapshot = null) {
   const areas = Array.from(world.areas.entries()).map(([id, area]) => ({
     id,
     field: { ...area.field },
@@ -53,6 +53,7 @@ function snapshotWorld(world, agents, behaviorSignatures = {}) {
     demand: world.demandIndex || null,
     demandHistory: (world.demandHistory || []).slice(),
     behaviorSignatures,
+    settlements: settlementSnapshot,
     agents: agents.map(agent => ({
       id: agent.id,
       name: agent.id,
@@ -93,7 +94,12 @@ export function createInspectorSimulationStream({ intervalMs = 2000, maxTraces =
     const replayFrames = replayBuffer.getAll();
     const latestTrace = traceCollector.getLatest();
     const payload = {
-      world: snapshotWorld(world, agents, traceCollector.getBehaviorSignatures()),
+      world: snapshotWorld(
+        world,
+        agents,
+        traceCollector.getBehaviorSignatures(),
+        traceCollector.getSettlementSnapshot()
+      ),
       trace: traceCollector.getAll(),
       latestTrace,
       replayFrames,
@@ -107,7 +113,12 @@ export function createInspectorSimulationStream({ intervalMs = 2000, maxTraces =
     tickManager(agents, world, traceCollector);
     replayBuffer.push({
       tick: world.tick || 0,
-      worldSnapshot: snapshotWorld(world, agents, traceCollector.getBehaviorSignatures()),
+      worldSnapshot: snapshotWorld(
+        world,
+        agents,
+        traceCollector.getBehaviorSignatures(),
+        traceCollector.getSettlementSnapshot()
+      ),
       trace: traceCollector.getAll(),
       timestamp: Date.now()
     });
@@ -118,7 +129,12 @@ export function createInspectorSimulationStream({ intervalMs = 2000, maxTraces =
     onTick(listener) {
       listeners.add(listener);
       listener({
-        world: snapshotWorld(world, agents, traceCollector.getBehaviorSignatures()),
+        world: snapshotWorld(
+          world,
+          agents,
+          traceCollector.getBehaviorSignatures(),
+          traceCollector.getSettlementSnapshot()
+        ),
         trace: traceCollector.getAll(),
         latestTrace: traceCollector.getLatest(),
         replayFrames: replayBuffer.getAll(),
@@ -139,7 +155,12 @@ export function createInspectorSimulationStream({ intervalMs = 2000, maxTraces =
     step,
     getSnapshot() {
       return {
-        world: snapshotWorld(world, agents, traceCollector.getBehaviorSignatures()),
+        world: snapshotWorld(
+          world,
+          agents,
+          traceCollector.getBehaviorSignatures(),
+          traceCollector.getSettlementSnapshot()
+        ),
         trace: traceCollector.getAll(),
         latestTrace: traceCollector.getLatest(),
         replayFrames: replayBuffer.getAll(),

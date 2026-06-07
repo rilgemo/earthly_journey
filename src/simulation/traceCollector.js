@@ -1,13 +1,15 @@
 const { BehaviorTraceRecorder } = require('./behavior/behaviorTraceRecorder');
 const { createBehavioralSignatures } = require('./behavior/behavioralSignature');
 const { cloneSnapshot } = require('./replayBuffer');
+const { SettlementDetector } = require('./settlement/settlementDetector');
 
 class TraceCollector {
-  constructor(max = 200, behaviorWindow = 100) {
+  constructor(max = 200, behaviorWindow = 100, settlementConfig = {}) {
     this.traces = [];
     this.max = max;
     this.current = null;
     this.behaviorRecorder = new BehaviorTraceRecorder(behaviorWindow);
+    this.settlementDetector = new SettlementDetector(settlementConfig);
   }
 
   beginTick(tickId, world) {
@@ -33,6 +35,7 @@ class TraceCollector {
 
   endTick() {
     if (!this.current) return null;
+    this.current.settlements = this.settlementDetector.recordTick(this.current);
     this.traces.push(this.current);
     if (this.traces.length > this.max) this.traces.shift();
     const ret = this.current;
@@ -59,6 +62,10 @@ class TraceCollector {
 
   getBehaviorSignatures() {
     return createBehavioralSignatures(this.getBehaviorHistory());
+  }
+
+  getSettlementSnapshot() {
+    return this.settlementDetector.getSnapshot();
   }
 }
 
