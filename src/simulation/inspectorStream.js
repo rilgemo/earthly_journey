@@ -49,6 +49,7 @@ function snapshotWorld(world, agents) {
     coupledEmergence: world.lastEmergenceTrace || null,
     stability: world.lastStabilityTrace || null,
     stabilityHistory: (world.stabilityHistory || []).slice(),
+    scenarioSummary: world.scenarioSummary || null,
     agents: agents.map(agent => ({
       id: agent.id,
       name: agent.role || agent.id,

@@ -11,14 +11,14 @@ const { resolveIntent } = require('../../src/simulation/resolutionModel');
 function createCandidates() {
   return [
     {
-      intent: 'rest_camp',
+      intent: 'rest',
       category: 'rest',
       score: 15,
       components: { base: 5, needScore: 8, influenceScore: 2 },
       reasonTrace: ['base:5', 'need:8', 'influence:2']
     },
     {
-      intent: 'cast_spark',
+      intent: 'cast_magic',
       category: 'magic',
       score: 42,
       components: { base: 10, roleScore: 12, influenceScore: 20 },
@@ -49,24 +49,24 @@ describe('Decision Inspector v1', () => {
     const inspection = inspectDecision(createTrace());
 
     expect(inspection.candidateRanking).toHaveLength(2);
-    expect(inspection.candidateRanking[0].intent).toBe('cast_spark');
-    expect(inspection.candidateRanking[1].intent).toBe('rest_camp');
+    expect(inspection.candidateRanking[0].intent).toBe('cast_magic');
+    expect(inspection.candidateRanking[1].intent).toBe('rest');
   });
 
   test('candidate breakdown is generated', () => {
     const inspection = inspectDecision(createTrace());
 
-    expect(inspection.breakdown.cast_spark.base).toBe(10);
-    expect(inspection.breakdown.cast_spark.roleScore).toBe(12);
-    expect(inspection.breakdown.cast_spark.influenceScore).toBe(20);
+    expect(inspection.breakdown.cast_magic.base).toBe(10);
+    expect(inspection.breakdown.cast_magic.roleScore).toBe(12);
+    expect(inspection.breakdown.cast_magic.influenceScore).toBe(20);
     expect(inspection.influenceContributions.sources.role.cast_magic).toBe(12);
   });
 
   test('selected intent matches resolution result', () => {
     const inspection = inspectDecision(createTrace());
 
-    expect(inspection.selected).toBe('cast_spark');
-    expect(inspection.resolutionResult.selectedIntent).toBe('cast_spark');
+    expect(inspection.selected).toBe('cast_magic');
+    expect(inspection.resolutionResult.selectedIntent).toBe('cast_magic');
     expect(inspection.resolutionResult.finalScore).toBe(42);
   });
 
@@ -81,7 +81,7 @@ describe('Decision Inspector v1', () => {
     const inspection = inspectDecision(trace);
 
     expect(Object.isFrozen(trace)).toBe(true);
-    expect(Object.isFrozen(trace.breakdown.cast_spark)).toBe(true);
+    expect(Object.isFrozen(trace.breakdown.cast_magic)).toBe(true);
     expect(Object.isFrozen(inspection)).toBe(true);
     expect(Object.isFrozen(inspection.candidateRanking)).toBe(true);
 

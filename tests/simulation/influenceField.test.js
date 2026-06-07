@@ -93,14 +93,14 @@ describe('Influence Field v1', () => {
     expect(world).toEqual(before);
     expect(influence).not.toHaveProperty('selectedAction');
     expect(influence).not.toHaveProperty('execute');
-    expect(typeof getActionInfluence('cast_spark', influence.profile)).toBe('number');
+    expect(typeof getActionInfluence('cast_magic', influence.profile)).toBe('number');
   });
 
   test('RESOLUTION_MODEL remains final selection authority', () => {
     const agent = createAgent('mage');
     const actions = [
-      { id: 'forage', type: 'work', baseUtility: 1 },
-      { id: 'cast_spark', type: 'magic', baseUtility: 1 }
+      { id: 'forage', type: 'survival', baseUtility: 1 },
+      { id: 'cast_magic', type: 'magic', baseUtility: 1 }
     ];
     const influence = createInfluenceField({
       field: { fire: 0, water: 0, arcane: 10 },
@@ -118,6 +118,6 @@ describe('Influence Field v1', () => {
 
     expect(intents).toHaveLength(2);
     expect(intents).not.toHaveProperty('selectedAction');
-    expect(resolveIntent(intents).intent).toBe('cast_spark');
+    expect(resolveIntent(intents).intent).toBe('cast_magic');
   });
 });

@@ -21,16 +21,16 @@ describe('Test 1: Action Registry Enforcement', () => {
       expect(isRegisteredAction('forage')).toBe(true);
     });
 
-    test('registered action "rest_camp" passes', () => {
-      expect(isRegisteredAction('rest_camp')).toBe(true);
+    test('registered action "rest" passes', () => {
+      expect(isRegisteredAction('rest')).toBe(true);
     });
 
-    test('registered action "cast_spark" passes', () => {
-      expect(isRegisteredAction('cast_spark')).toBe(true);
+    test('registered action "cast_magic" passes', () => {
+      expect(isRegisteredAction('cast_magic')).toBe(true);
     });
 
-    test('registered action "travel" passes', () => {
-      expect(isRegisteredAction('travel')).toBe(true);
+    test('registered action "move" passes', () => {
+      expect(isRegisteredAction('move')).toBe(true);
     });
 
     test('registered action "share_information" passes', () => {
@@ -46,7 +46,9 @@ describe('Test 1: Action Registry Enforcement', () => {
     });
 
     test('ACTION_REGISTRY is frozen at runtime', () => {
-      expect(ACTION_REGISTRY).toEqual(['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information']);
+      expect(ACTION_REGISTRY).toContain('farm');
+      expect(ACTION_REGISTRY).toContain('forge');
+      expect(ACTION_REGISTRY).toContain('attack');
     });
 
   });
@@ -88,7 +90,7 @@ describe('Test 1: Action Registry Enforcement', () => {
     });
 
     test('all valid actions execute', () => {
-      const valid = ['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information'];
+      const valid = ['forage', 'rest', 'cast_magic', 'move', 'share_information'];
       valid.forEach(action => {
         const result = contract.executeIntent({ action });
         expect(result.executed).toBe(true);
@@ -98,7 +100,7 @@ describe('Test 1: Action Registry Enforcement', () => {
     test('history tracks all rejections', () => {
       contract.executeIntent({ action: 'forage' });        // ok
       contract.executeIntent({ action: 'bad_action' });    // reject
-      contract.executeIntent({ action: 'rest_camp' });     // ok
+      contract.executeIntent({ action: 'rest' });     // ok
       contract.executeIntent({ action: 'illegal' });       // reject
 
       const history = contract.getHistory();

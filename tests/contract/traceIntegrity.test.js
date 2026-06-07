@@ -33,7 +33,7 @@ describe('Test 3: Trace Integrity', () => {
     test('all rejected traces in history have reasons', () => {
       contract.executeIntent({ action: 'forage' });           // valid
       contract.executeIntent({ action: 'hack1' });            // invalid
-      contract.executeIntent({ action: 'rest_camp' });        // valid
+      contract.executeIntent({ action: 'rest' });        // valid
       contract.executeIntent({ action: 'hack2' });            // invalid
       contract.executeIntent({ action: 'invalid_action' });   // invalid
 
@@ -152,7 +152,7 @@ describe('Test 3: Trace Integrity', () => {
 
     test('history is ordered chronologically', () => {
       contract.executeIntent({ action: 'forage' });
-      contract.executeIntent({ action: 'rest_camp' });
+      contract.executeIntent({ action: 'rest' });
       contract.executeIntent({ action: 'invalid' });
 
       const history = contract.getHistory();

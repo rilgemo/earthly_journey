@@ -56,7 +56,7 @@ describe('Test 2: Execution Contract', () => {
     });
 
     test('valid action never rejected', () => {
-      const validActions = ['forage', 'rest_camp', 'cast_spark', 'travel', 'share_information'];
+      const validActions = ['forage', 'rest', 'cast_magic', 'move', 'share_information'];
       validActions.forEach(action => {
         const result = contract.executeIntent({ action });
         expect(result.actionRejected).toBe(false);
@@ -163,7 +163,7 @@ describe('Test 2: Execution Contract', () => {
     test('contract maintains execution history', () => {
       contract.executeIntent({ action: 'forage' });
       contract.executeIntent({ action: 'invalid' });
-      contract.executeIntent({ action: 'rest_camp' });
+      contract.executeIntent({ action: 'rest' });
       
       const history = contract.getHistory();
       expect(history).toHaveLength(3);

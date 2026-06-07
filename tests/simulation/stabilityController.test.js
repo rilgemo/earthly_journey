@@ -60,10 +60,10 @@ describe('Stability Controller v1', () => {
   test('emergence amplification is reduced under instability', () => {
     const result = runStabilityController(highInstabilityInput());
     const unregulated = emergenceTickHook({
-      agentLog: [{ action: 'cast_spark', tileId: 'town' }]
+      agentLog: [{ action: 'cast_magic', tileId: 'town' }]
     });
     const regulated = emergenceTickHook({
-      agentLog: [{ action: 'cast_spark', tileId: 'town' }],
+      agentLog: [{ action: 'cast_magic', tileId: 'town' }],
       config: { gains: result.adjustedGains }
     });
 
@@ -108,7 +108,7 @@ describe('Stability Controller v1', () => {
 
   test('controller does not interfere with agent decisions', () => {
     const input = highInstabilityInput();
-    input.agentLog = [{ action: 'cast_spark', selectedIntent: 'cast_spark', score: 42 }];
+    input.agentLog = [{ action: 'cast_magic', selectedIntent: 'cast_magic', score: 42 }];
     const decisionsBefore = JSON.parse(JSON.stringify(input.agentLog));
 
     const result = runStabilityController(input);

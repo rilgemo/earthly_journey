@@ -129,8 +129,8 @@ describe('Test 4: TickManager Mutation Authority', () => {
   test('tick counter increments continuously', () => {
     const tickManager = loadTickManagerWithActions([
       {
-        id: 'travel',
-        type: 'travel',
+        id: 'move',
+        type: 'survival',
         baseUtility: 1,
         effects: {}
       }
@@ -148,7 +148,7 @@ describe('Test 4: TickManager Mutation Authority', () => {
   test('registered magic action mutates the expected world field', () => {
     const tickManager = loadTickManagerWithActions([
       {
-        id: 'cast_spark',
+        id: 'cast_magic',
         type: 'magic',
         baseUtility: 10,
         effects: { fieldChange: { arcane: 0.05 }, manaChange: { current: -5 } }

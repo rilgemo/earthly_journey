@@ -1,47 +1,37 @@
-const ACTIONS = [
-  {
-    id: 'forage',
-    type: 'work',
-    baseUtility: 1.0,
-    requirements: { },
-    effects: { manaChange: {}, fieldChange: { earth: +0.01 } }
-  },
-  {
-    id: 'rest_camp',
-    type: 'rest',
-    baseUtility: 0.5,
-    requirements: {},
-    effects: { manaChange: { current: +10 }, fieldChange: {} }
-  },
-  {
-    id: 'cast_spark',
-    type: 'magic',
-    baseUtility: 2.0,
-    requirements: { manaMin: 5, fieldAffinity: { arcane: 0.1 } },
-    effects: { manaChange: { current: -5 }, fieldChange: { arcane: +0.05 } }
-  },
-  {
-    id: 'travel',
-    type: 'travel',
-    baseUtility: 0.8,
-    requirements: {},
-    effects: { }
-  },
-  {
-    id: 'share_information',
-    type: 'communication',
-    baseUtility: 0.2,
-    requirements: { nearbyAgent: true, memory: true },
-    effects: {}
-  }
-];
+const {
+  ACTION_PROFILES,
+  UNIVERSAL_ACTIONS,
+  getProfessionActions
+} = require('./actions/actionProfiles');
 
-function getAvailableActions(npc) {
-  // minimal filter: if mana too low, remove magic
-  return ACTIONS.filter(a => {
-    if (a.type === 'magic' && npc.mana.current < (a.requirements.manaMin || 0)) return false;
+const ACTIONS = Object.freeze(
+  Object.values(ACTION_PROFILES).map(profile => Object.freeze({
+    id: profile.actionId,
+    type: profile.category,
+    baseUtility: 1,
+    requirements: profile.manaCost > 0 ? { manaMin: profile.manaCost } : {},
+    effects: {
+      manaChange: profile.manaCost ? { current: -profile.manaCost } : {},
+      fieldChange: profile.fieldAffinity
+    },
+    profile
+  }))
+);
+
+const ACTIONS_BY_ID = new Map(ACTIONS.map(action => [action.id, action]));
+
+function getAvailableActions(agent) {
+  const allowed = new Set([...UNIVERSAL_ACTIONS, ...getProfessionActions(agent.role)]);
+
+  return ACTIONS.filter(action => {
+    if (!allowed.has(action.id)) return false;
+    if (action.profile.manaCost > 0 && agent.mana.current < action.profile.manaCost) return false;
     return true;
   });
 }
 
-module.exports = { ACTIONS, getAvailableActions };
+module.exports = {
+  ACTIONS,
+  ACTIONS_BY_ID,
+  getAvailableActions
+};

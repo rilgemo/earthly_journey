@@ -45,6 +45,10 @@ function queueFieldPerturbation(worldObj, tileId, perturbation) {
 }
 
 function applyActionEffects(action, npc, worldObj) {
+  if (action.profile && typeof npc.stamina === 'number') {
+    npc.stamina = Math.max(0, Math.min(100, npc.stamina - action.profile.staminaCost));
+  }
+
   if (action.effects && action.effects.manaChange) {
     const delta = action.effects.manaChange.current || 0;
     npc.mana.current = Math.max(0, Math.min(npc.mana.capacity, npc.mana.current + delta));
@@ -145,7 +149,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
       rejectionReason = 'action-not-registered';
       console.warn(`Rejected execution of unregistered action '${selected.id}' for ${npc.id}`);
     } else {
-      if (selected.id === 'share_information') {
+      if (selected.id === 'share_information' || selected.id === 'communicate') {
         const targetInfo = perception.nearbyAgents[0];
         const receiver = targetInfo ? allNpcs.find(agent => agent.id === targetInfo.id) : null;
         const transfer = prepareInformationTransfer(npc, receiver, { tick: worldObj.tick || 0 });
@@ -184,6 +188,7 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
 
   return {
     agentId: npc.id,
+    role: npc.role,
     actionSelected: selected ? selected.id : null,
     scoreBreakdown: selectedIntent ? { ...selectedIntent.components, total: selectedIntent.score } : null,
     actionRegistered: selected ? actionRegistry.has(selected.id) : null,

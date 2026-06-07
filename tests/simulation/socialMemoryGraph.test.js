@@ -51,7 +51,7 @@ function loadTickManagerWithShareAction() {
   jest.doMock('../../src/simulation/actions', () => ({
     getAvailableActions: () => [{
       id: 'share_information',
-      type: 'communication',
+      type: 'social',
       baseUtility: 10,
       requirements: { nearbyAgent: true, memory: true },
       effects: {}

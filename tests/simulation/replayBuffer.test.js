@@ -51,7 +51,7 @@ describe('Replay Buffer v1', () => {
 
     world.fields.fire = 100;
     world.agents[0].mana = 0;
-    trace[0].agents[0].actionSelected = 'cast_spark';
+    trace[0].agents[0].actionSelected = 'cast_magic';
 
     const frame = buffer.latest();
 

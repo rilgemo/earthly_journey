@@ -1,5 +1,6 @@
 const { createFieldDelta } = require('../elementalField/fieldState');
 const { ACTIVITY_PROFILES, classifyActivity } = require('./activityFieldCoupler');
+const { ACTION_PROFILES } = require('../actions/actionProfiles');
 
 function updateActivityHistory(previousHistory = {}, agentLog = []) {
   const history = Object.fromEntries(
@@ -29,7 +30,7 @@ function createMemoryFieldImprints(history = {}, config = {}) {
       if (!activity || count < repeatThreshold) return;
 
       const scale = Math.min(maxDriftScale, (count - repeatThreshold + 1) * driftPerRepeat);
-      const profile = ACTIVITY_PROFILES[activity];
+      const profile = ACTION_PROFILES[action]?.fieldAffinity || ACTIVITY_PROFILES[activity];
       const fields = Object.fromEntries(
         Object.entries(profile).map(([field, value]) => [field, value * scale])
       );

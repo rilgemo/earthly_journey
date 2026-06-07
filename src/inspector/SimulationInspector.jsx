@@ -5,6 +5,7 @@ import FieldDynamicsPanel from './panels/FieldDynamicsPanel';
 import CoupledEmergencePanel from './panels/CoupledEmergencePanel';
 import StabilityPanel from './panels/StabilityPanel';
 import ScenarioSummaryPanel from './panels/ScenarioSummaryPanel';
+import ActionPanel from './panels/ActionPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
@@ -46,6 +47,7 @@ export default function SimulationInspector({ world, trace, replay }) {
         <CoupledEmergencePanel world={world} />
         <StabilityPanel world={world} />
         <ScenarioSummaryPanel world={world} />
+        <ActionPanel trace={trace} />
       </div>
     </section>
   );

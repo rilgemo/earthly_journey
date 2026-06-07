@@ -1,4 +1,5 @@
 const { getActionInfluence } = require('./influenceField');
+const { getProfessionBias } = require('./actions/actionProfiles');
 
 function evaluateFieldMatch(agent, field) {
   return ['fire', 'water', 'earth', 'arcane'].reduce((sum, key) => {
@@ -21,11 +22,11 @@ function evaluateManaResonance(agent, field) {
 }
 
 function getNeedComponent(action, needProfile) {
-  if (action.type === 'communication') {
+  if (action.type === 'social') {
     return needProfile.socialNeed * 0.04;
   }
 
-  if (action.type === 'rest') {
+  if (action.id === 'rest' || action.id === 'meditate') {
     return (needProfile.fatigue * 0.04) + (needProfile.manaNeed * 0.03);
   }
 
@@ -33,7 +34,7 @@ function getNeedComponent(action, needProfile) {
     return (needProfile.manaNeed * 0.015) + (needProfile.socialNeed * 0.01);
   }
 
-  if (action.type === 'travel') {
+  if (action.id === 'move' || action.id === 'flee') {
     return (needProfile.socialNeed * 0.02) + (needProfile.safetyNeed * 0.01);
   }
 
@@ -44,7 +45,9 @@ function getMemoryComponent(action, memories, bias = {}) {
   const directBias = bias[action.id] || 0;
   const memoryBias = memories.reduce((sum, memory) => {
     if (memory.action === action.id) return sum + ((memory.strength || 0) * 0.02);
-    if (memory.type === 'danger' && action.type === 'travel') return sum - ((memory.strength || 0) * 0.01);
+    if (memory.type === 'danger' && (action.id === 'move' || action.id === 'flee')) {
+      return sum - ((memory.strength || 0) * 0.01);
+    }
     return sum;
   }, 0);
 
@@ -58,10 +61,10 @@ function generateIntents(agent, actions, context) {
   return actions.map(action => {
     const needScore = getNeedComponent(action, context.needs.profile);
     const memoryScore = getMemoryComponent(action, context.memories, agent.memory?.bias || {});
-    const communicationScore = action.type === 'communication'
+    const communicationScore = action.type === 'social'
       ? ((context.memories.length > 0 && context.perception.nearbyAgents?.length > 0) ? 1 : -100)
       : 0;
-    const roleScore = agent.role === 'mage' && action.type === 'magic' ? 0.5 : 0;
+    const roleScore = getProfessionBias(agent.role, action.id);
     const environmentScore = action.type === 'magic' ? manaScore : fieldScore;
     const influenceScore = getActionInfluence(action.id, context.influenceProfile || {});
     const total = action.baseUtility + needScore + memoryScore + roleScore + environmentScore + communicationScore + influenceScore;
@@ -86,7 +89,7 @@ function generateIntents(agent, actions, context) {
         `base:${action.baseUtility.toFixed(2)}`,
         `need:${needScore.toFixed(2)}`,
         `memory:${memoryScore.toFixed(2)}`,
-        `role:${roleScore.toFixed(2)}`,
+        `profession:${roleScore.toFixed(2)}`,
         `environment:${environmentScore.toFixed(2)}`,
         `influence:${influenceScore.toFixed(2)}`
       ]

@@ -67,6 +67,52 @@ Each entry should include:
 - `cooldownSeconds`: optional spam control
 - `effects`: runtime effects the action may produce
 
+## Action Space v1
+
+Core survival:
+
+- `forage`
+- `rest`
+- `move`
+
+Economic and craft:
+
+- `farm`
+- `gather_water`
+- `hunt`
+- `chop_wood`
+- `mine`
+- `forge`
+- `craft_item`
+
+Magic and arcane:
+
+- `cast_magic`
+- `channel_arcane`
+- `study_arcane`
+- `meditate`
+
+Social:
+
+- `communicate`
+- `share_information`
+- `trade`
+- `teach`
+
+Combat:
+
+- `attack`
+- `defend`
+- `flee`
+
+Action semantics and field coupling hints are defined in:
+
+```text
+src/simulation/actions/actionProfiles.js
+```
+
+Profiles may define additive field perturbation signatures. They may not mutate fields or execute outside `tickManager()`.
+
 ## Example Entries
 
 ```md
@@ -78,7 +124,7 @@ Each entry should include:
     area: ["forest", "meadow"]
   cooldownSeconds: 300
 
-- key: rest_camp
+- key: rest
   label: Rest at Camp
   narrative: Spend time recovering health and stamina.
   stCost: rest_full

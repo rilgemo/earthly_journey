@@ -1,21 +1,12 @@
-const ACTION_KEYS = Object.freeze([
-  'forage',
-  'farm',
-  'forge',
-  'cast_magic',
-  'rest',
-  'move',
-  'share_information'
-]);
+const { ACTION_REGISTRY } = require('../actionRegistry');
+
+const ACTION_KEYS = ACTION_REGISTRY;
 
 function createActionDistribution() {
   return Object.fromEntries(ACTION_KEYS.map(action => [action, 0]));
 }
 
 function normalizeAction(action) {
-  if (action === 'cast_spark') return 'cast_magic';
-  if (action === 'rest_camp') return 'rest';
-  if (action === 'travel') return 'move';
   return ACTION_KEYS.includes(action) ? action : null;
 }
 

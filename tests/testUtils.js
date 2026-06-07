@@ -8,7 +8,11 @@ const fs = require('fs');
 const path = require('path');
 
 // Action registry from AI/action_registry.json
-const ACTION_REGISTRY = ["forage", "rest_camp", "cast_spark", "travel", "share_information"];
+const ACTION_REGISTRY = [
+  'forage', 'rest', 'move', 'farm', 'gather_water', 'hunt', 'chop_wood', 'mine',
+  'forge', 'craft_item', 'cast_magic', 'channel_arcane', 'study_arcane', 'meditate',
+  'communicate', 'share_information', 'trade', 'teach', 'attack', 'defend', 'flee'
+];
 
 /**
  * Validate if action is registered

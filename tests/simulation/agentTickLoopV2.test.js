@@ -44,7 +44,7 @@ function createAgent() {
       affinity: { fire: 0, water: 0, earth: 0, arcane: 1 }
     },
     memory: {
-      shortTerm: [{ type: 'success', action: 'cast_spark', strength: 10, location: 'meadow', tick: 1 }],
+      shortTerm: [{ type: 'success', action: 'cast_magic', strength: 10, location: 'meadow', tick: 1 }],
       longTerm: [],
       recentEvents: [],
       bias: {}
@@ -86,8 +86,8 @@ describe('Agent Tick Loop v2', () => {
   test('intent generation includes memory and need scores', () => {
     const agent = createAgent();
     const actions = [
-      { id: 'rest_camp', type: 'rest', baseUtility: 0.5, effects: {} },
-      { id: 'cast_spark', type: 'magic', baseUtility: 2, effects: {} }
+      { id: 'rest', type: 'survival', baseUtility: 0.5, effects: {} },
+      { id: 'cast_magic', type: 'magic', baseUtility: 2, effects: {} }
     ];
     const needs = { profile: getNeedProfile(agent), urgency: 1 };
 
@@ -106,7 +106,7 @@ describe('Agent Tick Loop v2', () => {
   test('tick trace exposes memory, needs, intents, and memory updates', () => {
     const tickManager = loadTickManagerWithActions([
       {
-        id: 'cast_spark',
+        id: 'cast_magic',
         type: 'magic',
         baseUtility: 2,
         effects: { manaChange: { current: -5 }, fieldChange: { arcane: 0.05 } }
@@ -122,10 +122,10 @@ describe('Agent Tick Loop v2', () => {
 
     expect(trace.memoryRecall).toHaveLength(1);
     expect(trace.needProfile.manaNeed).toBe(70);
-    expect(trace.candidateIntents[0].intent).toBe('cast_spark');
-    expect(trace.resolutionTrace.selectedAction).toBe('cast_spark');
+    expect(trace.candidateIntents[0].intent).toBe('cast_magic');
+    expect(trace.resolutionTrace.selectedAction).toBe('cast_magic');
     expect(trace.memoryUpdates[0].type).toBe('success');
     expect(agent.memory.shortTerm.length).toBeGreaterThan(0);
-    expect(agent.runtime.lastSelectedIntent).toBe('cast_spark');
+    expect(agent.runtime.lastSelectedIntent).toBe('cast_magic');
   });
 });
