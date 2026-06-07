@@ -16,12 +16,13 @@ import ResourceGeographyPanel from './panels/ResourceGeographyPanel';
 import ResourceFlowPanel from './panels/ResourceFlowPanel';
 import MigrationPressurePanel from './panels/MigrationPressurePanel';
 import ProtoEconomyPanel from './panels/ProtoEconomyPanel';
+import SemanticConsistencyPanel from './panels/SemanticConsistencyPanel';
 import ReplayPanel from './panels/ReplayPanel';
 import TickPanel from './panels/TickPanel';
 import TracePanel from './panels/TracePanel';
 import WorldPanel from './panels/WorldPanel';
 
-export default function SimulationInspector({ world, trace, replay }) {
+export default function SimulationInspector({ world, trace, replay, semanticReport }) {
   return (
     <section
       style={{
@@ -68,6 +69,7 @@ export default function SimulationInspector({ world, trace, replay }) {
         <MigrationPressurePanel trace={trace} world={world} />
         <ProtoEconomyPanel trace={trace} world={world} />
         <SettlementPanel world={world} />
+        <SemanticConsistencyPanel report={semanticReport} />
       </div>
     </section>
   );
