@@ -22,6 +22,7 @@ This project uses a DF x AI hybrid simulation model.
 - [SKILL_EMERGENCE_MODEL.md](SKILL_EMERGENCE_MODEL.md) - Trait, skill, knowledge, and derived identity authority
 - [IDENTITY_LOCK_MODEL.md](IDENTITY_LOCK_MODEL.md) - Hard anti-influence boundary for post-tick derived identity
 - [REALITY_VS_PERCEPTION_MODEL.md](REALITY_VS_PERCEPTION_MODEL.md) - One-way reality-to-belief interpretation boundary
+- [REALITY_PERCEPTION_DRIFT_MODEL.md](REALITY_PERCEPTION_DRIFT_MODEL.md) - Bounded cognitive drift and rumor stability diagnostics
 - [ENTITY_SCHEMA.md](ENTITY_SCHEMA.md) - Canonical entity contract layer and lifecycle rules
 
 ## Core Project Docs
@@ -54,6 +55,9 @@ consult `/AI/IDENTITY_LOCK_MODEL.md`.
 
 For belief state, information distortion, social interpretation, or asymmetric
 knowledge work, also consult `/AI/REALITY_VS_PERCEPTION_MODEL.md`.
+
+For cognitive drift, belief convergence, rumor persistence, or perception
+stability metrics, also consult `/AI/REALITY_PERCEPTION_DRIFT_MODEL.md`.
 
 ## Influence Boundary
 
