@@ -31,42 +31,24 @@ const LIFE_STAGE_TICKS = Object.freeze({
   max: 90 * 365
 });
 
-function clampLifeValue(value) {
-  if (!Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(100, value));
-}
-
 function resolveLifeStage(ageTicks) {
   if (ageTicks < LIFE_STAGE_TICKS.juvenile) return 'juvenile';
   if (ageTicks >= LIFE_STAGE_TICKS.elder) return 'elder';
   return 'adult';
 }
 
-function getLifeResourceSupport(agent, worldObj) {
-  const tile = worldObj.resourceMap?.tiles?.[agent.location];
-  if (tile) {
-    return (
-      ((tile.foodPotential || 0) * 0.45)
-      + ((tile.waterPotential || 0) * 0.35)
-      + ((tile.materialPotential || 0) * 0.1)
-      + ((tile.arcanePotential || 0) * 0.1)
-    ) / 100;
-  }
-
-  const field = typeof worldObj.getField === 'function' ? worldObj.getField(agent.location) : {};
-  return Math.max(0, Math.min(1, (((field.life || 0) * 0.6) + ((field.water || 0) * 0.4)) / 100));
-}
-
 function createInitialLife(agent, worldObj) {
   const existing = agent.life || {};
   const ageTicks = Math.max(0, Math.floor(existing.ageTicks || 0));
   const maxAgeTicks = Math.max(1, Math.floor(existing.maxAgeTicks || LIFE_STAGE_TICKS.max));
+  const alive = existing.alive !== false && ageTicks < maxAgeTicks;
 
   return {
     birthTick: Number.isFinite(existing.birthTick) ? existing.birthTick : (worldObj.tick || 0) - ageTicks,
     ageTicks,
     lifeStage: existing.lifeStage || resolveLifeStage(ageTicks),
-    vitality: clampLifeValue(existing.vitality ?? 100),
+    lifeCondition: existing.lifeCondition || (alive ? 'alive' : 'deceased'),
+    alive,
     maxAgeTicks
   };
 }
@@ -75,29 +57,25 @@ function runLifeKernel(agent, worldObj) {
   const previousLife = createInitialLife(agent, worldObj);
   const ageTicks = previousLife.ageTicks + 1;
   const lifeStage = resolveLifeStage(ageTicks);
-  const resourceSupport = getLifeResourceSupport(agent, worldObj);
-  const agePressure = ageTicks >= previousLife.maxAgeTicks
-    ? 100
-    : Math.max(0, (ageTicks - LIFE_STAGE_TICKS.elder) / Math.max(1, previousLife.maxAgeTicks - LIFE_STAGE_TICKS.elder));
-  const scarcityPressure = Math.max(0, 0.35 - resourceSupport);
-  const vitalityDelta = (resourceSupport * 0.04) - (scarcityPressure * 0.12) - (agePressure * 0.08);
-  const vitality = clampLifeValue(previousLife.vitality + vitalityDelta);
+  const alive = previousLife.alive && ageTicks < previousLife.maxAgeTicks;
+  const lifeCondition = alive ? 'alive' : 'deceased';
   const nextLife = {
     ...previousLife,
     ageTicks,
     lifeStage,
-    vitality
+    lifeCondition,
+    alive
   };
 
   agent.life = nextLife;
-  agent._pendingDeath = vitality <= 0 || ageTicks >= previousLife.maxAgeTicks;
+  agent._pendingDeath = !alive;
 
   return {
     agentId: agent.id,
     ageTicks,
     lifeStage,
-    vitality,
-    resourceSupport,
+    lifeCondition,
+    alive,
     pendingDeath: agent._pendingDeath
   };
 }
