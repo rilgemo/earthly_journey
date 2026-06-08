@@ -34,6 +34,7 @@ Simulation AI operating rules are defined in `/AI`.
 - [AI/AGENT_TYPOLOGY_MODEL.md](AI/AGENT_TYPOLOGY_MODEL.md) - Agent causal participation profiles and typology weighting
 - [AI/INTENT_PURITY_BOUNDARY.md](AI/INTENT_PURITY_BOUNDARY.md) - Pure scoring and controlled enrichment boundary for intents
 - [AI/CULTURE_EMERGENCE_MODEL.md](AI/CULTURE_EMERGENCE_MODEL.md) - Read-only culture emergence detection model
+- [AI/CIVILIZATION_MEMORY_MODEL.md](AI/CIVILIZATION_MEMORY_MODEL.md) - Cross-temporal emergent structure compression model
 - [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index
 
 ## Authority Boundary

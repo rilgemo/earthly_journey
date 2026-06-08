@@ -16,6 +16,7 @@ This project uses a DF x AI hybrid simulation model.
 - [AGENT_TYPOLOGY_MODEL.md](AGENT_TYPOLOGY_MODEL.md) - Causal participation profiles for agent weighting behavior
 - [INTENT_PURITY_BOUNDARY.md](INTENT_PURITY_BOUNDARY.md) - Strict phase boundary for pure scoring, enrichment, and resolution
 - [CULTURE_EMERGENCE_MODEL.md](CULTURE_EMERGENCE_MODEL.md) - Read-only cultural stabilization detection from traces
+- [CIVILIZATION_MEMORY_MODEL.md](CIVILIZATION_MEMORY_MODEL.md) - Cross-temporal compression of persistent emergent structures
 - [REPLAY_MODEL.md](REPLAY_MODEL.md) - Read-only time travel buffer for immutable tick snapshots
 - [INFLUENCE_FIELD.md](INFLUENCE_FIELD.md) - Additive behavioral pressure layer, not decision or execution
 - [DECISION_INSPECTOR.md](DECISION_INSPECTOR.md) - Observability-only decision analysis and immutable decision traces
@@ -62,6 +63,8 @@ For agent causal participation profiles, weighting modifiers, or typology trace 
 For intent scoring purity, enrichment boundaries, or intent pipeline work, also consult `/AI/INTENT_PURITY_BOUNDARY.md`.
 
 For culture detection, cross-agent behavioral stabilization, or downstream-only cultural traces, also consult `/AI/CULTURE_EMERGENCE_MODEL.md`.
+
+For civilization memory, cross-temporal compression, persistence graphs, or drift resistance analysis, also consult `/AI/CIVILIZATION_MEMORY_MODEL.md`.
 
 For simulation-agent traits, continuous skill growth, knowledge-assisted
 learning or derived identities, also consult
