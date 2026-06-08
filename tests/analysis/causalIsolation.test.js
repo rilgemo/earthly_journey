@@ -47,7 +47,21 @@ function createContext(agent) {
 describe('Causal Layer Isolation Framework v1', () => {
   test('Phase A is pure under identical inputs', () => {
     const agent = createAgent();
-    const result = validateIntentPhaseIsolation(agent, ACTIONS, createContext(agent));
+    const context = createContext(agent);
+    const beforeSnapshot = JSON.stringify({ agent, actions: ACTIONS, context });
+    const firstScoring = scoreIntents(agent, ACTIONS, context);
+    const secondScoring = scoreIntents(agent, ACTIONS, context);
+    const enrichmentResult = enrichIntents(firstScoring, ACTIONS);
+    const resolutionResult = resolveFinalIntent(enrichmentResult.enrichedIntents, context);
+    const afterSnapshot = JSON.stringify({ agent, actions: ACTIONS, context });
+    const result = validateIntentPhaseIsolation({
+      firstScoring,
+      secondScoring,
+      enrichmentResult,
+      resolutionResult,
+      beforeSnapshot,
+      afterSnapshot,
+    });
 
     expect(result.phaseA.valid).toBe(true);
     expect(result.phaseA.deterministic).toBe(true);
@@ -84,7 +98,9 @@ describe('Causal Layer Isolation Framework v1', () => {
 
   test('replay produces identical Phase A hashes', () => {
     const agent = createAgent();
-    const replay = verifyDeterministicReplay(agent, ACTIONS, createContext(agent));
+    const first = intentPipeline.execute(agent, ACTIONS, createContext(agent));
+    const second = intentPipeline.execute(agent, ACTIONS, createContext(agent));
+    const replay = verifyDeterministicReplay(first, second);
 
     expect(replay.valid).toBe(true);
     expect(replay.phaseAHashFirst).toBe(replay.phaseAHashSecond);

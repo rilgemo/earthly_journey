@@ -1,24 +1,15 @@
 import React from 'react';
-const { resolveCultureEmergence } = require('../../simulation/culture/cultureEmergenceResolver');
 
 function format(value) {
   return typeof value === 'number' ? value.toFixed(3) : '0.000';
 }
 
-export default function CultureEmergencePanel({ trace = [], world = {} }) {
-  const settlementSnapshot = world?.settlementSnapshot || world?.settlements || {};
-  const result = resolveCultureEmergence({
-    traces: trace,
-    settlementSnapshot,
-    context: {
-      demandIndex: world?.demandIndex,
-      resourceGeography: world?.resourceGeography,
-      migrationPressure: world?.migrationPressure
-    }
-  });
-  const { culture, cultureTrace } = result;
+export default function CultureEmergencePanel({ world = {}, cultureReport }) {
+  const result = cultureReport || world?.cultureEmergence || world?.cultureReport || null;
+  const culture = result?.culture || world?.culture || null;
+  const cultureTrace = result?.cultureTrace || world?.cultureTrace || null;
 
-  if (!cultureTrace.detectedPatterns.length) return null;
+  if (!culture || !cultureTrace?.detectedPatterns?.length) return null;
 
   return (
     <div>
@@ -38,7 +29,7 @@ export default function CultureEmergencePanel({ trace = [], world = {} }) {
           .join(', ') || 'none'}
       </div>
       <div style={{ maxHeight: 180, overflow: 'auto', marginTop: 8 }}>
-        {cultureTrace.clusterMapping.map(cluster => (
+        {(cultureTrace.clusterMapping || []).map(cluster => (
           <div key={cluster.clusterId}>
             {cluster.clusterId} agents:{cluster.agentCount} actions:{cluster.actionCount}
           </div>

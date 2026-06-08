@@ -1,32 +1,22 @@
-const { scoreIntents } = require('../../simulation/intent/intentScorer');
-const { enrichIntents } = require('../../simulation/intent/intentEnricher');
-const { resolveFinalIntent } = require('../../simulation/intent/intentResolver');
-
-function snapshot(value) {
-  return JSON.stringify(value);
-}
-
-function validatePhaseA(agent, actions, context) {
-  const before = snapshot({ agent, actions, context });
-  const first = scoreIntents(agent, actions, context);
-  const second = scoreIntents(agent, actions, context);
-  const after = snapshot({ agent, actions, context });
+function validatePhaseA({ firstScoring, secondScoring, beforeSnapshot, afterSnapshot }) {
+  const deterministic = JSON.stringify(firstScoring) === JSON.stringify(secondScoring);
+  const mutationFree = beforeSnapshot === afterSnapshot;
+  const hashStable = firstScoring?.deterministicSeedHash === secondScoring?.deterministicSeedHash;
 
   return Object.freeze({
     phase: 'A',
-    deterministic: JSON.stringify(first) === JSON.stringify(second),
-    mutationFree: before === after,
-    hashStable: first.deterministicSeedHash === second.deterministicSeedHash,
-    valid: JSON.stringify(first) === JSON.stringify(second) && before === after
+    deterministic,
+    mutationFree,
+    hashStable,
+    valid: deterministic && mutationFree && hashStable
   });
 }
 
-function validatePhaseB(scoringResult, actions) {
-  const beforeScores = scoringResult.intentScores.map(score => score.score);
-  const beforeOrder = scoringResult.intentScores.map(score => score.intent);
-  const enriched = enrichIntents(scoringResult, actions);
-  const afterScores = enriched.enrichedIntents.map(intent => intent.score);
-  const afterOrder = enriched.enrichedIntents.map(intent => intent.intent);
+function validatePhaseB(scoringResult, enrichmentResult) {
+  const beforeScores = (scoringResult?.intentScores || []).map(score => score.score);
+  const beforeOrder = (scoringResult?.intentScores || []).map(score => score.intent);
+  const afterScores = (enrichmentResult?.enrichedIntents || []).map(intent => intent.score);
+  const afterOrder = (enrichmentResult?.enrichedIntents || []).map(intent => intent.intent);
 
   return Object.freeze({
     phase: 'B',
@@ -37,25 +27,29 @@ function validatePhaseB(scoringResult, actions) {
   });
 }
 
-function validatePhaseC(enrichedIntents, context = {}) {
-  const resolved = resolveFinalIntent(enrichedIntents, context);
-  const selectedFromProvided = !resolved.selectedIntentId
-    || enrichedIntents.some(intent => intent.intent === resolved.selectedIntentId);
+function validatePhaseC(enrichedIntents, resolutionResult) {
+  const selectedFromProvided = !resolutionResult?.selectedIntentId
+    || (enrichedIntents || []).some(intent => intent.intent === resolutionResult.selectedIntentId);
 
   return Object.freeze({
     phase: 'C',
     selectedFromProvided,
-    candidateCountPreserved: resolved.selectionSet.length === enrichedIntents.length,
-    valid: selectedFromProvided && resolved.selectionSet.length === enrichedIntents.length
+    candidateCountPreserved: (resolutionResult?.selectionSet || []).length === (enrichedIntents || []).length,
+    valid: selectedFromProvided && (resolutionResult?.selectionSet || []).length === (enrichedIntents || []).length
   });
 }
 
-function validateIntentPhaseIsolation(agent, actions, context = {}) {
-  const phaseA = validatePhaseA(agent, actions, context);
-  const scoring = scoreIntents(agent, actions, context);
-  const phaseB = validatePhaseB(scoring, actions);
-  const enriched = enrichIntents(scoring, actions);
-  const phaseC = validatePhaseC(enriched.enrichedIntents, context);
+function validateIntentPhaseIsolation({
+  firstScoring,
+  secondScoring,
+  enrichmentResult,
+  resolutionResult,
+  beforeSnapshot,
+  afterSnapshot
+}) {
+  const phaseA = validatePhaseA({ firstScoring, secondScoring, beforeSnapshot, afterSnapshot });
+  const phaseB = validatePhaseB(firstScoring, enrichmentResult);
+  const phaseC = validatePhaseC(enrichmentResult?.enrichedIntents || [], resolutionResult);
 
   return Object.freeze({
     phaseA,

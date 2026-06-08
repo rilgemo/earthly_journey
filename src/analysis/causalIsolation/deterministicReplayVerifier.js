@@ -1,15 +1,11 @@
-const intentPipeline = require('../../simulation/intent/intentPipeline');
-
-function verifyDeterministicReplay(agent, actions, context = {}) {
-  const first = intentPipeline.execute(agent, actions, context);
-  const second = intentPipeline.execute(agent, actions, context);
-  const phaseAEqual = JSON.stringify(first.scoringResult) === JSON.stringify(second.scoringResult);
-  const phaseBEqual = JSON.stringify(first.enrichmentResult) === JSON.stringify(second.enrichmentResult);
-  const phaseCEqual = JSON.stringify(first.resolutionResult) === JSON.stringify(second.resolutionResult);
+function verifyDeterministicReplay(firstResult, secondResult) {
+  const phaseAEqual = JSON.stringify(firstResult?.scoringResult) === JSON.stringify(secondResult?.scoringResult);
+  const phaseBEqual = JSON.stringify(firstResult?.enrichmentResult) === JSON.stringify(secondResult?.enrichmentResult);
+  const phaseCEqual = JSON.stringify(firstResult?.resolutionResult) === JSON.stringify(secondResult?.resolutionResult);
 
   return Object.freeze({
-    phaseAHashFirst: first.scoringResult.deterministicSeedHash,
-    phaseAHashSecond: second.scoringResult.deterministicSeedHash,
+    phaseAHashFirst: firstResult?.scoringResult?.deterministicSeedHash,
+    phaseAHashSecond: secondResult?.scoringResult?.deterministicSeedHash,
     phaseAEqual,
     phaseBEqual,
     phaseCEqual,

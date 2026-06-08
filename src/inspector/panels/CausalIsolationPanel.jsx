@@ -1,5 +1,4 @@
 import React from 'react';
-const { buildCrossLayerInfluenceMatrix } = require('../../analysis/causalIsolation/crossLayerInfluenceMatrix');
 
 function collectReports(trace = [], world = {}) {
   const fromTrace = trace.flatMap(tick => (
@@ -15,7 +14,7 @@ function collectReports(trace = [], world = {}) {
 
 export default function CausalIsolationPanel({ trace = [], world = {} }) {
   const reports = collectReports(trace, world);
-  const matrix = buildCrossLayerInfluenceMatrix();
+  const matrix = world?.causalIsolationReport?.influenceMatrix || world?.causalIsolationMatrix || null;
   if (!reports.length) return null;
 
   return (
@@ -25,11 +24,13 @@ export default function CausalIsolationPanel({ trace = [], world = {} }) {
       <div>Latest Phase A Hash: {reports[reports.length - 1]?.phaseAHash}</div>
       <div style={{ marginTop: 8 }}>
         <strong>Influence Matrix</strong>
-        {Object.entries(matrix).map(([phase, systems]) => (
-          <div key={phase}>
-            {phase}: {Object.entries(systems).map(([system, value]) => `${system}:${value}`).join(' ')}
-          </div>
-        ))}
+        {matrix
+          ? Object.entries(matrix).map(([phase, systems]) => (
+            <div key={phase}>
+              {phase}: {Object.entries(systems).map(([system, value]) => `${system}:${value}`).join(' ')}
+            </div>
+          ))
+          : <div>not provided</div>}
       </div>
       <div style={{ marginTop: 8 }}>
         <strong>Replay Divergence</strong>

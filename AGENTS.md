@@ -1,202 +1,304 @@
-# Earthly Journey - Agent Operating Memory (v2)
+# Earthly Journey - Agent Operating Constitution v3 (Design Pass)
 
-You are operating inside Earthly Journey, a deterministic multi-layer simulation system.
+This document defines the authoritative simulation principles of Earthly Journey.
 
-The world is not RPG-driven.
-The world is not class-driven.
-The world is not quest-driven.
+It governs:
 
-The world is emergent and pressure-driven.
+* simulation structure
+* layer boundaries
+* causal rules
+* emergence systems
+* execution constraints
 
----
-
-# CORE PRINCIPLE
-
-Earthly is composed of layered systems:
-
-## 1. Reality Layer (Authoritative World State)
-
-- tickManager is the ONLY mutation authority
-- Elemental Fields are part of physical reality
-- World Demand is derived from world state
-- All actions are validated against DF constraints
-
-Reality is deterministic and immutable per tick.
+It does NOT describe implementation details.
 
 ---
 
-## 2. Agent Layer (Decision Layer)
+# 1. Core Principle
 
-Agents are autonomous systems.
+Earthly is a deterministic layered simulation system.
 
-Agents contain:
-
-- Traits
-- Skills (continuous values)
-- Knowledge
-- Needs
-- Intent Generation
-
-Agents do NOT contain:
-- fixed derived identity expressions
-- hardcoded behavioral expressions
-- forced behaviors
-
----
-
-## 3. Execution Layer
-
-All actions follow:
+The world is structured into three causal domains:
 
 ```text
-Perception -> Intent -> Validation (DF) -> Resolution -> Execution -> Memory Update
+Reality Layer → Decision Layer → Execution Layer
 ```
 
-Rules:
+and one non-causal domain:
 
-* tickManager is the only execution authority
-* no direct state mutation outside engine
-* no bypass of validation layer
+```text
+Observation Layer (read-only)
+```
 
 ---
 
-## 4. Observation Layer (READ-ONLY ANALYTICS)
+## 1.1 Causal Rule
+
+```text
+Only Execution Layer may mutate world state.
+```
+
+```text
+Decision Layer may only produce intent, never execution.
+```
+
+```text
+Observation Layer may only interpret, never influence.
+```
+
+---
+
+# 2. Layer Authority Matrix
+
+---
+
+## 2.1 Reality Layer
+
+Owns:
+
+* resource geography
+* environmental fields
+* world demand
+* action yield context
+
+Cannot:
+
+* generate intent
+* modify behavior
+* interpret outcomes
+
+---
+
+## 2.2 Decision Layer
+
+Owns:
+
+* intent generation
+* preference weighting
+* action selection logic
+* typology influence (weight-only)
+
+Cannot:
+
+* mutate world state
+* observe historical truth directly without trace
+* be influenced by observation layers
+
+---
+
+## 2.3 Execution Layer
+
+Owns:
+
+* validation
+* state mutation
+* action resolution
+* tickManager authority
+
+Cannot:
+
+* generate intent
+* modify decision logic
+
+---
+
+## 2.4 Observation Layer
 
 Includes:
 
-* Identity (derived only)
 * Behavioral Signature
-* Replay Buffer
-* Trace Collector
-* Inspector UI
+* Culture Emergence
+* Settlement Emergence
+* Civilization Memory
+* Civilization Myth
+* Semantic Audit
+* Causal Isolation
 
-Rules:
+Owns:
 
-* Observation must NEVER influence runtime behavior
-* Identity is NOT an input to decision-making
-* Behavioral patterns are NOT used for scoring or control
+* trace interpretation
+* pattern extraction
+* historical compression
 
----
+Cannot:
 
-## 5. Cognitive Layer (Perception System)
-
-* Perception is a distorted projection of Reality
-* Each agent has independent belief state
-* Social Memory propagates imperfect information
-* Controlled Drift stabilizes entropy
-
-Rules:
-
-* Perception MUST NOT modify Reality
-* Perception MUST NOT directly influence Intent or Resolution
-* Perception is informational only
+* influence decision layer
+* influence execution layer
+* modify world state
 
 ---
 
-## 6. World Demand System (Opportunity Pressure Layer)
+# 3. Emergence Chain (Downstream Only)
 
-World Demand represents systemic pressure:
-
-* food
-* tools
-* materials
-* healing
-* arcane
-* safety
-* shelter
-
-Rules:
-
-* Demand is derived from World State
-* Demand creates opportunity pressure only
-* Demand may influence Intent scoring additively
-* Demand MUST NOT assign actions
-* Demand MUST NOT enforce behavioral expressions or derived identity expressions
-
----
-
-## 7. Elemental Field System (Physical Layer)
-
-* Elemental Fields are continuous world properties
-* Agents interact via actions only
-* Fields evolve via tickManager-controlled dynamics
-
-Rules:
-
-* Fields are part of Reality Layer
-* No external mutation outside engine
-* Fields may influence outcomes but not decisions directly
-
----
-
-# EXECUTION ORDER
-
-Each tick follows:
+Emergent systems must strictly follow:
 
 ```text
-World State Update
-→ Elemental Field Dynamics
-→ World Demand Calculation
-→ Perception Update
-→ Intent Generation
-→ Resolution Model
-→ Execution
-→ Memory Update
-→ Observation Snapshot (READ-ONLY)
+Action
+→ Trace
+→ Behavioral Patterns
+→ Culture
+→ Civilization Memory
+→ Civilization Myth
 ```
 
 ---
 
-# PRIORITY RULES
+## 3.1 Emergence Rule
 
-When conflicts occur:
-
-1. Reality Layer (highest priority)
-2. DF constraints
-3. Execution validation
-4. Agent intent priority
-5. Random tie-breaker
+```text
+Emergence layers are descriptive only.
+They never feed back into causality.
+```
 
 ---
 
-# NON-NEGOTIABLE RULES
-
-* tickManager is the ONLY mutation layer
-* No system may directly modify Reality
-* No system may override Resolution Model
-* No system may use Identity for decision-making
-* No system may use Behavioral Signature for control
-* No system may convert Demand into forced actions
-* No system may convert Perception into Reality influence
+# 4. Key Systems Definitions
 
 ---
 
-# EMERGENCE PRINCIPLE
+## 4.1 Typology System
 
-All higher-level structures must emerge from:
+Typology is a causal weighting profile.
 
-* repeated actions
-* world demand pressure
-* skill progression
-* environmental constraints
+It may influence:
 
-NOT from predefined classes or behavioral expressions.
+* intent scoring
+* preference weighting
+
+It must NOT define:
+
+* profession
+* class
+* role authority
 
 ---
 
-# DESIGN INTENT
+## 4.2 Demand System
 
-The system must allow:
+Demand is a contextual pressure field.
 
-* behavioral divergence
-* skill specialization
-* emergent occupations
-* stable misinformation (without correction bias)
-* evolving persistent activity cluster pressure
-* long-term ecological simulation of agent collective structures
+It may influence:
 
-WITHOUT:
+* action attractiveness score
 
-* hardcoded derived identity expressions
-* scripted behavior trees
-* forced behavioral expression assignment
+It must NOT:
+
+* generate actions
+* enforce behaviors
+* override intent selection
+
+---
+
+## 4.3 Settlement System
+
+Settlements are emergent clustering of persistent agent activity.
+
+They are:
+
+* observational constructs only
+
+They are NOT:
+
+* governing entities
+* decision authorities
+
+---
+
+## 4.4 Myth System
+
+Myth is a symbolic interpretation layer.
+
+It produces narrative projections of Civilization Memory.
+
+It must NOT:
+
+* influence intent
+* influence behavior
+* influence world state
+
+---
+
+## 4.5 Culture System
+
+Culture is a convergence pattern of repeated behaviors across agents.
+
+It is:
+
+* descriptive
+* statistical
+* emergent
+
+It must NOT:
+
+* act as causal input
+
+---
+
+## 4.6 Civilization Memory
+
+Civilization Memory is a compressed historical structure of trace data.
+
+It is:
+
+* archival
+* structural
+* non-causal
+
+---
+
+# 5. Execution Model
+
+All simulation must follow:
+
+```text
+Perception → Intent → Resolution → Execution → Trace Update
+```
+
+---
+
+## 5.1 Tick Authority
+
+```text
+tickManager is the sole execution authority.
+```
+
+No system may bypass tickManager.
+
+---
+
+# 6. Architectural Red Flags
+
+The following patterns are strictly forbidden:
+
+```text
+Culture → Intent injection
+Myth → Behavior modification
+Settlement → Skill authority
+Observation → Decision influence
+Demand → Forced action selection
+Typology → Role enforcement
+```
+
+---
+
+# 7. Simulation Integrity Rule
+
+Earthly simulation must remain:
+
+* deterministic
+* layered
+* non-referential across observation boundaries
+* causally one-directional
+
+---
+
+# 8. Source of Truth Hierarchy
+
+1. AGENTS.md (this document)
+2. /AI/ system prompts
+3. /docs architecture definitions
+4. runtime implementation (lowest authority)
+
+---
+
+# End of Constitution v3 Design Pass
