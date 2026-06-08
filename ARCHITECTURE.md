@@ -20,6 +20,7 @@ Simulation AI operating rules are defined in `/AI`.
 - [docs/09_ui_conventions.md](docs/09_ui_conventions.md) - UI layout, panel flow, colors, and rendering rules
 - [docs/10_future_roadmap.md](docs/10_future_roadmap.md) - Implementation status, planned systems, and long-term vision
 - [docs/implementation/phase1_mapping.md](docs/implementation/phase1_mapping.md) - Bridge from current code to future simulation kernel
+- [docs/architecture/CAUSAL_LAYER_ISOLATION.md](docs/architecture/CAUSAL_LAYER_ISOLATION.md) - Deterministic cross-layer causality verification
 
 ## AI Simulation Kernel
 
@@ -32,6 +33,7 @@ Simulation AI operating rules are defined in `/AI`.
 - [AI/TRACE_MODEL.md](AI/TRACE_MODEL.md) - Observability, replay, and emergence debugging
 - [AI/AGENT_TYPOLOGY_MODEL.md](AI/AGENT_TYPOLOGY_MODEL.md) - Agent causal participation profiles and typology weighting
 - [AI/INTENT_PURITY_BOUNDARY.md](AI/INTENT_PURITY_BOUNDARY.md) - Pure scoring and controlled enrichment boundary for intents
+- [AI/CULTURE_EMERGENCE_MODEL.md](AI/CULTURE_EMERGENCE_MODEL.md) - Read-only culture emergence detection model
 - [AI/ARCHITECTURE.md](AI/ARCHITECTURE.md) - AI architecture index
 
 ## Authority Boundary

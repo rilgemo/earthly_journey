@@ -1,4 +1,18 @@
 function buildIntentTrace({ scoringResult, enrichmentResult, resolutionResult }) {
+  const causalTrace = Object.freeze({
+    phaseAHash: scoringResult.deterministicSeedHash,
+    phaseBMetadata: enrichmentResult.enrichmentSummary,
+    phaseCSelection: resolutionResult.selectedIntentId,
+    externalInfluenceVector: Object.freeze({
+      Field: 0,
+      Demand: 0,
+      Typology: 0,
+      Memory: 0,
+      Settlement: 0
+    }),
+    deterministicSeed: scoringResult.deterministicSeedHash
+  });
+
   return Object.freeze({
     phaseA: Object.freeze({
       deterministicSeedHash: scoringResult.deterministicSeedHash,
@@ -22,7 +36,8 @@ function buildIntentTrace({ scoringResult, enrichmentResult, resolutionResult })
       selectedIntent: resolutionResult.selectedIntentId,
       selectionSet: resolutionResult.selectionSet,
       rationale: resolutionResult.rationale
-    })
+    }),
+    causalTrace
   });
 }
 
