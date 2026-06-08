@@ -17,6 +17,7 @@ This project uses a DF x AI hybrid simulation model.
 - [INTENT_PURITY_BOUNDARY.md](INTENT_PURITY_BOUNDARY.md) - Strict phase boundary for pure scoring, enrichment, and resolution
 - [CULTURE_EMERGENCE_MODEL.md](CULTURE_EMERGENCE_MODEL.md) - Read-only cultural stabilization detection from traces
 - [CIVILIZATION_MEMORY_MODEL.md](CIVILIZATION_MEMORY_MODEL.md) - Cross-temporal compression of persistent emergent structures
+- [CIVILIZATION_MYTH_MODEL.md](CIVILIZATION_MYTH_MODEL.md) - Downstream self-narrative and causal reinterpretation layer
 - [REPLAY_MODEL.md](REPLAY_MODEL.md) - Read-only time travel buffer for immutable tick snapshots
 - [INFLUENCE_FIELD.md](INFLUENCE_FIELD.md) - Additive behavioral pressure layer, not decision or execution
 - [DECISION_INSPECTOR.md](DECISION_INSPECTOR.md) - Observability-only decision analysis and immutable decision traces
@@ -65,6 +66,8 @@ For intent scoring purity, enrichment boundaries, or intent pipeline work, also 
 For culture detection, cross-agent behavioral stabilization, or downstream-only cultural traces, also consult `/AI/CULTURE_EMERGENCE_MODEL.md`.
 
 For civilization memory, cross-temporal compression, persistence graphs, or drift resistance analysis, also consult `/AI/CIVILIZATION_MEMORY_MODEL.md`.
+
+For civilization self-narrative, symbolic mapping, myth traces, or causal reinterpretation work, also consult `/AI/CIVILIZATION_MYTH_MODEL.md`.
 
 For simulation-agent traits, continuous skill growth, knowledge-assisted
 learning or derived identities, also consult
