@@ -12,6 +12,14 @@ function average(values = []) {
   return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
 }
 
+function biologicalStress(agent) {
+  const conditions = Object.values(agent.biology?.condition || {});
+  if (!conditions.length) return 0;
+  return conditions.reduce((sum, state) => (
+    sum + ({ sound: 0, strained: 1, impaired: 2, collapsed: 3 }[state] || 0)
+  ), 0);
+}
+
 function totalFields(world = {}) {
   const totals = {};
   const areas = world.areas instanceof Map ? [...world.areas.values()] : Object.values(world.areas || {});
@@ -28,7 +36,7 @@ function deriveDemandSignals(world = {}, agents = []) {
   const explicit = world.demandSignals || {};
   const fields = totalFields(world);
   const population = agents.length;
-  const injuries = agents.map(agent => Math.max(0, 100 - (agent.hp ?? 100)));
+  const injuries = agents.map(biologicalStress);
   const fatigue = agents.map(agent => Math.max(0, agent.needs?.fatigue || 0));
   const manaInstability = agents.map(agent => Math.max(0, (1 - (agent.mana?.stability ?? 1)) * 100));
   const monsters = agents.filter(agent => agent.type === 'monster').length;

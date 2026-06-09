@@ -32,7 +32,6 @@ function createAgent(seedName) {
     id: `${seedName}-1`,
     type: 'npc',
     location: 'tile',
-    hp: 100,
     stamina: 100,
     needs: { hunger: 0, fatigue: 0, manaNeed: 0, socialNeed: 0, safetyNeed: 0 },
     affinities: { fire: 0, water: 0, air: 0, earth: 0, life: 0, arcane: 0 },

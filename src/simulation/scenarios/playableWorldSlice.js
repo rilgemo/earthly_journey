@@ -106,7 +106,7 @@ function createScenarioWorld(seed = 12345) {
 function createScenarioAgent({ id, type, location, rng, skills = {} }) {
   const agent = createNPC({ id, type, location, rng, skills });
   agent.state = {
-    hp: agent.hp,
+    biology: agent.biology,
     stamina: agent.stamina,
     skills: agent.skills
   };

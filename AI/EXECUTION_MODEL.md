@@ -89,7 +89,7 @@ The contract layer prevents drift by making every AI-proposed action pass throug
 Before execution, validate:
 
 - Required stamina
-- Required HP
+- Required multidimensional biological condition, when explicitly declared
 - Required location
 - Required item
 - Required skill

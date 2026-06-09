@@ -5,10 +5,19 @@ All game content must be defined in these shapes and stored in `/src/data/`. No 
 ## Core Types
 
 ```ts
-type StatKey = 'hp' | 'stamina' | 'attack' | 'defense' | 'speed' | 'spirit' | 'dexterity';
+type StatKey = 'stamina' | 'attack' | 'defense' | 'speed' | 'spirit' | 'dexterity';
+
+type BiologicalDimension = 'structural' | 'metabolic' | 'immune' | 'neural';
+type CapacityState = 'full' | 'reduced' | 'minimal';
+type ConditionState = 'sound' | 'strained' | 'impaired' | 'collapsed';
+
+type ConditionCapacity = {
+  capacity: Record<BiologicalDimension, CapacityState>;
+  condition: Record<BiologicalDimension, ConditionState>;
+};
 
 type Player = {
-  hp: number;
+  biology: ConditionCapacity;
   stamina: number;
   gold: number;
   currentArea: string;
@@ -51,7 +60,7 @@ type Action = {
     skill?: { id: string; level?: number };
     item?: { id: string; qty?: number };
     gold?: number;
-    hpAbove?: number;
+    requiredCondition?: Partial<Record<BiologicalDimension, ConditionState>>;
     staminaAbove?: number;
     timePeriod?: string[];
     area?: string[];
@@ -66,7 +75,7 @@ type Action = {
   removeActions?: string[];
   skillXp?: { id: string; xp: number };
   cost?: { gold: number };
-  hpRestore?: number;
+  conditionChanges?: Partial<Record<BiologicalDimension, ConditionState>>;
   stRestore?: 'tiny' | 'small' | 'medium' | 'large';
 };
 
@@ -97,7 +106,7 @@ type Message = {
 type Enemy = {
   id: string;
   name: string;
-  hp: number;
+  biology: ConditionCapacity;
   stats: Partial<Record<StatKey, number>>;
   rewards?: {
     gold?: number;
@@ -119,7 +128,7 @@ type NPCSchedule = {
 type NPC = {
   id: string;
   name: string;
-  hp: number;
+  biology: ConditionCapacity;
   stamina: number;
   gold: number;
   skills: Skill[];

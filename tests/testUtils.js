@@ -84,8 +84,10 @@ class WorldState {
       id,
       mana,
       maxMana,
-      hp: 100,
-      maxHp: 100,
+      biology: {
+        capacity: { structural: 'full', metabolic: 'full', immune: 'full', neural: 'full' },
+        condition: { structural: 'sound', metabolic: 'sound', immune: 'sound', neural: 'sound' }
+      },
       position: 'camp'
     });
   }

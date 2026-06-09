@@ -24,7 +24,7 @@ function StatRow({ label, value, dimmed }) {
   );
 }
 
-export default function LeftPanel({ baseStats, stamina, displayStats, debuffed, stPct, equipped, onUnequipGear, slots, skills, onUnequipSkillSlot }) {
+export default function LeftPanel({ stamina, displayStats, debuffed, stPct, equipped, onUnequipGear, slots, skills, onUnequipSkillSlot }) {
   const stColor = (p) => p > 69 ? C.stFull : p > 29 ? C.stOk : p > 9 ? C.stWarn : C.stCrit;
   const stLabel = (p) => p > 69 ? "充沛" : p > 29 ? "疲惫" : p > 9 ? "警戒" : "极限";
 
@@ -36,7 +36,6 @@ export default function LeftPanel({ baseStats, stamina, displayStats, debuffed, 
       {/* 状态 */}
       <div style={panel}>
         <div style={sec}>状 态</div>
-        <Bar label="HP" cur={baseStats.HP.cur} max={baseStats.HP.max} fillColor={C.hpFill} bgColor={C.hp} />
         <Bar label="体力" cur={stamina} max={100} fillColor={stColor(stPct)} bgColor="#1a1a1a" rightLabel={stLabel(stPct)} />
         {debuffed && (
           <div style={{ fontSize: 10, color: C.stWarn, margin: "4px 0", padding: "2px 6px", border: `1px solid ${C.stWarn}`, borderRadius: 3, textAlign: "center" }}>

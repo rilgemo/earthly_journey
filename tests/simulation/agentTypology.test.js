@@ -11,7 +11,6 @@ function createAgent(overrides = {}) {
     id: 'agent_1',
     type: 'npc',
     location: 'meadow',
-    hp: 100,
     stamina: 100,
     traits: {},
     skills: {},

@@ -1,5 +1,6 @@
 const { createSkills } = require('./skills/skillSystem');
 const { createTraits } = require('./skills/traitSystem');
+const { createConditionCapacity } = require('./life/conditionCapacityModel');
 
 const createNPC = ({
   id,
@@ -13,7 +14,7 @@ const createNPC = ({
     id,
     type,
     location,
-    hp: 100,
+    biology: createConditionCapacity(),
     stamina: 100,
     traits: createTraits(rng, traits),
     skills: createSkills(skills),

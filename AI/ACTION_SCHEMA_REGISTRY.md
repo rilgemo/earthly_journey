@@ -50,7 +50,7 @@ type ActionSchema = {
   removeActions?: string[];
   skillXp?: { id: string; xp: number };
   cost?: { gold: number };
-  hpRestore?: number;
+  conditionChanges?: Record<string, string>;
   stRestore?: 'tiny' | 'small' | 'medium' | 'large';
 };
 ```
@@ -126,7 +126,7 @@ Profiles may define additive field perturbation signatures. They may not mutate 
 
 - key: rest
   label: Rest at Camp
-  narrative: Spend time recovering health and stamina.
+  narrative: Spend time recovering from strain and restoring stamina.
   stCost: rest_full
   requirements:
     area: ["camp"]

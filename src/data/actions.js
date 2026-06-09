@@ -68,7 +68,7 @@ export const ACTION_DATA = {
       "「喜欢就拿去，算我送你的见面礼。」",
     ],
     log: ["你从商贩那里得到了一本草药图鉴。"],
-    unlockSkill: { name: "草药知识", type: "辅助", desc: "辨别常见草药的种类与药效。", stats: { HP: 2, 精神: 1 } },
+    unlockSkill: { name: "草药知识", type: "辅助", desc: "辨别常见草药的种类与药效。", stats: { 精神: 1 } },
     giveItem: { name: "草药图鉴", qty: 1 },
     removeActions: ["翻看商贩的小册子", "询问商贩关于这座镇子"],
   },
@@ -124,7 +124,6 @@ export const ACTION_DATA = {
   "点一碗炖肉汤（5G）": {
     stCost: "rest_tiny",
     cost: { gold: 5 },
-    hpRestore: 5,
     narrative: [
       "掌柜端来一碗冒着热气的浓汤，里面浮着几块肉和蘑菇。",
       "入口鲜浓，暖意从胃里散开，蔓延到四肢。你感觉好多了。",
@@ -148,7 +147,7 @@ export const ACTION_DATA = {
     stCost: "vlow",
     narrative: [
       "货架上整齐排列着各种药剂：",
-      "· 小型回复药水（红色）— 15G，回复少量HP",
+      "· 小型回复药水（红色）— 15G，用于处理轻微损伤",
       "· 解毒剂（绿色）— 20G，解除中毒状态",
       "· 提神剂（黄色）— 30G，立即回复大量体力",
       "角落还有几瓶标签模糊的瓶子，看不出内容物。",
@@ -343,7 +342,7 @@ export const ACTION_DATA = {
     log: ["你采集到了 普通草药 ×2。"],
     giveItem: { name: "普通草药", qty: 2 },
     skillXp: { name: "采集", xp: 5 },
-    unlockSkill: { name: "采集", type: "采集", desc: "从自然环境中收集有用的材料。", stats: { 速度: 1, 灵巧: 2, HP: 1 } },
+    unlockSkill: { name: "采集", type: "采集", desc: "从自然环境中收集有用的材料。", stats: { 速度: 1, 灵巧: 2 } },
   },
   "深入林地": {
     stCost: "mid",
@@ -405,7 +404,7 @@ export const ACTION_DATA = {
     log: ["你采集到了 铁矿石 ×1。"],
     giveItem: { name: "铁矿石", qty: 1 },
     skillXp: { name: "采集", xp: 10 },
-    unlockSkill: { name: "采矿", type: "采集", desc: "从岩层中提取矿石的能力。", stats: { 物攻: 1, HP: 1 } },
+    unlockSkill: { name: "采矿", type: "采集", desc: "从岩层中提取矿石的能力。", stats: { 物攻: 1 } },
   },
   "仔细观察矿脉": {
     stCost: "vlow",

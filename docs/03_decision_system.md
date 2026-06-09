@@ -14,7 +14,7 @@ Available actions are determined by:
 - The area's `actions`
 - The player's `discoveredActions`
 - Action `requirements`
-- Current HP and stamina
+- Current multidimensional biological condition and stamina
 - World time period
 - Cooldowns, when defined
 

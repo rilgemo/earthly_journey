@@ -13,7 +13,7 @@ const TRACKED_FIELDS = Object.freeze(['fire', 'water', 'life', 'arcane']);
 
 function countPopulation(agents) {
   return agents.reduce((counts, agent) => {
-    if ((agent.hp ?? agent.state?.hp ?? 0) > 0 && counts[agent.type] !== undefined) {
+    if (agent.life?.alive !== false && counts[agent.type] !== undefined) {
       counts[agent.type] += 1;
     }
     return counts;

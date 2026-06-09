@@ -23,6 +23,7 @@ const {
 } = require('./identity/identityLock');
 const { calculateWorldDemand } = require('./demand/demandModel');
 const { buildAgentTypologySnapshot } = require('./agentTypology/typeTraceBuilder');
+const { createConditionCapacity, supportsLife } = require('./life/conditionCapacityModel');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 const LIFE_STAGE_TICKS = Object.freeze({
@@ -41,7 +42,8 @@ function createInitialLife(agent, worldObj) {
   const existing = agent.life || {};
   const ageTicks = Math.max(0, Math.floor(existing.ageTicks || 0));
   const maxAgeTicks = Math.max(1, Math.floor(existing.maxAgeTicks || LIFE_STAGE_TICKS.max));
-  const alive = existing.alive !== false && ageTicks < maxAgeTicks;
+  agent.biology = createConditionCapacity(agent.biology);
+  const alive = existing.alive !== false && supportsLife(agent.biology);
 
   return {
     birthTick: Number.isFinite(existing.birthTick) ? existing.birthTick : (worldObj.tick || 0) - ageTicks,
@@ -57,7 +59,7 @@ function runLifeKernel(agent, worldObj) {
   const previousLife = createInitialLife(agent, worldObj);
   const ageTicks = previousLife.ageTicks + 1;
   const lifeStage = resolveLifeStage(ageTicks);
-  const alive = previousLife.alive && ageTicks < previousLife.maxAgeTicks;
+  const alive = previousLife.alive && supportsLife(agent.biology);
   const lifeCondition = alive ? 'alive' : 'deceased';
   const nextLife = {
     ...previousLife,

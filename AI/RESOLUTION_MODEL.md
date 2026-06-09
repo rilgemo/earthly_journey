@@ -109,7 +109,7 @@ rest      0.55 -> survival
 
 Rule set v1:
 
-1. Survival overrides all other intents if HP is below the survival threshold.
+1. Immediate multidimensional biological collapse may override other intents only through explicitly declared condition signals.
 2. Immediate threats override EETS tuning.
 3. Social bonding overrides economic behavior only if trust is above threshold.
 4. Economic intent dominates if scarcity is above threshold.

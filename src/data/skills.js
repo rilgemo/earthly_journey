@@ -17,13 +17,13 @@ export const SKILL_DEFS = {
     name: "草药知识",
     type: "辅助",
     desc: "辨别常见草药的种类与药效。",
-    stats: { HP: 2, 精神: 1 },
+    stats: { 精神: 1 },
   },
   采集: {
     name: "采集",
     type: "采集",
     desc: "从自然环境中收集有用的材料。",
-    stats: { 速度: 1, 灵巧: 2, HP: 1 },
+    stats: { 速度: 1, 灵巧: 2 },
   },
   辨别植物: {
     name: "辨别植物",
@@ -35,7 +35,7 @@ export const SKILL_DEFS = {
     name: "采矿",
     type: "采集",
     desc: "从岩层中提取矿石的能力。",
-    stats: { 物攻: 1, HP: 1 },
+    stats: { 物攻: 1 },
   },
   锻造入门: {
     name: "锻造入门",

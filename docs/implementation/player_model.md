@@ -21,7 +21,7 @@ The player should remain a special agent:
 
 | Current Player Field | Future Meaning |
 | --- | --- |
-| `hp` | Physical state |
+| `biology.condition` | Multidimensional current biological state |
 | `stamina` | Physical state and action capacity |
 | `gold` | Economic state |
 | `currentArea` | Location |

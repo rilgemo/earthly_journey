@@ -32,7 +32,7 @@ type NPCSchedule = {
 type NPC = {
   id: string;
   name: string;
-  hp: number;
+  biology: ConditionCapacity;
   stamina: number;
   gold: number;
   skills: Skill[];

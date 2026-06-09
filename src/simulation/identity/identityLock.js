@@ -16,7 +16,7 @@ function createIdentityFreeDecisionView(agent) {
   return {
     id: agent.id,
     location: agent.location,
-    hp: agent.hp,
+    biology: agent.biology,
     stamina: agent.stamina,
     traits: agent.traits,
     skills: agent.skills,

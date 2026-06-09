@@ -27,7 +27,7 @@ src/
 |-- utils/
 |   `-- worldTime.js      # getWorldTime() pure function
 `-- components/
-    |-- LeftPanel.jsx     # HP/Stamina bars, stats, status display
+    |-- LeftPanel.jsx     # Stamina, stats, and status display
     |-- MainPanel.jsx     # Narrative pane, action buttons, message feed
     `-- RightPanel.jsx    # Skills, equipment, inventory display
 ```

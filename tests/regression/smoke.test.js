@@ -140,8 +140,10 @@ describe('Test 7: Smoke Test (Daily Sanity Check)', () => {
       manager.world.agents.forEach((agent, id) => {
         expect(agent.mana).toBeGreaterThanOrEqual(0);
         expect(agent.mana).toBeLessThanOrEqual(agent.maxMana);
-        expect(agent.hp).toBeGreaterThanOrEqual(0);
-        expect(agent.hp).toBeLessThanOrEqual(agent.maxHp);
+        expect(Object.keys(agent.biology.condition)).toEqual(
+          expect.arrayContaining(['structural', 'metabolic', 'immune', 'neural'])
+        );
+        expect(Object.values(agent.biology.condition)).not.toContain(undefined);
       });
     });
 

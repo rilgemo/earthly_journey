@@ -3,7 +3,8 @@
 ## Core Rules
 
 - Skills define all stats.
-- HP, attack, defense, and other attributes are derived from equipped skills.
+- Attack, defense, and other action attributes are derived from equipped skills.
+- Skills do not define biological Capacity or Condition.
 - There is no separate stat point system.
 - Skill slots matter: players must choose which skills to equip.
 - Undiscovered skills are invisible and must not render placeholders or hints.
@@ -12,14 +13,13 @@
 
 Derived stats are computed, not stored.
 
-- `maxHp = 50 + sum(skill.hp bonuses)`
 - `maxStamina = 100 + sum(skill.stamina bonuses)`
-- `maxHp`, `maxStamina`, `attack`, and `defense` are recalculated on demand from equipped skills.
+- `maxStamina`, `attack`, and `defense` are recalculated on demand from equipped skills.
 
 ## Skill Schema
 
 ```ts
-type StatKey = 'hp' | 'stamina' | 'attack' | 'defense' | 'speed' | 'spirit' | 'dexterity';
+type StatKey = 'stamina' | 'attack' | 'defense' | 'speed' | 'spirit' | 'dexterity';
 
 type Skill = {
   id: string;

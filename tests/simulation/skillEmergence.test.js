@@ -16,7 +16,6 @@ function agent(overrides = {}) {
     id: 'agent-1',
     type: 'npc',
     location: 'tile',
-    hp: 100,
     stamina: 100,
     needs: { hunger: 0, fatigue: 0, manaNeed: 0, socialNeed: 0, safetyNeed: 0 },
     affinities: {},

@@ -17,7 +17,6 @@ export const C = {
   accent: "#7c6fcd", accentDim: "#3d3666",
   green: "#5a9e6f", red: "#9e5a5a", gold: "#b89a4a",
   log0: "#c4c0b8", log1: "#7a7890",
-  hp: "#8b3a3a", hpFill: "#c05050",
   stFull: "#4a9e6f", stOk: "#8a9e3a", stWarn: "#c07830", stCrit: "#c03030",
 };
 
@@ -36,7 +35,15 @@ const ST_MAX = 100;
 const ST_WARN = 30;
 const ST_CRIT = 10;
 const ST_COST = { high: 18, mid: 10, low: 5, vlow: 2 };
+const INITIAL_BASE_STATS = Object.freeze({ 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
 const inspectorSimulator = createInspectorSimulationStream();
+
+function normalizeBaseStats(candidate = {}) {
+  return Object.fromEntries(Object.keys(INITIAL_BASE_STATS).map(key => [
+    key,
+    typeof candidate[key] === "number" ? candidate[key] : INITIAL_BASE_STATS[key]
+  ]));
+}
 
 export default function App() {
   const [area, setArea] = useState("新叶镇·广场");
@@ -55,7 +62,7 @@ export default function App() {
   const lastSavedJsonRef = useRef(null);
   const [skills, setSkills] = useState([]);
   const [slots, setSlots] = useState(() => Array(SKILL_SLOTS).fill(null));
-  const [baseStats, setBaseStats] = useState({ HP: { cur: 20, max: 20 }, 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
+  const [baseStats, setBaseStats] = useState(() => normalizeBaseStats());
   const [stamina, setStamina] = useState(ST_MAX);
   const [gold, setGold] = useState(50);
   const [items, setItems] = useState([]);
@@ -96,7 +103,7 @@ export default function App() {
       if (data.areaActions) setAreaActions(data.areaActions);
       if (data.skills) setSkills(data.skills);
       if (data.slots) setSlots(data.slots);
-      if (data.baseStats) setBaseStats(data.baseStats);
+      if (data.baseStats) setBaseStats(normalizeBaseStats(data.baseStats));
       if (typeof data.stamina === "number") setStamina(data.stamina);
       if (typeof data.gold === "number") setGold(data.gold);
       if (Array.isArray(data.items)) setItems(data.items);
@@ -156,7 +163,6 @@ export default function App() {
   }, {});
 
   const displayStats = {
-    HP: baseStats.HP,
     物攻: Math.floor((baseStats.物攻 + (equipBonus.物攻 || 0)) * stMult),
     防御: Math.floor((baseStats.防御 + (equipBonus.防御 || 0)) * stMult),
     魔攻: Math.floor((baseStats.魔攻 + (equipBonus.魔攻 || 0)) * stMult),
@@ -169,17 +175,16 @@ export default function App() {
   // ── 技能属性重算 ──────────────────────────────────────
   const recalc = useCallback((newSlots) => {
     const sk = skillsRef.current;
-    const b = { HP: { cur: 20, max: 20 }, 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 };
+    const b = normalizeBaseStats();
     newSlots.forEach(name => {
       if (!name) return;
       const s = sk.find(x => x.name === name);
       if (!s) return;
       Object.entries(s.stats || {}).forEach(([k, v]) => {
-        if (k === "HP") b.HP.max += v * s.level;
-        else b[k] = (b[k] || 0) + v * s.level;
+        b[k] = (b[k] || 0) + v * s.level;
       });
     });
-    setBaseStats(prev => { b.HP.cur = Math.min(prev.HP.cur + (b.HP.max - prev.HP.max), b.HP.max); return b; });
+    setBaseStats(b);
   }, []);
 
   // ── 体力 ─────────────────────────────────────────────
@@ -230,7 +235,6 @@ export default function App() {
     else if (d.stCost === "rest_tiny" || d.stRestore === "tiny") restoreSt("tiny");
     else drainSt(ST_COST[d.stCost] || 0);
 
-    if (d.hpRestore) setBaseStats(b => ({ ...b, HP: { ...b.HP, cur: Math.min(b.HP.max, b.HP.cur + d.hpRestore) } }));
 
     // 行动列表更新
     setAreaActions(prev => {
@@ -348,7 +352,6 @@ export default function App() {
       {/* 三栏 */}
       <div style={{ display: "grid", gridTemplateColumns: "190px 1fr 220px", flex: 1, minHeight: 0 }}>
         <LeftPanel
-          baseStats={baseStats}
           stamina={stamina}
           displayStats={displayStats}
           debuffed={debuffed}

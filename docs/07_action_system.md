@@ -22,7 +22,7 @@ type Action = {
     skill?: { id: string; level?: number };
     item?: { id: string; qty?: number };
     gold?: number;
-    hpAbove?: number;
+    requiredCondition?: Partial<Record<BiologicalDimension, ConditionState>>;
     staminaAbove?: number;
     timePeriod?: string[];
     area?: string[];
@@ -37,7 +37,7 @@ type Action = {
   removeActions?: string[];
   skillXp?: { id: string; xp: number };
   cost?: { gold: number };
-  hpRestore?: number;
+  conditionChanges?: Partial<Record<BiologicalDimension, ConditionState>>;
   stRestore?: 'tiny' | 'small' | 'medium' | 'large';
 };
 ```
@@ -49,7 +49,7 @@ Actions may require:
 - Skill id and optional level
 - Item id and optional quantity
 - Gold
-- HP above a threshold
+- Explicit biological condition state
 - Stamina above a threshold
 - Time period
 - Area
@@ -66,7 +66,7 @@ Action execution may:
 - Add or remove actions
 - Grant skill XP
 - Spend gold
-- Restore HP
+- Apply explicit biological condition changes through execution authority
 - Restore stamina
 
 ## Stamina Thresholds

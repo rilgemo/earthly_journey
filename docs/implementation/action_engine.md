@@ -13,7 +13,7 @@ Actions currently carry:
 - Rewards
 - Skill XP
 - Added or removed actions
-- HP or stamina restoration
+- Explicit biological condition changes or stamina restoration
 - Message output
 
 ## Future Action Engine Shape
@@ -33,7 +33,7 @@ Validation checks whether reality allows the action.
 Examples:
 
 - Enough stamina
-- Enough HP
+- Required biological condition state, when explicitly declared
 - Required skill
 - Required item
 - Required gold

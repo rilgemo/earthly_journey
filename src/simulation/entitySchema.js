@@ -61,7 +61,10 @@ function createNpcEntity(overrides = {}) {
     type: 'npc',
     location: 'meadow',
     state: {
-      hp: 100,
+      biology: {
+        capacity: { structural: 'full', metabolic: 'full', immune: 'full', neural: 'full' },
+        condition: { structural: 'sound', metabolic: 'sound', immune: 'sound', neural: 'sound' }
+      },
       stamina: 100,
       skills: []
     },
@@ -78,7 +81,10 @@ function createMonsterEntity(overrides = {}) {
     type: 'monster',
     location: 'cave',
     state: {
-      hp: 100,
+      biology: {
+        capacity: { structural: 'full', metabolic: 'full', immune: 'full', neural: 'full' },
+        condition: { structural: 'sound', metabolic: 'sound', immune: 'sound', neural: 'sound' }
+      },
       aggression: 0.5
     },
     memory: {},
@@ -94,7 +100,10 @@ function createAnimalEntity(overrides = {}) {
     type: 'animal',
     location: 'forest',
     state: {
-      hp: 30,
+      biology: {
+        capacity: { structural: 'full', metabolic: 'full', immune: 'full', neural: 'full' },
+        condition: { structural: 'sound', metabolic: 'sound', immune: 'sound', neural: 'sound' }
+      },
       hunger: 0.2
     },
     memory: {},
