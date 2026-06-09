@@ -25,6 +25,10 @@ const { calculateWorldDemand } = require('./demand/demandModel');
 const { buildAgentTypologySnapshot } = require('./agentTypology/typeTraceBuilder');
 const { createConditionCapacity, supportsLife } = require('./life/conditionCapacityModel');
 const { computeReproductionProbabilityField } = require('./reproduction/reproductionProbabilityField');
+const { runReproductionEventEngine } = require('./reproduction/reproductionEventEngine');
+const { evaluateCommitmentBoundary } = require('./reproduction/reproductionCommitmentBoundary');
+const { runBirthSystem } = require('./reproduction/birthSystem');
+const { evaluateBirthConsistencyContract } = require('./reproduction/birthConsistencyContract');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 const LIFE_STAGE_TICKS = Object.freeze({
@@ -528,12 +532,56 @@ function tickManager(npcs, worldObj, traceCollector) {
     if (npc.runtime) npc.runtime.lastIdentityChanges = identityChanges;
   });
 
+  const reproductionEventOutput = runReproductionEventEngine({
+    tick: worldObj.tick,
+    agents: npcs,
+    reproductionField,
+    world: worldObj
+  });
+  if (traceCollector?.current) {
+    traceCollector.current.reproductionEvents = reproductionEventOutput.proposals;
+  }
+
+  const commitmentReport = evaluateCommitmentBoundary({
+    tick: worldObj.tick,
+    proposals: reproductionEventOutput.proposals,
+    reproductionField,
+    agents: npcs,
+    world: worldObj
+  });
+  if (traceCollector?.current) {
+    traceCollector.current.reproductionCommitment = commitmentReport;
+  }
+
   const corpseEntries = finalizePendingDeaths(npcs, worldObj);
   if (traceCollector?.current) {
     traceCollector.current.life = {
       agents: lifeTraces,
       corpseEntries
     };
+  }
+
+  const previousTickAgentSnapshot = npcs.map(agent => ({ id: agent.id }));
+  const birthResult = runBirthSystem({ commitmentReport, npcs, world: worldObj });
+  birthResult.births.forEach(newborn => npcs.push(newborn));
+  if (traceCollector?.current) {
+    traceCollector.current.birthSystem = {
+      births: birthResult.births,
+      rejectedCommitments: birthResult.rejectedCommitments,
+      tick: worldObj.tick
+    };
+  }
+
+  const birthConsistencyReport = evaluateBirthConsistencyContract({
+    tick: worldObj.tick,
+    births: birthResult.births,
+    previousTickState: { agents: previousTickAgentSnapshot },
+    currentAgents: npcs,
+    lineageGraph: worldObj.lineageGraph || null,
+    worldSnapshot: null
+  });
+  if (traceCollector?.current) {
+    traceCollector.current.birthConsistency = birthConsistencyReport;
   }
 
   if (traceCollector && typeof traceCollector.endTick === 'function') {
