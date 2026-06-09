@@ -30,8 +30,8 @@ const FORBIDDEN_BIOLOGY_KEY_PATTERNS = Object.freeze([
 ]);
 
 const FORBIDDEN_SIMULATION_IMPORTS = Object.freeze([
-  /require\(['"].*(?:components|inspector|App)['"]\)/,
-  /from\s+['"].*(?:components|inspector|App)['"]/
+  /require\(['"].*(?:components|inspector|App).*['"]\)/,
+  /from\s+['"].*(?:components|inspector|App).*['"]/
 ]);
 
 function walkFiles(rootDir, extensions = ['.js', '.jsx', '.json']) {

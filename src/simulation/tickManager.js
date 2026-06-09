@@ -24,6 +24,7 @@ const {
 const { calculateWorldDemand } = require('./demand/demandModel');
 const { buildAgentTypologySnapshot } = require('./agentTypology/typeTraceBuilder');
 const { createConditionCapacity, supportsLife } = require('./life/conditionCapacityModel');
+const { computeReproductionProbabilityField } = require('./reproduction/reproductionProbabilityField');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 const LIFE_STAGE_TICKS = Object.freeze({
@@ -441,6 +442,11 @@ function tickManager(npcs, worldObj, traceCollector) {
       action: agentTrace.actionSelected,
       score: agentTrace.scoreBreakdown ? agentTrace.scoreBreakdown.total : null
     });
+  }
+
+  const reproductionField = computeReproductionProbabilityField(npcs, worldObj);
+  if (traceCollector?.current) {
+    traceCollector.current.reproductionField = reproductionField;
   }
 
   if (worldObj.resourceMap) {
