@@ -1,0 +1,124 @@
+flowchart TD
+    %% ─── Reproduction Pipeline v1 ────────────────────────────────────
+    %% Strict causal order extracted from tickManager.js
+    %% No cycles. No direct bond access below Mating Event System.
+
+    %% ─── Upstream inputs (read-only by pipeline) ─────────────────────
+    AGENT_MEM([Agent Memory\nshortTerm · longTerm · recentEvents])
+    AGENT_LIFE([Agent Life State\nalive · lifeStage · _pendingDeath])
+    AGENT_BIO([Agent Biology\nconditionCapacity signals])
+    WORLD_DEMAND([World State\ndemandIndex · resourceMap\nlocationCounts])
+    WORLD_STABILITY([World Stability\nlastStabilityTrace])
+
+    %% ─── Layer B.5 · Mating Event System ─────────────────────────────
+    subgraph B5 ["Layer B.5 — Mating Event System  (matingEventSystem.js)"]
+        BOND_READ[Read bond signal\ndirectedBondSignal per pair\nfrom agent memory entries]
+        ELIGIBILITY[Eligibility check\nalive · adult · no collapsed dimensions\nco-location required]
+        AFFINITY[Compute affinity\nclamp mean of mutual bond signals]
+        EMIT_MATING[Emit matingEvents\nfrozen ephemeral array\npair + affinity only]
+    end
+
+    %% ─── Layer C · Reproduction Probability Field ────────────────────
+    subgraph C ["Layer C — Reproduction Probability Field  (reproductionProbabilityField.js)"]
+        BIO_FIELD[biologicalField\nconditionCapacity signals\nper agent]
+        MATING_FIELD[matingField\nreads matingEventIndex\nNO bond memory access]
+        COMP_FIELD[competitionField\nlocation density · resource count]
+        DEMAND_FIELD[demandField\nworld demandIndex average]
+        STRUCT_FIELD[structureField\nco-location population density]
+        COMBINE[Combine components\ncombinedField sum]
+        SIGMOID[sigmoid transform\npairAttractor · groupAttractor\nindependentAttractor]
+        PAIR_RESULT[Frozen PairResult\npair · probabilityVector\ncomponents · combinedField]
+    end
+
+    %% ─── Layer D · Reproduction Event Engine ─────────────────────────
+    subgraph D ["Layer D — Reproduction Event Engine  (reproductionEventEngine.js)"]
+        DYN_THRESH[Dynamic threshold\npopulationPressure · fertilityPressure\nstabilityModifier]
+        CANDIDATE[Candidate selection\nfilter pairAttractor ≥ threshold\ntop-K per agent]
+        MODE[selectMode\nsuppression · cluster · pair · asymmetric]
+        PROPOSALS[Frozen proposals\ntick · parents · probability · confidence · mode]
+    end
+
+    %% ─── Layer E · Commitment Boundary ───────────────────────────────
+    subgraph E ["Layer E — Commitment Boundary  (reproductionCommitmentBoundary.js)"]
+        BOUNDARY[evaluateCommitmentBoundary\nvalidates proposals against\nagent state · world · tick]
+        COMMIT_REPORT[commitmentReport\napproved · rejected commitments]
+    end
+
+    %% ─── Layer F · Birth System ───────────────────────────────────────
+    subgraph F ["Layer F — Birth System  (birthSystem.js)"]
+        BIRTH_EXEC[runBirthSystem\ncreates newborn agent objects\nappends to npcs array]
+        BIRTHS[births[]\nnew agents added this tick]
+    end
+
+    %% ─── Layer G · Birth Consistency Contract ─────────────────────────
+    subgraph G ["Layer G — Birth Consistency Contract  (birthConsistencyContract.js)"]
+        CONSISTENCY[evaluateBirthConsistencyContract\nverification only · no mutation]
+        BIRTH_REPORT[birthConsistencyReport\nobservation output]
+    end
+
+    %% ─── Causal edges ─────────────────────────────────────────────────
+    AGENT_MEM --> BOND_READ
+    AGENT_LIFE --> ELIGIBILITY
+    AGENT_BIO --> ELIGIBILITY
+    BOND_READ --> AFFINITY
+    ELIGIBILITY --> AFFINITY
+    AFFINITY --> EMIT_MATING
+
+    EMIT_MATING -->|matingEvents| MATING_FIELD
+    AGENT_BIO --> BIO_FIELD
+    AGENT_LIFE --> BIO_FIELD
+    WORLD_DEMAND --> DEMAND_FIELD
+    WORLD_DEMAND --> COMP_FIELD
+    WORLD_DEMAND --> STRUCT_FIELD
+
+    BIO_FIELD --> COMBINE
+    MATING_FIELD --> COMBINE
+    COMP_FIELD --> COMBINE
+    DEMAND_FIELD --> COMBINE
+    STRUCT_FIELD --> COMBINE
+    COMBINE --> SIGMOID
+    SIGMOID --> PAIR_RESULT
+
+    PAIR_RESULT -->|reproductionField| DYN_THRESH
+    PAIR_RESULT -->|reproductionField| CANDIDATE
+    WORLD_STABILITY --> DYN_THRESH
+    AGENT_LIFE --> DYN_THRESH
+    DYN_THRESH -->|threshold| CANDIDATE
+    CANDIDATE --> MODE
+    MODE --> PROPOSALS
+
+    PROPOSALS --> BOUNDARY
+    PAIR_RESULT -->|reproductionField| BOUNDARY
+    AGENT_LIFE --> BOUNDARY
+    WORLD_DEMAND --> BOUNDARY
+    BOUNDARY --> COMMIT_REPORT
+
+    COMMIT_REPORT --> BIRTH_EXEC
+    BIRTH_EXEC --> BIRTHS
+
+    BIRTHS --> CONSISTENCY
+    CONSISTENCY --> BIRTH_REPORT
+
+    %% ─── Isolation enforcement annotations ────────────────────────────
+    BOND_WALL{Bond signal\nSTOPS here}
+    EMIT_MATING --> BOND_WALL
+    BOND_WALL -->|affinity only| MATING_FIELD
+
+    %% ─── Styles ───────────────────────────────────────────────────────
+    classDef input    fill:#1a1a2e,color:#aaaaff,stroke:#3333aa
+    classDef mating   fill:#1b3a4b,color:#ffd6a5,stroke:#ff9900
+    classDef probf    fill:#0d2137,color:#c8f0c8,stroke:#2a7a2a
+    classDef engine   fill:#16213e,color:#e0e0ff,stroke:#4a4aff
+    classDef commit   fill:#2a1f3d,color:#ffb3ff,stroke:#9933cc
+    classDef birth    fill:#1b2f1b,color:#b3ffb3,stroke:#33cc33
+    classDef obs      fill:#2d2d2d,color:#aaaaaa,stroke:#555555
+    classDef wall     fill:#3d1a1a,color:#ff8080,stroke:#cc0000
+
+    class AGENT_MEM,AGENT_LIFE,AGENT_BIO,WORLD_DEMAND,WORLD_STABILITY input
+    class BOND_READ,ELIGIBILITY,AFFINITY,EMIT_MATING mating
+    class BIO_FIELD,MATING_FIELD,COMP_FIELD,DEMAND_FIELD,STRUCT_FIELD,COMBINE,SIGMOID,PAIR_RESULT probf
+    class DYN_THRESH,CANDIDATE,MODE,PROPOSALS engine
+    class BOUNDARY,COMMIT_REPORT commit
+    class BIRTH_EXEC,BIRTHS birth
+    class CONSISTENCY,BIRTH_REPORT obs
+    class BOND_WALL wall

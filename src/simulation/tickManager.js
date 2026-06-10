@@ -30,6 +30,7 @@ const { runReproductionEventEngine } = require('./reproduction/reproductionEvent
 const { evaluateCommitmentBoundary } = require('./reproduction/reproductionCommitmentBoundary');
 const { runBirthSystem } = require('./reproduction/birthSystem');
 const { evaluateBirthConsistencyContract } = require('./reproduction/birthConsistencyContract');
+const { runArchitectureCI } = require('./architecture-ci/architectureCI');
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 const LIFE_STAGE_TICKS = Object.freeze({
@@ -588,6 +589,14 @@ function tickManager(npcs, worldObj, traceCollector) {
   });
   if (traceCollector?.current) {
     traceCollector.current.birthConsistency = birthConsistencyReport;
+  }
+
+  const ciReport = runArchitectureCI({
+    tick: worldObj.tick,
+    trace: traceCollector
+  });
+  if (traceCollector) {
+    traceCollector.architectureCI = ciReport;
   }
 
   if (traceCollector && typeof traceCollector.endTick === 'function') {

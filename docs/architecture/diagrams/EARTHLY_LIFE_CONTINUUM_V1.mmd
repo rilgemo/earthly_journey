@@ -1,0 +1,91 @@
+flowchart TD
+    %% ─── Tick Boundary ───────────────────────────────────────────────
+    TICK_START([Tick N begins])
+
+    %% ─── Phase 1 · Pre-agent setup ───────────────────────────────────
+    TICK_ADV[Advance worldObj.tick]
+    LIFE_K[Life Kernel\nrunLifeKernel per agent\nage · lifeStage · _pendingDeath]
+    ID_BEGIN[Identity-Free Begin\nbeginIdentityFreeTick\nstrips derived identity metadata]
+    TRACE_BEGIN[Begin Trace Collection]
+    DEMAND[World Demand\ncalculateWorldDemand\nwrites demandIndex]
+
+    %% ─── Phase 2 · Agent simulation loop ─────────────────────────────
+    SIM_LOOP[[simulateAgent loop\nfor each agent]]
+
+    MEMORY[Memory init · decay · recall\nlearnKnowledgeFromMemories]
+    PERCEPTION[Perception\nperceive · evaluateNeeds\ncreateInfluenceField]
+    INTENT[Intent Pipeline\nfilterRegisteredActions\nintentPipeline.execute\nbuildAgentTypologySnapshot]
+    EXEC[Action Execution\napplyActionEffects · mana update\ncommunication transfer · yield]
+    REINFORCE[Internal Reinforcement\nrecordActionOutcome · applySkillGain\nadvanceNeeds · createRuntimeSnapshot]
+    AGENT_TRACE[Record Agent Trace]
+
+    %% ─── Phase 3 · Reproduction pipeline ────────────────────────────
+    MATING[Mating Event System\ncomputeMatingEvents\nreads Bond signal · location · condition\nemits ephemeral matingEvents]
+    REPRO_FIELD[Reproduction Probability Field\ncomputeReproductionProbabilityField\nreads matingEvents · biology · competition\ndemand · structure\nNO direct bond access]
+
+    %% ─── Phase 4 · World physics ──────────────────────────────────────
+    RES_FLOW[Resource Flow\nrunResourceFlowTick\nconsumes action-yield snapshots]
+    FIELD_DYN[Field Dynamics\ncommitFieldDynamics\napplies perturbation queue]
+    EMERGENCE[Coupled Emergence\nemergenceTickHook\nqueues future field perturbations]
+    STABILITY[Stability Controller\nrunStabilityController\nwrites stabilityGains]
+
+    %% ─── Phase 5 · Identity restore ──────────────────────────────────
+    ID_RESTORE[Identity Restore\napplyPostTickIdentity\nderives identity metadata]
+
+    %% ─── Phase 6 · Reproduction resolution ──────────────────────────
+    REPRO_ENG[Reproduction Event Engine\nrunReproductionEventEngine\nreads only reproductionField\nno bond · no mating access]
+    COMMIT_BOUND[Commitment Boundary\nevaluateCommitmentBoundary\nvalidates proposals]
+
+    %% ─── Phase 7 · Life finalisation ─────────────────────────────────
+    DEATH[Finalize Pending Deaths\nfinalizePendingDeaths\ncreates corpse resource entries]
+    BIRTH[Birth System\nrunBirthSystem\nappends newborns to npcs]
+    BIRTH_CONTRACT[Birth Consistency Contract\nevaluateBirthConsistencyContract\nverification only]
+
+    TICK_END([Tick N ends])
+
+    %% ─── Edges ────────────────────────────────────────────────────────
+    TICK_START --> TICK_ADV
+    TICK_ADV --> LIFE_K
+    LIFE_K --> ID_BEGIN
+    ID_BEGIN --> TRACE_BEGIN
+    TRACE_BEGIN --> DEMAND
+    DEMAND --> SIM_LOOP
+
+    SIM_LOOP --> MEMORY
+    MEMORY --> PERCEPTION
+    PERCEPTION --> INTENT
+    INTENT --> EXEC
+    EXEC --> REINFORCE
+    REINFORCE --> AGENT_TRACE
+    AGENT_TRACE --> SIM_LOOP
+
+    SIM_LOOP -->|all agents done| MATING
+    MATING -->|matingEvents| REPRO_FIELD
+
+    REPRO_FIELD --> RES_FLOW
+    RES_FLOW --> FIELD_DYN
+    FIELD_DYN --> EMERGENCE
+    EMERGENCE --> STABILITY
+    STABILITY --> ID_RESTORE
+
+    ID_RESTORE --> REPRO_ENG
+    REPRO_FIELD -->|reproductionField| REPRO_ENG
+    REPRO_ENG -->|proposals| COMMIT_BOUND
+
+    COMMIT_BOUND --> DEATH
+    DEATH --> BIRTH
+    BIRTH --> BIRTH_CONTRACT
+    BIRTH_CONTRACT --> TICK_END
+
+    %% ─── Causal boundaries ────────────────────────────────────────────
+    classDef execution fill:#1a1a2e,color:#e0e0ff,stroke:#4a4aff
+    classDef decision  fill:#16213e,color:#c8f0c8,stroke:#2a7a2a
+    classDef repro     fill:#0f3460,color:#ffd6a5,stroke:#ff9900
+    classDef life      fill:#1b1b2f,color:#ffb3b3,stroke:#cc3333
+    classDef observe   fill:#2d2d2d,color:#aaaaaa,stroke:#555555
+
+    class TICK_ADV,DEMAND,EXEC,REINFORCE,RES_FLOW,FIELD_DYN,EMERGENCE,STABILITY,ID_RESTORE,ID_BEGIN execution
+    class MEMORY,PERCEPTION,INTENT,AGENT_TRACE decision
+    class MATING,REPRO_FIELD,REPRO_ENG,COMMIT_BOUND repro
+    class LIFE_K,DEATH,BIRTH,BIRTH_CONTRACT life
+    class TRACE_BEGIN,SIM_LOOP observe
