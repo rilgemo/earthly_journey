@@ -37,13 +37,14 @@ exports.startWatcher = startWatcher;
 const vscode = __importStar(require("vscode"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const diffHighlighter_1 = require("./diffHighlighter");
 function resolveArtifactPath() {
     const folders = vscode.workspace.workspaceFolders;
     if (!folders || folders.length === 0)
         return null;
     return path.join(folders[0].uri.fsPath, 'docs', 'ci', 'graph', 'latest.json');
 }
-function readArtifact(filePath) {
+function readIR(filePath) {
     try {
         const raw = fs.readFileSync(filePath, 'utf-8');
         return JSON.parse(raw);
@@ -52,42 +53,42 @@ function readArtifact(filePath) {
         return null;
     }
 }
-function postUpdate(panel, data) {
-    panel.webview.postMessage({ type: 'UPDATE_GRAPH', data });
+function postUpdate(panel, current, diff) {
+    const msg = { type: 'UPDATE_GRAPH', data: { current, diff } };
+    panel.webview.postMessage(msg);
 }
 function startWatcher(panel) {
     const filePath = resolveArtifactPath();
     if (!filePath) {
-        postUpdate(panel, null);
         return;
     }
-    // Send initial state if the file already exists
-    const initial = readArtifact(filePath);
-    if (initial) {
-        postUpdate(panel, initial);
+    let prevIR = null;
+    function onFileChanged() {
+        const current = readIR(filePath);
+        if (!current)
+            return;
+        const diff = prevIR ? (0, diffHighlighter_1.computeDiff)(prevIR, current) : null;
+        prevIR = current;
+        postUpdate(panel, current, diff);
     }
-    // Watch for changes — VSCode fs.watch is reliable on Windows for single-file watching
+    // Send initial state if file already exists
+    const initial = readIR(filePath);
+    if (initial) {
+        prevIR = initial;
+        postUpdate(panel, initial, null);
+    }
     let watcher = null;
     try {
-        watcher = fs.watch(filePath, () => {
-            const data = readArtifact(filePath);
-            if (data)
-                postUpdate(panel, data);
-        });
+        watcher = fs.watch(filePath, () => onFileChanged());
     }
     catch {
         // File doesn't exist yet — use VSCode's FileSystemWatcher to wait for creation
         const vsWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(vscode.workspace.workspaceFolders[0], 'docs/ci/graph/latest.json'));
-        const onFile = () => {
+        vsWatcher.onDidCreate(() => {
             vsWatcher.dispose();
-            startWatcher(panel); // restart with fs.watch now that file exists
-        };
-        vsWatcher.onDidCreate(onFile);
-        vsWatcher.onDidChange(() => {
-            const data = readArtifact(filePath);
-            if (data)
-                postUpdate(panel, data);
+            startWatcher(panel);
         });
+        vsWatcher.onDidChange(() => onFileChanged());
         panel.onDidDispose(() => vsWatcher.dispose());
         return;
     }

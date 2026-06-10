@@ -30,11 +30,13 @@ const { runReproductionEventEngine } = require('./reproduction/reproductionEvent
 const { evaluateCommitmentBoundary } = require('./reproduction/reproductionCommitmentBoundary');
 const { runBirthSystem } = require('./reproduction/birthSystem');
 const { evaluateBirthConsistencyContract } = require('./reproduction/birthConsistencyContract');
-const { runCILite } = require('./architecture-ci/ciLiteRunner');
-const { generateCIGraphIR } = require('./architecture-ci/ciGraphIR');
+const { runCIPipeline }      = require('./architecture-ci/ciPipelineRunner');
 const { writeCIGraphArtifact } = require('./architecture-ci/ciGraphWriter');
 
 const CI_GRAPH_WRITE = process.env.EARTHLY_CI_GRAPH === 'true';
+
+// Persists the last IR so ciPipelineRunner can produce a diff each tick.
+let _prevCIGraphIR = null;
 
 const actionRegistry = new Set(ACTION_REGISTRY);
 const LIFE_STAGE_TICKS = Object.freeze({
@@ -595,14 +597,14 @@ function tickManager(npcs, worldObj, traceCollector) {
     traceCollector.current.birthConsistency = birthConsistencyReport;
   }
 
-  const ciReport = runCILite(traceCollector);
-  const ciGraphIR = generateCIGraphIR(ciReport);
+  const { ciReport, ir, diff } = runCIPipeline(traceCollector, _prevCIGraphIR);
+  _prevCIGraphIR = ir;
   if (traceCollector) {
-    traceCollector.architectureCI = ciReport;
-    traceCollector.architectureCIGraph = ciGraphIR;
+    traceCollector.architectureCI      = ciReport;
+    traceCollector.architectureCIGraph = ir;
   }
   if (CI_GRAPH_WRITE) {
-    writeCIGraphArtifact(ciGraphIR);
+    writeCIGraphArtifact(ir, diff);
   }
 
   if (traceCollector && typeof traceCollector.endTick === 'function') {

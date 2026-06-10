@@ -9,28 +9,39 @@
   <title>CI Graph Overlay</title>
 </head>
 <body>
+
+  <!-- ─── Header ─────────────────────────────────────────────────────── -->
   <div id="header">
     <h2>CI Graph</h2>
     <span id="tick-label">—</span>
-    <span id="status-badge">—</span>
   </div>
 
-  <div id="graph-chain"></div>
-
-  <div id="violations-section" style="display:none">
-    <h3>⚠ Violations</h3>
-    <div id="violations-list"></div>
+  <!-- ─── Drift Meter ─────────────────────────────────────────────────── -->
+  <div id="drift-section">
+    <div id="drift-row">
+      <span class="section-label">CAUSAL DRIFT</span>
+      <span id="drift-score">—</span>
+      <span id="drift-label"></span>
+    </div>
+    <div id="drift-track"><div id="drift-bar"></div></div>
   </div>
 
-  <div id="meta-footer">
-    <span id="meta-version">—</span>
-    <span id="meta-hash">—</span>
-    <span id="meta-schema">—</span>
+  <!-- ─── Node Chain ──────────────────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-title">Nodes</div>
+    <div id="node-chain"></div>
   </div>
 
-  <div id="empty-state">
-    Waiting for CI Graph artifact…<br>
-    Run simulation with <code>EARTHLY_CI_GRAPH=true</code> to start live updates.
+  <!-- ─── Edge Diff Panel ─────────────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-title">Edges</div>
+    <div id="edge-list"></div>
+  </div>
+
+  <!-- ─── Violation List ──────────────────────────────────────────────── -->
+  <div id="violation-section" class="hidden">
+    <div class="panel-title violation-title">⚠ Violations</div>
+    <div id="violation-list"></div>
   </div>
 
   <script src="{{GRAPH_JS}}"></script>
