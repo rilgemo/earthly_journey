@@ -30,7 +30,8 @@ const { runReproductionEventEngine } = require('./reproduction/reproductionEvent
 const { evaluateCommitmentBoundary } = require('./reproduction/reproductionCommitmentBoundary');
 const { runBirthSystem } = require('./reproduction/birthSystem');
 const { evaluateBirthConsistencyContract } = require('./reproduction/birthConsistencyContract');
-const { runCIPipeline }      = require('./architecture-ci/ciPipelineRunner');
+const { createLineageEngine }  = require('./lineageEngine');
+const { runCIPipeline }        = require('./architecture-ci/ciPipelineRunner');
 const { writeCIGraphArtifact } = require('./architecture-ci/ciGraphWriter');
 
 const CI_GRAPH_WRITE = process.env.EARTHLY_CI_GRAPH === 'true';
@@ -424,6 +425,13 @@ function tickManager(npcs, worldObj, traceCollector) {
   const log = [];
   const agentTraces = [];
   worldObj.tick = (worldObj.tick || 0) + 1;
+
+  // Lazy-init the lineage engine on the world object (persists across ticks).
+  if (!worldObj.lineageEngine) {
+    worldObj.lineageEngine = createLineageEngine();
+    // Register all founding agents (generation 0) on the first tick.
+    for (const agent of npcs) worldObj.lineageEngine.registerAgent(agent);
+  }
   const lifeTraces = npcs.map(npc => runLifeKernel(npc, worldObj));
   const previousIdentities = new Map(npcs.map(npc => [npc.id, beginIdentityFreeTick(npc)]));
 
@@ -576,7 +584,12 @@ function tickManager(npcs, worldObj, traceCollector) {
 
   const previousTickAgentSnapshot = npcs.map(agent => ({ id: agent.id }));
   const birthResult = runBirthSystem({ commitmentReport, npcs, world: worldObj });
-  birthResult.births.forEach(newborn => npcs.push(newborn));
+  birthResult.births.forEach(newborn => {
+    npcs.push(newborn);
+    if (worldObj.lineageEngine) {
+      worldObj.lineageEngine.registerBirth(newborn, npcs);
+    }
+  });
   if (traceCollector?.current) {
     traceCollector.current.birthSystem = {
       births: birthResult.births,
