@@ -21,26 +21,11 @@ function biologicalField(agent) {
   );
 }
 
-function memoryEntries(agent) {
-  return [
-    ...(agent.memory?.shortTerm || []),
-    ...(agent.memory?.longTerm || []),
-    ...(agent.memory?.recentEvents || [])
-  ];
-}
-
-function directedBondSignal(source, targetId) {
-  const related = memoryEntries(source).filter(memory => (
-    memory.target === targetId
-    || memory.agentId === targetId
-    || memory.sourceId === targetId
-  ));
-  if (!related.length) return 0;
-  return clamp(related.reduce((sum, memory) => sum + clamp((memory.strength || 0) / 100), 0) / related.length);
-}
-
-function bondField(agentA, agentB) {
-  return clamp((directedBondSignal(agentA, agentB.id) + directedBondSignal(agentB, agentA.id)) / 2);
+function matingField(agentA, agentB, matingEventIndex) {
+  const key = [agentA.id, agentB.id].sort().join(':');
+  const event = matingEventIndex.get(key);
+  if (!event) return 0;
+  return clamp(event.affinity);
 }
 
 function competitionField(agentA, agentB, context) {
@@ -63,6 +48,15 @@ function structureField(agentA, agentB, context) {
   return clamp((Math.min(localCount, 6) - 2) / 4);
 }
 
+function buildMatingEventIndex(matingEvents) {
+  const index = new Map();
+  for (const event of matingEvents) {
+    const key = [...event.pair].sort().join(':');
+    index.set(key, event);
+  }
+  return index;
+}
+
 function createContext(agents, world) {
   const locationCounts = new Map();
   agents.forEach(agent => {
@@ -71,10 +65,10 @@ function createContext(agents, world) {
   return { world, locationCounts };
 }
 
-function createPairResult(agentA, agentB, context) {
+function createPairResult(agentA, agentB, context, matingEventIndex) {
   const components = Object.freeze({
     bio: clamp((biologicalField(agentA) + biologicalField(agentB)) / 2),
-    bond: bondField(agentA, agentB),
+    mating: matingField(agentA, agentB, matingEventIndex),
     competition: competitionField(agentA, agentB, context),
     demand: demandField(context),
     structure: structureField(agentA, agentB, context)
@@ -85,7 +79,7 @@ function createPairResult(agentA, agentB, context) {
     pair: Object.freeze([agentA.id, agentB.id].sort()),
     probabilityVector: Object.freeze({
       pairAttractor: sigmoid(combinedField),
-      groupAttractor: sigmoid(combinedField + components.structure - Math.abs(components.bond)),
+      groupAttractor: sigmoid(combinedField + components.structure - Math.abs(components.mating)),
       independentAttractor: sigmoid(-combinedField)
     }),
     components,
@@ -93,14 +87,15 @@ function createPairResult(agentA, agentB, context) {
   });
 }
 
-function computeReproductionProbabilityField(agents = [], world = {}) {
+function computeReproductionProbabilityField(agents = [], world = {}, matingEvents = []) {
   const stableAgents = agents.slice().sort((a, b) => String(a.id).localeCompare(String(b.id)));
   const context = createContext(stableAgents, world);
+  const matingEventIndex = buildMatingEventIndex(matingEvents);
   const results = [];
 
   for (let left = 0; left < stableAgents.length; left += 1) {
     for (let right = left + 1; right < stableAgents.length; right += 1) {
-      results.push(createPairResult(stableAgents[left], stableAgents[right], context));
+      results.push(createPairResult(stableAgents[left], stableAgents[right], context, matingEventIndex));
     }
   }
 
@@ -109,7 +104,7 @@ function computeReproductionProbabilityField(agents = [], world = {}) {
 
 module.exports = {
   biologicalField,
-  bondField,
+  matingField,
   competitionField,
   computeReproductionProbabilityField,
   demandField,

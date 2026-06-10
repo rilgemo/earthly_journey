@@ -54,7 +54,7 @@ describe('Reproduction Probability Field v2', () => {
 
     expect(result.components).toEqual(expect.objectContaining({
       bio: expect.any(Number),
-      bond: expect.any(Number),
+      mating: expect.any(Number),
       competition: expect.any(Number),
       demand: expect.any(Number),
       structure: expect.any(Number)

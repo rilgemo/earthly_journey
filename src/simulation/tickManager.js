@@ -24,6 +24,7 @@ const {
 const { calculateWorldDemand } = require('./demand/demandModel');
 const { buildAgentTypologySnapshot } = require('./agentTypology/typeTraceBuilder');
 const { createConditionCapacity, supportsLife } = require('./life/conditionCapacityModel');
+const { computeMatingEvents } = require('./mating/matingEventSystem');
 const { computeReproductionProbabilityField } = require('./reproduction/reproductionProbabilityField');
 const { runReproductionEventEngine } = require('./reproduction/reproductionEventEngine');
 const { evaluateCommitmentBoundary } = require('./reproduction/reproductionCommitmentBoundary');
@@ -448,7 +449,12 @@ function tickManager(npcs, worldObj, traceCollector) {
     });
   }
 
-  const reproductionField = computeReproductionProbabilityField(npcs, worldObj);
+  const matingEvents = computeMatingEvents(npcs);
+  if (traceCollector?.current) {
+    traceCollector.current.matingEvents = matingEvents;
+  }
+
+  const reproductionField = computeReproductionProbabilityField(npcs, worldObj, matingEvents);
   if (traceCollector?.current) {
     traceCollector.current.reproductionField = reproductionField;
   }
