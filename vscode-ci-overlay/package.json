@@ -1,0 +1,31 @@
+{
+  "name": "ci-graph-overlay",
+  "displayName": "CI Graph Overlay",
+  "description": "Live causal DAG debugger for Earthly Journey simulation",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ciGraph.open",
+        "title": "CI Graph Overlay: Open CI Graph"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

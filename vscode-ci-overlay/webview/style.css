@@ -1,0 +1,172 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  padding: 12px 16px;
+}
+
+#header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  padding-bottom: 8px;
+}
+
+#header h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#tick-label {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+#status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+#status-badge.PASS {
+  background: #1e4a1e;
+  color: #7ec87e;
+}
+
+#status-badge.FAIL {
+  background: #4a1e1e;
+  color: #e07070;
+}
+
+/* ── Graph chain ──────────────────────────────────────────────── */
+
+#graph-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.node-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  line-height: 1.4;
+  cursor: default;
+}
+
+.node-chip.EXECUTION {
+  border-color: #3a6a3a;
+  background: #1a2e1a;
+  color: #a8d8a8;
+}
+
+.node-chip.OBSERVATION {
+  border-color: #6a3a3a;
+  background: #2e1a1a;
+  color: #d8a8a8;
+}
+
+.node-chip.DECISION {
+  border-color: #3a4a6a;
+  background: #1a1e2e;
+  color: #a8b8d8;
+}
+
+.node-chip .node-id {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.node-chip .node-layer {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.edge-arrow {
+  font-size: 14px;
+  color: var(--vscode-descriptionForeground);
+  user-select: none;
+}
+
+/* ── Violations ───────────────────────────────────────────────── */
+
+#violations-section {
+  margin-top: 8px;
+}
+
+#violations-section h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e07070;
+  margin-bottom: 6px;
+}
+
+.violation-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-left: 3px solid #e07070;
+  background: #2e1a1a;
+  border-radius: 0 4px 4px 0;
+}
+
+.violation-type {
+  font-size: 10px;
+  font-weight: 700;
+  color: #e07070;
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.violation-detail {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.violation-edge {
+  font-weight: 600;
+}
+
+.violation-reason {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* ── Meta footer ──────────────────────────────────────────────── */
+
+#meta-footer {
+  margin-top: 16px;
+  font-size: 10px;
+  color: var(--vscode-descriptionForeground);
+  border-top: 1px solid var(--vscode-panel-border);
+  padding-top: 6px;
+  display: flex;
+  gap: 16px;
+}
+
+/* ── Empty state ──────────────────────────────────────────────── */
+
+#empty-state {
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+  margin-top: 24px;
+  line-height: 1.6;
+}

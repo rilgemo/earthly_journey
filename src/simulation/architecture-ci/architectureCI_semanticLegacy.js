@@ -1,3 +1,23 @@
+/**
+ * LEGACY SYSTEM — architectureCI_semanticLegacy.js
+ *
+ * Status       : RETIRED from authoritative CI role
+ * Replaced by  : ciLiteRunner.js (CI v1 Lite — structural causal DAG validator)
+ * Retained as  : semantic debug oracle / anomaly explainer
+ *
+ * DO NOT USE FOR:
+ *   - tick validation
+ *   - DAG enforcement
+ *   - authoritative CI decisions
+ *
+ * MAY BE USED FOR:
+ *   - semantic anomaly reporting
+ *   - dev/debug inspection
+ *   - comparison baseline against ciLiteRunner output
+ *
+ * Logic is frozen. No further feature development in this file.
+ */
+
 const CI_VERSION = 'CI_V0';
 const TOP_K_LIMIT = 3;
 

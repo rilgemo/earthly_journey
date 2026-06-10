@@ -1,4 +1,4 @@
-const { runArchitectureCI } = require('../../src/simulation/architecture-ci/architectureCI');
+const { runArchitectureCI } = require('../../src/simulation/architecture-ci/architectureCI_semanticLegacy');
 
 // Minimal valid tick trace — all Layer 1/2/3 checks pass.
 function validTrace() {
