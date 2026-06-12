@@ -12,6 +12,10 @@ import SimulationInspector from "./inspector/SimulationInspector";
 import { useSimulationStream } from "./inspector/hooks/useSimulationStream";
 import { createInspectorSimulationStream } from "./simulation/inspectorStream";
 
+// Dev toggle: simulation sandbox inspector is not part of the player game.
+// Set to true locally to inspect tick/agent traces during mechanics research.
+const SHOW_SIMULATION_INSPECTOR = false;
+
 // ── 颜色系统（exported for use in child components） ──
 export const C = {
   bg: "#0e0e12", panel: "#141418", border: "#2a2a35", borderHi: "#44445a",
@@ -434,7 +438,7 @@ export default function App() {
           worldTime={worldTime}
         />
       </div>
-      <SimulationInspector world={inspector.world} trace={inspector.trace} replay={inspector.replay} />
+      {SHOW_SIMULATION_INSPECTOR && <SimulationInspector world={inspector.world} trace={inspector.trace} replay={inspector.replay} />}
     </div>
   );
 }

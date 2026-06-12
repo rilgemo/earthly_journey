@@ -1,5 +1,29 @@
 # Earthly Journey
 
+## 0. PROJECT SCOPE — TWO SYSTEMS
+
+This repo contains two separate systems that share a codebase but must not be merged without an explicit design pass.
+
+### Earthly Journey (player game)
+
+- React UI: `src/components/` (LeftPanel, MainPanel, RightPanel, TickPanel)
+- Data: `src/data/{areas,actions,skills,npcs}.js`
+- Time: `src/utils/worldTime.js`, `src/utils/tickSystem.js` (1 tick = 1 ingame hour = 15 real minutes)
+- This is what players experience. CLAUDE.md primarily documents this system.
+
+### Simulation Sandbox (`src/simulation/`)
+
+- Tick-based agent simulation: perception / intent / memory / reproduction / lineage
+- Used to prototype and validate mechanics (memory decay, need systems, lineage, field dynamics) before a simplified version is designed into Earthly Journey
+- Has its own tick concept (integer tick counter), its own agent model, its own world object — none of which are the same as the player game's worldTime or AGENTS
+- NOT connected to the player game at runtime. Data does not flow between the two systems.
+
+### Separation rules
+
+- `src/simulation/` imports must not appear in player-game components (`LeftPanel`, `MainPanel`, `RightPanel`) or player-game data files
+- The Simulation Sandbox UI (`SimulationInspector` / `TickPanel` / inspector hooks) is dev-only, gated behind `SHOW_SIMULATION_INSPECTOR = false` in `App.js`
+- When a mechanic from the Sandbox is ready to migrate into Earthly Journey, it must be redesigned for the player game's data model — not imported directly
+
 ## LANGUAGE CONVENTION
 
 - Code: variable names, keys, file names, comments, commit messages → English
