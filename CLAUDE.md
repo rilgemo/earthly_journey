@@ -79,3 +79,40 @@ When adding new features:
 3. Do not implement future systems unless explicitly requested.
 
 When in doubt, follow the data schemas and non-negotiable rules.
+
+## NPC SYSTEM v1
+
+**File:** `src/data/npcs.js`
+
+Agents are individuals with skills and a time-based schedule. "铁匠" is a social label players may use; it is not a data field. Agent identity is their name (e.g., 老周).
+
+**Schema:**
+
+```js
+NPCS[agentId] = {
+  id: string,
+  name: string,
+  skills: [{ name, level }],
+  schedule: [{ from: minuteOfDay, to: minuteOfDay, activity, location }],
+  defaultLocation: string,   // area key
+  defaultActivity: string,
+}
+```
+
+**API:**
+
+```js
+getAgentStatus(agentId, timeOfDay) → { location, activity }
+```
+
+`location` is an area key (matching `AREAS` keys). `timeOfDay` is minutes since midnight (0–1440).
+
+**Presence-gated actions:**
+
+Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.
+
+**Current agents:**
+
+- **老周** — skills: 锻造入门 Lv3, 钓鱼 Lv1
+  - Schedule: 06:00–20:00 锻造(铺) → 20:00–21:00 用餐(旅店) → 21:00–22:00 锻造(铺) → 22:00–23:00 钓鱼(南边林地)
+  - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）

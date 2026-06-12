@@ -2,7 +2,10 @@ import { useRef, useEffect, useState, useMemo } from "react";
 import { C } from "../App";
 import { AREAS } from "../data/areas";
 
-export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea }) {
+// Actions that require 老周 to be present at the forge.
+const ZHOU_FORGE_ACTIONS = new Set(["与铁匠搭话", "靠近铁匠铺观摩锻造", "购买采矿镐（40G）"]);
+
+export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea, areaKey, zhouStatus }) {
   const [filter, setFilter] = useState("全部");
   const endRef = useRef(null);
 
@@ -17,6 +20,24 @@ export default function MainPanel({ narrative, messages, curActions, curRest, tr
       return true;
     });
   }, [messages, filter]);
+
+  // ── Presence-gated action resolution ─────────────────
+  const zhouAtForge = areaKey === "新叶镇·锻造铺" && zhouStatus?.location === "新叶镇·锻造铺";
+  const zhouAtLin   = areaKey === "南边林地"       && zhouStatus?.location === "南边林地";
+
+  let visibleActions = curActions;
+  let zhouAbsenceMsg = null;
+
+  if (areaKey === "新叶镇·锻造铺" && !zhouAtForge) {
+    visibleActions = curActions.filter(a => !ZHOU_FORGE_ACTIONS.has(a));
+    zhouAbsenceMsg = zhouStatus?.activity === "钓鱼"
+      ? "炉火还温着，但老周不在——也许去钓鱼了。"
+      : "锻造铺空着，老周似乎不在。";
+  }
+
+  if (zhouAtLin) {
+    visibleActions = [...visibleActions, "看到老周在钓鱼"];
+  }
 
   const blocked = stPct <= 10;
   const tabButtonStyle = active => ({
@@ -47,7 +68,12 @@ export default function MainPanel({ narrative, messages, curActions, curRest, tr
       {/* 行动 / 休息 / 前往 */}
       <div style={{ padding: "0 16px 10px 16px", marginTop: "14px", flexShrink: 0 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {curActions.map(a => (
+          {zhouAbsenceMsg && (
+            <div style={{ color: C.textDim, fontSize: 12, fontStyle: "italic", padding: "4px 2px" }}>
+              {zhouAbsenceMsg}
+            </div>
+          )}
+          {visibleActions.map(a => (
             <button key={a} onClick={() => onAction(a)}
               style={{
                 width: "100%",

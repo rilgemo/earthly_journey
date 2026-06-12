@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
+import { getAgentStatus } from "./data/npcs";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
 import LeftPanel from "./components/LeftPanel";
@@ -314,6 +315,8 @@ export default function App() {
   const travel = AREAS[area]?.travel || [];
   const curArea = AREAS[area];
 
+  const zhouStatus = getAgentStatus("老周", worldTime.timeOfDay);
+
   return (
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Noto Serif SC', serif", fontSize: 13, display: "flex", flexDirection: "column" }}>
       {notif && (
@@ -374,6 +377,8 @@ export default function App() {
           onAction={doAction}
           onTravel={travelTo}
           curArea={curArea}
+          areaKey={area}
+          zhouStatus={zhouStatus}
           worldTime={worldTime}
         />
         <RightPanel
