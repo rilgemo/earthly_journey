@@ -32,7 +32,6 @@ const { runBirthSystem } = require('./reproduction/birthSystem');
 const { evaluateBirthConsistencyContract } = require('./reproduction/birthConsistencyContract');
 const { createLineageEngine }  = require('./lineageEngine');
 const { runCIPipeline }        = require('./architecture-ci/ciPipelineRunner');
-const { writeCIGraphArtifact } = require('./architecture-ci/ciGraphWriter');
 
 const CI_GRAPH_WRITE = process.env.EARTHLY_CI_GRAPH === 'true';
 
@@ -617,6 +616,7 @@ function tickManager(npcs, worldObj, traceCollector) {
     traceCollector.architectureCIGraph = ir;
   }
   if (CI_GRAPH_WRITE) {
+    const { writeCIGraphArtifact } = require('./architecture-ci/ciGraphWriter');
     writeCIGraphArtifact(ir, diff);
   }
 

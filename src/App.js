@@ -74,6 +74,10 @@ export default function App() {
   const [agents, setAgents] = useState(AGENTS);
   const inspector = useSimulationStream(inspectorSimulator);
 
+  const pushMessage = useCallback((type, text, speaker) => {
+    setMessages(p => [...p, { id: messageIdRef.current++, type, speaker, text }].slice(-80));
+  }, []);
+
   // Each real-world tick (15s) = 1 in-game minute = 1/60 of an ingame hour.
   // checkTick fires registered handlers once per ingame hour boundary.
   useEffect(() => {
@@ -87,10 +91,6 @@ export default function App() {
 
   const skillsRef = useRef([]);
   useEffect(() => { skillsRef.current = skills; }, [skills]);
-
-  const pushMessage = useCallback((type, text, speaker) => {
-    setMessages(p => [...p, { id: messageIdRef.current++, type, speaker, text }].slice(-80));
-  }, []);
 
   // Register lao_zhou XP settlement: once per ingame hour, batch 60 minutes of XP.
   useEffect(() => {
