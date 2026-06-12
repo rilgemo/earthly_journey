@@ -115,7 +115,7 @@ getAgentStatus(agentId, timeOfDay) → { location, activity }
 
 **Skill XP accumulation:**
 
-Agents earn XP while performing scheduled activities. Each real-world tick (15s = 1 in-game minute) calls `tickAgentSkillXp(agent, activity, minutesElapsed)` — a pure function returning an updated agent object. Level = `floor(xp / 200) + 1`. Agent state is held in React `useState`, initialized from `AGENTS`.
+Agents earn XP once per ingame hour (tick boundary) via `tickAgentSkillXp(agent, activity, 60)` — a pure function returning an updated agent object. Level = `floor(xp / 200) + 1`. Agent state is held in React `useState`, initialized from `AGENTS`. XP settlement is registered as a tick handler (see TICK SYSTEM below).
 
 ```js
 tickAgentSkillXp(agent, activity, minutesElapsed) → agent
@@ -133,3 +133,27 @@ Actions that require an agent to be physically present are filtered in `MainPane
 - **lao_zhou** (name: "老周") — skills: 锻造入门 (200xp/level), 钓鱼 (200xp/level)
   - Schedule: 06:00–20:00 锻造(铺) → 20:00–21:00 用餐(旅店) → 21:00–22:00 锻造(铺) → 22:00–23:00 钓鱼(南边林地)
   - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）
+
+## TICK SYSTEM
+
+**File:** `src/utils/tickSystem.js`
+
+1 tick = 1 ingame hour = 15 real minutes.
+
+On each tick boundary, all registered handlers fire to settle and summarize what happened during the elapsed hour, and may push a message to the feed.
+
+```js
+onTick(handler)                          // register a handler (call once, in useEffect)
+checkTick(worldTime, pushMessage)        // call every 15s in the worldTime interval
+// handler signature: (worldTime, ticksElapsed, pushMessage) => void
+```
+
+`checkTick` compares `day * 24 + hour` to detect hour boundaries. If multiple hours elapsed (e.g., after a tab sleep), `ticksElapsed > 1` and handlers receive the full count.
+
+**Currently registered handlers:**
+
+- **lao_zhou skill XP settlement** — on each tick, calls `tickAgentSkillXp(agent, activity, ticksElapsed * 60)`. If a skill levels up, pushes a system feed message: `"老周的${skillName}更熟练了（Lv.N）。"`
+
+**Extension pattern:**
+
+Future systems (shop restocking, weather change, other agent XP) register their own handler via `onTick(handler)` inside a `useEffect(() => { ... }, [])` in App.js or the relevant component.

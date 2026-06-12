@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
 import { AGENTS, getAgentStatus, tickAgentSkillXp } from "./data/npcs";
+import { onTick, checkTick } from "./utils/tickSystem";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
 import LeftPanel from "./components/LeftPanel";
@@ -73,23 +74,16 @@ export default function App() {
   const [agents, setAgents] = useState(AGENTS);
   const inspector = useSimulationStream(inspectorSimulator);
 
-  // Each real-world tick (15s) = 1 in-game minute. Advance world time and
-  // tick XP for lao_zhou based on his current scheduled activity.
+  // Each real-world tick (15s) = 1 in-game minute = 1/60 of an ingame hour.
+  // checkTick fires registered handlers once per ingame hour boundary.
   useEffect(() => {
     const timer = setInterval(() => {
       const wt = getWorldTime();
       setWorldTime(wt);
-      setAgents(prev => {
-        const zhou = prev.lao_zhou;
-        const status = getAgentStatus("lao_zhou", wt.timeOfDay);
-        return {
-          ...prev,
-          lao_zhou: tickAgentSkillXp(zhou, status?.activity ?? "", 1),
-        };
-      });
+      checkTick(wt, pushMessage);
     }, 15000);
     return () => clearInterval(timer);
-  }, []);
+  }, [pushMessage]);
 
   const skillsRef = useRef([]);
   useEffect(() => { skillsRef.current = skills; }, [skills]);
@@ -97,6 +91,25 @@ export default function App() {
   const pushMessage = useCallback((type, text, speaker) => {
     setMessages(p => [...p, { id: messageIdRef.current++, type, speaker, text }].slice(-80));
   }, []);
+
+  // Register lao_zhou XP settlement: once per ingame hour, batch 60 minutes of XP.
+  useEffect(() => {
+    onTick((worldTime, ticksElapsed, pushMsg) => {
+      const status = getAgentStatus("lao_zhou", worldTime.timeOfDay);
+      const minutesElapsed = ticksElapsed * 60;
+      setAgents(prev => {
+        const before = prev.lao_zhou;
+        const after = tickAgentSkillXp(before, status?.activity ?? "", minutesElapsed);
+        after.skills.forEach(sk => {
+          const prevLevel = before.skills.find(s => s.name === sk.name)?.level ?? 1;
+          if (sk.level > prevLevel) {
+            pushMsg("system", `老周的${sk.name}更熟练了（Lv.${sk.level}）。`);
+          }
+        });
+        return { ...prev, lao_zhou: after };
+      });
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 自动体力恢复
   useEffect(() => {
