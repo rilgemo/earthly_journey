@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
-import { getAgentStatus } from "./data/npcs";
+import { AGENTS, getAgentStatus, tickAgentSkillXp } from "./data/npcs";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
 import LeftPanel from "./components/LeftPanel";
@@ -70,10 +70,24 @@ export default function App() {
   const [equipped, setEquipped] = useState(() => Object.fromEntries(EQUIP_SLOTS.map(s => [s.id, null])));
   const [notif, setNotif] = useState(null);
   const [worldTime, setWorldTime] = useState(() => getWorldTime());
+  const [agents, setAgents] = useState(AGENTS);
   const inspector = useSimulationStream(inspectorSimulator);
 
+  // Each real-world tick (15s) = 1 in-game minute. Advance world time and
+  // tick XP for lao_zhou based on his current scheduled activity.
   useEffect(() => {
-    const timer = setInterval(() => setWorldTime(getWorldTime()), 15000);
+    const timer = setInterval(() => {
+      const wt = getWorldTime();
+      setWorldTime(wt);
+      setAgents(prev => {
+        const zhou = prev.lao_zhou;
+        const status = getAgentStatus("lao_zhou", wt.timeOfDay);
+        return {
+          ...prev,
+          lao_zhou: tickAgentSkillXp(zhou, status?.activity ?? "", 1),
+        };
+      });
+    }, 15000);
     return () => clearInterval(timer);
   }, []);
 
@@ -266,6 +280,17 @@ export default function App() {
     }));
   }, [stPct, gold, pushMessage, restoreSt, drainSt, unlockSkill]);
 
+  // ── 观察老周钓鱼（注入实时技能等级到叙事） ──────────────
+  const observeZhouFishing = useCallback(() => {
+    doAction("看到老周在钓鱼");
+    const fishingSkill = agents.lao_zhou.skills.find(s => s.name === "钓鱼");
+    const level = fishingSkill?.level ?? 1;
+    setNarrative([
+      `老周蹲在溪边，鱼线垂在水里，看起来一点也不着急。（钓鱼 Lv.${level}）`,
+      "「钓鱼比打铁省心。」他说，眼睛没离开水面。",
+    ]);
+  }, [agents.lao_zhou, doAction]);
+
   // ── 移动区域 ─────────────────────────────────────────
   const travelTo = useCallback(key => {
     if (!AREAS[key]) return;
@@ -316,6 +341,7 @@ export default function App() {
   const curArea = AREAS[area];
 
   const zhouStatus = getAgentStatus("lao_zhou", worldTime.timeOfDay);
+  const laoZhou = agents.lao_zhou;
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Noto Serif SC', serif", fontSize: 13, display: "flex", flexDirection: "column" }}>
@@ -379,6 +405,8 @@ export default function App() {
           curArea={curArea}
           areaKey={area}
           zhouStatus={zhouStatus}
+          laoZhou={laoZhou}
+          onZhouFishing={observeZhouFishing}
           worldTime={worldTime}
         />
         <RightPanel

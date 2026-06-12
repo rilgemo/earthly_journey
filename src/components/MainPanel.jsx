@@ -5,7 +5,7 @@ import { AREAS } from "../data/areas";
 // Actions that require 老周 to be present at the forge.
 const ZHOU_FORGE_ACTIONS = new Set(["与铁匠搭话", "靠近铁匠铺观摩锻造", "购买采矿镐（40G）"]);
 
-export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea, areaKey, zhouStatus }) {
+export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea, areaKey, zhouStatus, laoZhou, onZhouFishing }) {
   const [filter, setFilter] = useState("全部");
   const endRef = useRef(null);
 
@@ -74,7 +74,7 @@ export default function MainPanel({ narrative, messages, curActions, curRest, tr
             </div>
           )}
           {visibleActions.map(a => (
-            <button key={a} onClick={() => onAction(a)}
+            <button key={a} onClick={() => a === "看到老周在钓鱼" ? onZhouFishing?.() : onAction(a)}
               style={{
                 width: "100%",
                 padding: "5px 14px",

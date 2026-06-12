@@ -113,12 +113,23 @@ getAgentStatus(agentId, timeOfDay) → { location, activity }
 
 `agentId` is the English key (e.g. `"lao_zhou"`). `location` is an area key matching `AREAS`. `timeOfDay` is minutes since midnight (0–1440).
 
+**Skill XP accumulation:**
+
+Agents earn XP while performing scheduled activities. Each real-world tick (15s = 1 in-game minute) calls `tickAgentSkillXp(agent, activity, minutesElapsed)` — a pure function returning an updated agent object. Level = `floor(xp / 200) + 1`. Agent state is held in React `useState`, initialized from `AGENTS`.
+
+```js
+tickAgentSkillXp(agent, activity, minutesElapsed) → agent
+// XP rates: 锻造 → 锻造入门 +1/min, 钓鱼 → 钓鱼 +1/min
+```
+
+The player can observe an agent's live skill level via specific actions (e.g., "看到老周在钓鱼" shows current 钓鱼 Lv). These actions use a dedicated handler (`onZhouFishing`) that injects the live level into the narrative at click time.
+
 **Presence-gated actions:**
 
 Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.
 
 **Current agents:**
 
-- **lao_zhou** (name: "老周") — skills: 锻造入门 Lv3, 钓鱼 Lv1
+- **lao_zhou** (name: "老周") — skills: 锻造入门 (200xp/level), 钓鱼 (200xp/level)
   - Schedule: 06:00–20:00 锻造(铺) → 20:00–21:00 用餐(旅店) → 21:00–22:00 锻造(铺) → 22:00–23:00 钓鱼(南边林地)
   - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）

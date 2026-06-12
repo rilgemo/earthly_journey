@@ -3,9 +3,10 @@ export const AGENTS = {
     id: "lao_zhou",
     name: "老周",
     skills: [
-      { name: "锻造入门", level: 3 },
+      { name: "锻造入门", level: 1 },
       { name: "钓鱼", level: 1 },
     ],
+    xp: { 锻造入门: 0, 钓鱼: 0 },
     schedule: [
       { from: 360, to: 1200, activity: "锻造", location: "新叶镇·锻造铺" },
       { from: 1200, to: 1260, activity: "用餐", location: "新叶镇·晨星旅店" },
@@ -27,4 +28,23 @@ export function getAgentStatus(agentId, timeOfDay) {
     if (inRange) return { location: slot.location, activity: slot.activity };
   }
   return { location: agent.defaultLocation, activity: agent.defaultActivity };
+}
+
+// Maps activity names to the skill they train and XP earned per in-game minute.
+const XP_RATES = {
+  "锻造": { skill: "锻造入门", rate: 1 },
+  "钓鱼": { skill: "钓鱼",    rate: 1 },
+};
+
+// Pure function — returns updated agent object, never mutates.
+export function tickAgentSkillXp(agent, activity, minutesElapsed) {
+  const rate = XP_RATES[activity];
+  if (!rate) return agent;
+  const newXp = { ...agent.xp, [rate.skill]: agent.xp[rate.skill] + minutesElapsed * rate.rate };
+  const skills = agent.skills.map(s =>
+    s.name === rate.skill
+      ? { ...s, level: Math.floor(newXp[rate.skill] / 200) + 1 }
+      : s
+  );
+  return { ...agent, xp: newXp, skills };
 }
