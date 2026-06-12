@@ -1,5 +1,11 @@
 # Earthly Journey
 
+## LANGUAGE CONVENTION
+
+- Code: variable names, keys, file names, comments, commit messages → English
+- Display content: narrative, dialogue, UI labels, item/skill/agent names → Chinese
+- Example: `AGENTS.lao_zhou.name = "老周"` (English key, Chinese display value)
+
 This file is the code and development constraint layer.
 
 It defines how Earthly Journey must be built. Product meaning belongs in [README.md](README.md). Current tasks and backlog belong in [TODO.md](TODO.md).
@@ -84,14 +90,14 @@ When in doubt, follow the data schemas and non-negotiable rules.
 
 **File:** `src/data/npcs.js`
 
-Agents are individuals with skills and a time-based schedule. "铁匠" is a social label players may use; it is not a data field. Agent identity is their name (e.g., 老周).
+Agents are individuals with skills and a time-based schedule. "铁匠" is a social label players may use; it is not a data field. Agent identity is an English key; the display name is Chinese.
 
 **Schema:**
 
 ```js
-NPCS[agentId] = {
-  id: string,
-  name: string,
+AGENTS[agentId] = {
+  id: string,        // English key, e.g. "lao_zhou"
+  name: string,      // Chinese display value, e.g. "老周"
   skills: [{ name, level }],
   schedule: [{ from: minuteOfDay, to: minuteOfDay, activity, location }],
   defaultLocation: string,   // area key
@@ -105,7 +111,7 @@ NPCS[agentId] = {
 getAgentStatus(agentId, timeOfDay) → { location, activity }
 ```
 
-`location` is an area key (matching `AREAS` keys). `timeOfDay` is minutes since midnight (0–1440).
+`agentId` is the English key (e.g. `"lao_zhou"`). `location` is an area key matching `AREAS`. `timeOfDay` is minutes since midnight (0–1440).
 
 **Presence-gated actions:**
 
@@ -113,6 +119,6 @@ Actions that require an agent to be physically present are filtered in `MainPane
 
 **Current agents:**
 
-- **老周** — skills: 锻造入门 Lv3, 钓鱼 Lv1
+- **lao_zhou** (name: "老周") — skills: 锻造入门 Lv3, 钓鱼 Lv1
   - Schedule: 06:00–20:00 锻造(铺) → 20:00–21:00 用餐(旅店) → 21:00–22:00 锻造(铺) → 22:00–23:00 钓鱼(南边林地)
   - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）

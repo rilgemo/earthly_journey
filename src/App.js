@@ -315,7 +315,7 @@ export default function App() {
   const travel = AREAS[area]?.travel || [];
   const curArea = AREAS[area];
 
-  const zhouStatus = getAgentStatus("老周", worldTime.timeOfDay);
+  const zhouStatus = getAgentStatus("lao_zhou", worldTime.timeOfDay);
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Noto Serif SC', serif", fontSize: 13, display: "flex", flexDirection: "column" }}>

@@ -1,6 +1,6 @@
-export const NPCS = {
-  老周: {
-    id: "老周",
+export const AGENTS = {
+  lao_zhou: {
+    id: "lao_zhou",
     name: "老周",
     skills: [
       { name: "锻造入门", level: 3 },
@@ -18,7 +18,7 @@ export const NPCS = {
 };
 
 export function getAgentStatus(agentId, timeOfDay) {
-  const agent = NPCS[agentId];
+  const agent = AGENTS[agentId];
   if (!agent) return null;
   for (const slot of agent.schedule) {
     const inRange = slot.from <= slot.to
