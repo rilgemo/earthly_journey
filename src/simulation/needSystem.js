@@ -23,7 +23,9 @@ function getNeedProfile(agent, world) {
   const result = {
     hunger: clampNeed(toNeedScale(needs.hunger)),
     fatigue: clampNeed(toNeedScale(needs.fatigue ?? needs.rest)),
-    manaNeed: clampNeed(toNeedScale(needs.manaNeed ?? (1 - (manaCurrent / manaCapacity)))),
+    // Derived every tick from live mana state
+    // DO NOT persist into agent.needs
+    manaNeed: clampNeed(toNeedScale(1 - (manaCurrent / manaCapacity))),
     socialNeed: clampNeed(toNeedScale(needs.socialNeed ?? needs.curiosity ?? 0)),
     safetyNeed: clampNeed(toNeedScale(needs.safetyNeed ?? 0))
   };
@@ -60,7 +62,9 @@ function advanceNeeds(agent) {
   const profile = getNeedProfile(agent);
   agent.needs.hunger = clampNeed(profile.hunger + 1);
   agent.needs.fatigue = clampNeed(profile.fatigue + 0.5);
-  agent.needs.manaNeed = clampNeed(profile.manaNeed);
+  if (agent.needs.manaNeed !== undefined) {
+    delete agent.needs.manaNeed;
+  }
   agent.needs.socialNeed = clampNeed(profile.socialNeed + 0.2);
   agent.needs.safetyNeed = clampNeed(profile.safetyNeed);
 
