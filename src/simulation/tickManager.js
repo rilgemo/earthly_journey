@@ -447,10 +447,32 @@ function tickManager(npcs, worldObj, traceCollector) {
     traceCollector.recordDemand(demand);
   }
 
+  const actionDistribution = {};
+
   for (const npc of npcs) {
     const agentTrace = simulateAgent(npc, worldObj, npcs);
     agentTrace.lifeTrace = lifeTraces.find(lifeTrace => lifeTrace.agentId === npc.id) || null;
     agentTraces.push(agentTrace);
+
+    if (agentTrace.actionSelected) {
+      actionDistribution[agentTrace.actionSelected] =
+        (actionDistribution[agentTrace.actionSelected] || 0) + 1;
+    }
+
+    if (process.env.DEBUG_SIMULATION === 'true') {
+      const npcObj = npcs.find(n => n.id === agentTrace.agentId);
+      worldObj.lastDebugTick = {
+        tick: worldObj.tick,
+        agentId: agentTrace.agentId,
+        intents: agentTrace.candidateIntents,
+        selectedIntent: agentTrace.actionSelected,
+        needProfile: agentTrace.needProfile,
+        mana: npcObj ? { current: npcObj.mana.current, capacity: npcObj.mana.capacity } : null,
+        influenceProfile: agentTrace.influenceProfile,
+        resolutionTrace: agentTrace.resolutionTrace
+      };
+      console.log('[DEBUG_TICK]', JSON.stringify(worldObj.lastDebugTick, null, 2));
+    }
 
     if (traceCollector && typeof traceCollector.recordAgent === 'function') {
       traceCollector.recordAgent(agentTrace);
@@ -462,6 +484,8 @@ function tickManager(npcs, worldObj, traceCollector) {
       score: agentTrace.scoreBreakdown ? agentTrace.scoreBreakdown.total : null
     });
   }
+
+  worldObj.lastActionDistribution = actionDistribution;
 
   const matingEvents = computeMatingEvents(npcs);
   if (traceCollector?.current) {

@@ -15,18 +15,29 @@ function clampNeed(value) {
   return Math.max(0, Math.min(100, value));
 }
 
-function getNeedProfile(agent) {
+function getNeedProfile(agent, world) {
   const needs = agent.needs || {};
   const manaCapacity = agent.mana?.capacity || 1;
   const manaCurrent = agent.mana?.current || 0;
 
-  return {
+  const result = {
     hunger: clampNeed(toNeedScale(needs.hunger)),
     fatigue: clampNeed(toNeedScale(needs.fatigue ?? needs.rest)),
     manaNeed: clampNeed(toNeedScale(needs.manaNeed ?? (1 - (manaCurrent / manaCapacity)))),
     socialNeed: clampNeed(toNeedScale(needs.socialNeed ?? needs.curiosity ?? 0)),
     safetyNeed: clampNeed(toNeedScale(needs.safetyNeed ?? 0))
   };
+
+  if (process.env.DEBUG_SIMULATION === 'true') {
+    console.log('[manaNeed]', {
+      tick: world?.tick,
+      manaCurrent,
+      manaNeed: result.manaNeed,
+      rawFallbackUsed: needs.manaNeed === undefined
+    });
+  }
+
+  return result;
 }
 
 function evaluateNeeds(agent) {
