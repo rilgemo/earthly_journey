@@ -61,3 +61,35 @@ If confirmed: influence is acting as "world will" rather than
 agent preference, which directly affects L2 design.
 
 Status: experiment not yet run. Hypothesis only.
+
+## Resolution: Identity-Physiology Decoupling (Implemented)
+
+Root cause confirmed: Responsibility Contamination, not duplicate
+calculation. influenceField had `needs` as a DIRECT input alongside
+field/memories/social, causing physiological state (similar across all
+agents) to dominate over skill-based identity (which differs per agent).
+
+Fix implemented:
+1. needs removed from createInfluenceField signature — influenceField
+   is now world-signal-only (field-driven + memory-driven + social-driven)
+2. needScore remains independent in intentPipeline, additive and unmasked
+   — represents agent urgency, not feasibility constraint
+3. Per-action feasibility mask added via computeFeasibilityMask(action,
+   needProfile), using max-reduction across simultaneous needs to avoid
+   compounding collapse
+
+Acceptance tests (14/14 pass):
+  T1: forge(10.35) beats meditate(7.90) under fatigue=80/hunger=60/forging=80
+  T2: farmer/blacksmith/arcane produce 3 different winning actions
+      under identical fatigue=80
+  T3 (Longitudinal, 72 ticks, randomized fatigue/hunger):
+      farmer→forage 100%, smith→forge 100%, arcane→study_arcane 100%
+      (threshold was >35%, actual far exceeds — identity is stable
+      under physiological noise)
+
+Status: L1→L2 identity preservation confirmed at score-flow level.
+meaningLayer (selection based on "what fits who I am becoming") can now
+be built on top of a skillScore signal that is no longer drowned by need.
+
+This was a score-flow and channel-ownership correction, not a new system.
+No new learning mechanisms, no memory restructuring, no agent rewrite.
