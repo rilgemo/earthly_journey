@@ -231,7 +231,6 @@ function simulateAgent(npc, worldObj, allNpcs = []) {
   const influenceField = createInfluenceField({
     field: perception.field,
     memories,
-    needs: needs.profile
   });
   const rawActions = getAvailableActions(decisionAgent);
   const { registeredActions, rejectedProposals } = filterRegisteredActions(rawActions);

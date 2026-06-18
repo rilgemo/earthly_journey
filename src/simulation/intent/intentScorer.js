@@ -4,6 +4,42 @@ const { TRAIT_SKILL_AFFINITY } = require('../skills/traitSystem');
 const { getDemandOpportunityScore } = require('../demand/demandModel');
 const { resolveTypologyWeights } = require('../agentTypology/typologyResolver');
 
+// Actions grouped by exertion category for feasibility masking.
+// needScore remains additive and separate — it represents agent urgency,
+// not capability. The mask represents physical/mental feasibility.
+const MASK_HEAVY_WORK  = new Set(['forge', 'mine', 'hunt', 'farm', 'chop_wood', 'attack']);
+const MASK_LIGHT_WORK  = new Set(['gather_water', 'craft_item', 'defend', 'flee', 'forage', 'move', 'trade']);
+const MASK_REST_LIKE   = new Set(['rest', 'meditate']);
+const MASK_MAGIC_LIKE  = new Set(['cast_magic', 'channel_arcane', 'study_arcane']);
+// social-like and uncategorised default to 1.0
+
+const FATIGUE_THRESHOLD = 60;
+const HUNGER_THRESHOLD  = 60;
+
+// Penalties use max(), not multiplication, so two simultaneous bad needs
+// do not compound below a reasonable floor for skill-dominant agents.
+function computeFeasibilityMask(action, needProfile) {
+  const fatigue = needProfile.fatigue || 0;
+  const hunger  = needProfile.hunger  || 0;
+  let reduction = 0;
+
+  if (fatigue >= FATIGUE_THRESHOLD) {
+    if (MASK_HEAVY_WORK.has(action.id))       reduction = Math.max(reduction, 0.4);
+    else if (MASK_LIGHT_WORK.has(action.id))  reduction = Math.max(reduction, 0.3);
+    else if (MASK_MAGIC_LIKE.has(action.id))  reduction = Math.max(reduction, 0.2);
+    else if (!MASK_REST_LIKE.has(action.id))  reduction = Math.max(reduction, 0.15);
+    // rest-like: no reduction (mask stays 1.0)
+  }
+
+  if (hunger >= HUNGER_THRESHOLD) {
+    if (MASK_HEAVY_WORK.has(action.id))       reduction = Math.max(reduction, 0.3);
+    else if (MASK_LIGHT_WORK.has(action.id))  reduction = Math.max(reduction, 0.15);
+    // rest / magic / social: unaffected by hunger
+  }
+
+  return 1.0 - reduction;
+}
+
 function stableHash(value) {
   const input = JSON.stringify(value, Object.keys(value || {}).sort());
   let hash = 0;
@@ -97,8 +133,11 @@ function scoreIntent(agent, action, context = {}) {
   const environmentScore = action.type === 'magic' ? manaScore : fieldScore;
   const influenceScore = getActionInfluence(action.id, context.influenceProfile || {});
   const demandScore = getDemandOpportunityScore(action.id, context.demandIndex || {});
-  const preTypologyTotal = action.baseUtility + needScore + memoryScore + skillScore + traitScore
-    + knowledgeScore + environmentScore + communicationScore + influenceScore + demandScore;
+  const mask = computeFeasibilityMask(action, context.needs?.profile || {});
+  const maskedComponents = (skillScore + memoryScore + influenceScore + demandScore
+    + traitScore + knowledgeScore + environmentScore + communicationScore) * mask;
+  // needScore stays additive and unmasked — it is agent urgency, not feasibility.
+  const preTypologyTotal = action.baseUtility + needScore + maskedComponents;
   const typology = resolveTypologyWeights(agent, action, context);
   const typologyScore = preTypologyTotal * (typology.scoreModifier - 1);
   const score = preTypologyTotal + typologyScore;
@@ -155,5 +194,6 @@ module.exports = {
   getNeedComponent,
   getMemoryComponent,
   getPureSkillAffinity,
-  getPureKnowledgeForAction
+  getPureKnowledgeForAction,
+  computeFeasibilityMask
 };

@@ -4,15 +4,15 @@ const {
   getWorldFieldInfluence,
   getObservedMemoryInfluence,
   getSocialInfluence,
-  getNeedInfluence
 } = require('./influenceSources');
 
-function createInfluenceField({ field = {}, memories = [], needs = {} } = {}) {
+// needs is intentionally NOT a parameter here — physiological state belongs
+// in needScore (intentScorer) and the feasibility mask, not in world-signal channels.
+function createInfluenceField({ field = {}, memories = [] } = {}) {
   const sources = {
     world: getWorldFieldInfluence(field),
     memory: getObservedMemoryInfluence(memories),
     social: getSocialInfluence(memories),
-    needs: getNeedInfluence(needs)
   };
 
   const profile = Object.values(sources).reduce((result, source) => {
