@@ -1,0 +1,56 @@
+{
+  "version": "1.0",
+  "generated_from": "createInfluenceField",
+  "source_file": "src/simulation/influenceField.js",
+  "generated_at": "2026-06-18",
+  "fields": [
+    {
+      "id": "field",
+      "evidence": "DIRECT",
+      "source": "parameter: field = {}",
+      "notes": "Passed directly to getWorldFieldInfluence(field). Produces the 'world' source in the returned sources object. Field keys (fire, water, earth, arcane, etc.) are multiplied by WORLD_FIELD_INFLUENCE_PROFILES weights."
+    },
+    {
+      "id": "memories",
+      "evidence": "DIRECT",
+      "source": "parameter: memories = []",
+      "notes": "Passed to both getObservedMemoryInfluence(memories) → 'memory' source, and getSocialInfluence(memories) → 'social' source. Non-heard memories go to memory; heard memories (isHeardMemory) go to social at 0.5x strength."
+    },
+    {
+      "id": "needs",
+      "evidence": "DIRECT",
+      "source": "parameter: needs = {}",
+      "notes": "Passed directly to getNeedInfluence(needs). Produces the 'needs' source. Need keys (hunger, fatigue, manaNeed, socialNeed, safetyNeed) are multiplied by NEED_INFLUENCE_PROFILES weights and written into named influence channels."
+    },
+    {
+      "id": "profile",
+      "evidence": "DERIVED",
+      "source": "Object.values(sources).reduce(mergeInfluence, {})",
+      "notes": "Merged union of all four sources (world + memory + social + needs). Not a parameter — computed inside the function. This is what getActionInfluence() reads per action."
+    },
+    {
+      "id": "topInfluences",
+      "evidence": "DERIVED",
+      "source": "Object.entries(profile).map(...).sort(desc)",
+      "notes": "Sorted array of { key, score } pairs derived from profile. Convenience output, not an input."
+    },
+    {
+      "id": "sources",
+      "evidence": "DERIVED",
+      "source": "{ world, memory, social, needs } computed from parameters",
+      "notes": "Returned as part of the result object. Allows callers to inspect per-source breakdown. Used by influenceSources.js diagnostic to decompose action influence per channel."
+    },
+    {
+      "id": "repeat_success",
+      "evidence": "INFERRED",
+      "source": "MEMORY_INFLUENCE_PROFILES.success = { repeat_success: 0.5 }",
+      "notes": "Written into influenceProfile.repeat_success by success-type memories via getObservedMemoryInfluence. However, no entry in ACTION_INFLUENCE_PROFILES reads the 'repeat_success' channel. This is a dead channel: accumulated but never consumed by any action's influenceScore."
+    }
+  ],
+  "primary_question_answer": {
+    "question": "Is 'needs' a direct input to influenceField?",
+    "answer": "YES",
+    "evidence_class": "DIRECT",
+    "explanation": "'needs' is an explicit destructured parameter of createInfluenceField({ field, memories, needs }) and is passed unchanged to getNeedInfluence(needs), making it a first-class input that directly shapes the influence profile via NEED_INFLUENCE_PROFILES weights."
+  }
+}
