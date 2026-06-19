@@ -61,7 +61,16 @@ For implementation bridges from the current React game to the future simulation 
 
 ## Specification Index
 
-- [GDD.md](docs/GDD.md) - Game Design Document: core vision, world setting, skill/attribute/economy systems, NPC ecology, agent evolution roadmap
+### World & Product Direction
+
+> Priority: GDD defines player-facing intent and world principles.
+> Technical specifications define implementation details and may evolve.
+> If conflicts exist, raise explicitly instead of silently conforming.
+
+- [GDD.md](docs/GDD.md) - Game design document: core vision, skill/attribute system, NPC ecology, world time, magic design principles (concept stage), Agent evolution draft (L1→L2→L3, design draft only)
+
+### Architecture & Technical Design
+
 - [00_overview.md](docs/00_overview.md) - Project overview, stack, core loop, and current file structure
 - [01_core_architecture.md](docs/01_core_architecture.md) - Architecture boundaries and implementation rules
 - [02_agent_system.md](docs/02_agent_system.md) - Agent model and future NPC ecology references
