@@ -93,3 +93,39 @@ be built on top of a skillScore signal that is no longer drowned by need.
 
 This was a score-flow and channel-ownership correction, not a new system.
 No new learning mechanisms, no memory restructuring, no agent rewrite.
+
+## Phase 0.5 — Player-Observable Identity (Earthly Journey, not Sandbox)
+
+Separate track from the Sandbox identity-physiology decoupling work
+above. Implemented entirely in src/data/, src/App.js — no dependency
+on src/simulation/.
+
+Added: actionLog on lao_zhou (capped 168 entries / 7 game days),
+describeIdentityNarrative(actionLog) — pure function producing tiered
+qualitative narrative (never raw stats) — and a player action
+"观察老周最近的状态" to trigger it.
+
+Acceptance results (synthetic log from lao_zhou's real schedule):
+  ~1 day (24 entries):  "最近大部分时间，老周都在锻造铺打铁。"
+  ~3 days (72 entries): "最近几天老周经常待在锻造铺，偶尔在镇上走走。"
+  ~7 days (168 entries): same as 3-day — correctly did not fire the
+    "deepening dominance" branch, because lao_zhou's schedule is
+    static and repeats identically every day. No artificial trend
+    was manufactured. This is correct, honest behaviour — the system
+    only reports a deepening pattern when one actually exists.
+
+Implication: Phase 0.5 proves players can perceive an existing
+behavioural pattern through narrative, not raw data. It does NOT yet
+prove identity evolves over time — that requires the underlying
+schedule/skill weighting to actually shift (e.g. via accumulated XP
+changing behaviour ratios), which is a separate, later step.
+
+Bugs caught during acceptance testing (both fixed):
+
+- missing "偶尔" prefix in mid-tier template
+- "待在锻造铺打铁" double-verb awkwardness — fixed by splitting
+  PLACE_PHRASE / LOCATION_PHRASE into separate tables for different
+  sentence positions
+
+Status: Phase 0.5 complete. Player can now ask "what has this person
+been doing" and receive a qualitative answer, not a stat readout.
