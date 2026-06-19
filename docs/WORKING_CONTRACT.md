@@ -23,6 +23,11 @@ Core principles:
 - World exists before player understanding
 - NPCs are living individuals, not role labels
 - Status is result, not purpose
+- World state may be numeric. Player understanding must be narrative.
+  (Internal state — actionLog, dominance ratios, trends — must never be
+  exposed directly to the player. A Narrator layer compresses history
+  into qualitative perception. The Narrator compresses, it does not
+  invent: if no real trend exists, it must not manufacture one.)
 
 Do not introduce systems that convert discovery into explicit menus,
 trees, prompts, probabilities, or checklists.
