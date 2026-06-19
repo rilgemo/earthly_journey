@@ -61,6 +61,7 @@ For implementation bridges from the current React game to the future simulation 
 
 ## Specification Index
 
+- [GDD.md](docs/GDD.md) - Game Design Document: core vision, world setting, skill/attribute/economy systems, NPC ecology, agent evolution roadmap
 - [00_overview.md](docs/00_overview.md) - Project overview, stack, core loop, and current file structure
 - [01_core_architecture.md](docs/01_core_architecture.md) - Architecture boundaries and implementation rules
 - [02_agent_system.md](docs/02_agent_system.md) - Agent model and future NPC ecology references
