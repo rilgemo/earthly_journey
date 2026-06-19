@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
-import { AGENTS, getAgentStatus, tickAgentSkillXp, pushActionLog, describeIdentityNarrative } from "./data/npcs";
+import { AGENTS, getAgentStatus, tickAgentSkillXp, tickSkillHabit, pushActionLog, describeIdentityNarrative, driftSchedule } from "./data/npcs";
 import { onTick, checkTick } from "./utils/tickSystem";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
@@ -97,6 +97,7 @@ export default function App() {
   useEffect(() => { skillsRef.current = skills; }, [skills]);
 
   // Register lao_zhou XP settlement and action log: once per ingame hour.
+  const lastDriftDayRef = useRef(null);
   useEffect(() => {
     onTick((worldTime, ticksElapsed, pushMsg) => {
       const status = getAgentStatus("lao_zhou", worldTime.timeOfDay);
@@ -112,7 +113,15 @@ export default function App() {
             pushMsg("system", `老周的${sk.name}更熟练了（Lv.${sk.level}）。`);
           }
         });
-        const afterLog = pushActionLog(afterXp, tick, activity);
+        const afterHabit = tickSkillHabit(afterXp, activity, ticksElapsed);
+        let afterLog = pushActionLog(afterHabit, tick, activity);
+
+        // Drift schedule once per ingame day boundary (not every tick).
+        if (lastDriftDayRef.current !== null && worldTime.day !== lastDriftDayRef.current) {
+          afterLog = { ...afterLog, schedule: driftSchedule(afterLog) };
+        }
+        lastDriftDayRef.current = worldTime.day;
+
         return { ...prev, lao_zhou: afterLog };
       });
     });

@@ -176,6 +176,16 @@ The action "观察老周最近的状态" (available when lao_zhou is at 锻造�
 
 This is the first instance of player-observable identity in the player game.
 
+**Schedule drift (Phase 0.6):**
+
+Each agent carries `skillHabit: { forge, fishing }` — counters incremented by 1 per ingame hour spent on the corresponding activity, via `tickSkillHabit(agent, activity, ticksElapsed)` (pure). This accumulates alongside XP/actionLog in the same tick handler.
+
+```js
+driftSchedule(agent) → schedule   // pure, computed from BASE_SCHEDULE (not agent.schedule)
+```
+
+Once per ingame day boundary (checked via `worldTime.day` changing, not every tick), `driftSchedule(agent)` reads `skillHabit` imbalance and nudges the forge/fishing block boundary by a small bounded amount (max ±2 ingame hours from the original schedule shape, floor of 30min per block). This lets long-term behavioral dominance show up as a real shift in the action distribution, giving Phase 0.5's "deepening dominance" narrative branch in `describeIdentityNarrative` something genuine to detect — no changes to that function were needed.
+
 **Presence-gated actions:**
 
 Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.

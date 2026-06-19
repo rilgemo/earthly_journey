@@ -8,6 +8,7 @@ export const AGENTS = {
     ],
     xp: { 锻造入门: 0, 钓鱼: 0 },
     actionLog: [],  // [{ tick, activity }], capped at 168 (7 game-days × 24 ticks)
+    skillHabit: { forge: 0, fishing: 0 },  // accumulated ingame hours per activity, drives driftSchedule
     schedule: [
       { from: 360, to: 1200, activity: "锻造", location: "新叶镇·锻造铺" },
       { from: 1200, to: 1260, activity: "用餐", location: "新叶镇·晨星旅店" },
@@ -18,6 +19,10 @@ export const AGENTS = {
     defaultActivity: "闲逛",
   },
 };
+
+// Baseline schedule shape — driftSchedule always nudges from this, never
+// from the agent's already-drifted schedule, so drift can't compound forever.
+const BASE_SCHEDULE = AGENTS.lao_zhou.schedule.map(slot => ({ ...slot }));
 
 export function getAgentStatus(agentId, timeOfDay) {
   const agent = AGENTS[agentId];
@@ -170,4 +175,49 @@ export function tickAgentSkillXp(agent, activity, minutesElapsed) {
       : s
   );
   return { ...agent, xp: newXp, skills };
+}
+
+// Maps activity names to the skillHabit counter they accumulate.
+const HABIT_KEYS = {
+  "锻造": "forge",
+  "钓鱼": "fishing",
+};
+
+// Pure function — increments the habit counter for `activity` by one
+// ingame hour spent on it. Activities with no habit mapping are a no-op.
+export function tickSkillHabit(agent, activity, ticksElapsed) {
+  const key = HABIT_KEYS[activity];
+  if (!key) return agent;
+  const habit = agent.skillHabit || { forge: 0, fishing: 0 };
+  return { ...agent, skillHabit: { ...habit, [key]: habit[key] + ticksElapsed } };
+}
+
+const HABIT_THRESHOLD = 50;   // ingame hours of imbalance per drift step
+const DRIFT_STEP_MIN = 15;    // ingame minutes nudged per threshold step
+const MAX_DRIFT_MIN = 120;    // hard cap: schedule can drift at most +/-2h from baseline
+const MIN_BLOCK_MIN = 30;     // floor on forge2/fishing block length
+
+// Pure function — nudges lao_zhou's schedule based on accumulated
+// skillHabit imbalance. Always computed from BASE_SCHEDULE (not the
+// agent's current schedule), so drift is bounded and never compounds.
+// forge habit > fishing habit -> forge block grows, fishing block shrinks
+// (and vice versa), capped at +/-MAX_DRIFT_MIN from the baseline boundary.
+export function driftSchedule(agent) {
+  const habit = agent.skillHabit || { forge: 0, fishing: 0 };
+  const imbalance = habit.forge - habit.fishing;
+  const rawDrift = Math.floor(imbalance / HABIT_THRESHOLD) * DRIFT_STEP_MIN;
+  const drift = Math.max(-MAX_DRIFT_MIN, Math.min(MAX_DRIFT_MIN, rawDrift));
+
+  return BASE_SCHEDULE.map((slot, i) => {
+    if (i !== 2 && i !== 3) return { ...slot };
+    const forge2 = BASE_SCHEDULE[2];
+    const fishing = BASE_SCHEDULE[3];
+    const forge2Len = forge2.to - forge2.from;
+    const fishingLen = fishing.to - fishing.from;
+    const maxPositive = fishingLen - MIN_BLOCK_MIN;   // how far forge2 can grow into fishing
+    const maxNegative = -(forge2Len - MIN_BLOCK_MIN); // how far forge2 can shrink
+    const boundedDrift = Math.max(maxNegative, Math.min(maxPositive, drift));
+    if (i === 2) return { ...slot, to: forge2.to + boundedDrift };
+    return { ...slot, from: fishing.from + boundedDrift };
+  });
 }
