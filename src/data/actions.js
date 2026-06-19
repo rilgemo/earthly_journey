@@ -267,6 +267,13 @@ export const ACTION_DATA = {
     ],
     log: ["购买了 采矿镐 ×1。采矿效率将提升。"],
   },
+  "观察老周最近的状态": {
+    stCost: "vlow",
+    // Narrative is generated dynamically in App.js (observeZhouIdentity) from
+    // summarizeIdentity(lao_zhou.actionLog) — this static line is never shown.
+    narrative: ["你留意了老周最近的状态。"],
+    log: ["你留意了老周最近的状态。"],
+  },
   "看到老周在钓鱼": {
     stCost: "vlow",
     narrative: [

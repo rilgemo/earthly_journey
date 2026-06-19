@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
-import { AGENTS, getAgentStatus, tickAgentSkillXp } from "./data/npcs";
+import { AGENTS, getAgentStatus, tickAgentSkillXp, pushActionLog, summarizeIdentity } from "./data/npcs";
 import { onTick, checkTick } from "./utils/tickSystem";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
@@ -96,21 +96,24 @@ export default function App() {
   const skillsRef = useRef([]);
   useEffect(() => { skillsRef.current = skills; }, [skills]);
 
-  // Register lao_zhou XP settlement: once per ingame hour, batch 60 minutes of XP.
+  // Register lao_zhou XP settlement and action log: once per ingame hour.
   useEffect(() => {
     onTick((worldTime, ticksElapsed, pushMsg) => {
       const status = getAgentStatus("lao_zhou", worldTime.timeOfDay);
+      const activity = status?.activity ?? "闲逛";
+      const tick = worldTime.day * 24 + worldTime.hour;
       const minutesElapsed = ticksElapsed * 60;
       setAgents(prev => {
         const before = prev.lao_zhou;
-        const after = tickAgentSkillXp(before, status?.activity ?? "", minutesElapsed);
-        after.skills.forEach(sk => {
+        const afterXp = tickAgentSkillXp(before, activity, minutesElapsed);
+        afterXp.skills.forEach(sk => {
           const prevLevel = before.skills.find(s => s.name === sk.name)?.level ?? 1;
           if (sk.level > prevLevel) {
             pushMsg("system", `老周的${sk.name}更熟练了（Lv.${sk.level}）。`);
           }
         });
-        return { ...prev, lao_zhou: after };
+        const afterLog = pushActionLog(afterXp, tick, activity);
+        return { ...prev, lao_zhou: afterLog };
       });
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -308,6 +311,33 @@ export default function App() {
     ]);
   }, [agents.lao_zhou, doAction]);
 
+  // ── 观察老周近期状态（从 actionLog 生成动态叙事） ────────
+  const observeZhouIdentity = useCallback(() => {
+    doAction("观察老周最近的状态");
+    const log = agents.lao_zhou.actionLog || [];
+    const summary = summarizeIdentity(log);
+    const activityCN = { "锻造": "打铁", "钓鱼": "钓鱼", "用餐": "吃饭", "闲逛": "闲逛" };
+    let narrative;
+    if (log.length < 20) {
+      narrative = ["你认识老周还不够久，还看不出什么规律。"];
+    } else if (summary.length === 0) {
+      narrative = ["老周最近的动向你还摸不透。"];
+    } else {
+      const top = summary[0];
+      const second = summary[1];
+      const topCN = activityCN[top.activity] || top.activity;
+      if (top.percent > 50) {
+        narrative = [`老周最近大半时间都在${topCN}。`, `你在他身上待了${log.length}个时辰，印象很深。`];
+      } else if (second && (top.percent - second.percent) <= 15) {
+        const secondCN = activityCN[second.activity] || second.activity;
+        narrative = [`老周最近在${topCN}和${secondCN}之间，似乎找到了某种节奏。`];
+      } else {
+        narrative = [`老周最近的重心在${topCN}上，其他时候就随意了。`];
+      }
+    }
+    setNarrative(narrative);
+  }, [agents.lao_zhou, doAction]);
+
   // ── 移动区域 ─────────────────────────────────────────
   const travelTo = useCallback(key => {
     if (!AREAS[key]) return;
@@ -424,6 +454,7 @@ export default function App() {
           zhouStatus={zhouStatus}
           laoZhou={laoZhou}
           onZhouFishing={observeZhouFishing}
+          onZhouIdentity={observeZhouIdentity}
           worldTime={worldTime}
         />
         <RightPanel

@@ -126,6 +126,7 @@ AGENTS[agentId] = {
   schedule: [{ from: minuteOfDay, to: minuteOfDay, activity, location }],
   defaultLocation: string,   // area key
   defaultActivity: string,
+  actionLog: [{ tick, activity }],  // last 168 entries (7 game-days × 24 ticks)
 }
 ```
 
@@ -148,6 +149,23 @@ tickAgentSkillXp(agent, activity, minutesElapsed) → agent
 
 The player can observe an agent's live skill level via specific actions (e.g., "看到老周在钓鱼" shows current 钓鱼 Lv). These actions use a dedicated handler (`onZhouFishing`) that injects the live level into the narrative at click time.
 
+**Action log and identity summary:**
+
+Each agent carries `actionLog: [{ tick, activity }]`, capped at 168 entries (7 game-days). Populated once per ingame hour via `pushActionLog(agent, tick, activity)` — a pure function. The log enables:
+
+```js
+pushActionLog(agent, tick, activity) → agent   // pure, trims to last 168
+summarizeIdentity(actionLog) → [{ activity, count, percent }]  // sorted desc
+```
+
+The action "观察老周最近的状态" (available when lao_zhou is at 锻造铺) calls `summarizeIdentity` at click time and generates Chinese narrative:
+
+- log < 20 entries → "你认识老周还不够久，还看不出什么规律。"
+- top activity > 50% → "老周最近大半时间都在{activity}。"
+- top two within 15% → "老周最近在{A}和{B}之间，似乎找到了某种节奏。"
+
+This is the first instance of player-observable identity in the player game.
+
 **Presence-gated actions:**
 
 Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.
@@ -156,7 +174,7 @@ Actions that require an agent to be physically present are filtered in `MainPane
 
 - **lao_zhou** (name: "老周") — skills: 锻造入门 (200xp/level), 钓鱼 (200xp/level)
   - Schedule: 06:00–20:00 锻造(铺) → 20:00–21:00 用餐(旅店) → 21:00–22:00 锻造(铺) → 22:00–23:00 钓鱼(南边林地)
-  - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）
+  - Actions gated on his forge presence: 与铁匠搭话, 靠近铁匠铺观摩锻造, 购买采矿镐（40G）, 观察老周最近的状态
 
 ## TICK SYSTEM
 

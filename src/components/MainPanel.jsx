@@ -5,7 +5,7 @@ import { AREAS } from "../data/areas";
 // Actions that require 老周 to be present at the forge.
 const ZHOU_FORGE_ACTIONS = new Set(["与铁匠搭话", "靠近铁匠铺观摩锻造", "购买采矿镐（40G）"]);
 
-export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea, areaKey, zhouStatus, laoZhou, onZhouFishing }) {
+export default function MainPanel({ narrative, messages, curActions, curRest, travel, stPct, onAction, onTravel, curArea, areaKey, zhouStatus, laoZhou, onZhouFishing, onZhouIdentity }) {
   const [filter, setFilter] = useState("全部");
   const endRef = useRef(null);
 
@@ -33,6 +33,10 @@ export default function MainPanel({ narrative, messages, curActions, curRest, tr
     zhouAbsenceMsg = zhouStatus?.activity === "钓鱼"
       ? "炉火还温着，但老周不在——也许去钓鱼了。"
       : "锻造铺空着，老周似乎不在。";
+  }
+
+  if (zhouAtForge) {
+    visibleActions = [...visibleActions, "观察老周最近的状态"];
   }
 
   if (zhouAtLin) {
@@ -74,7 +78,11 @@ export default function MainPanel({ narrative, messages, curActions, curRest, tr
             </div>
           )}
           {visibleActions.map(a => (
-            <button key={a} onClick={() => a === "看到老周在钓鱼" ? onZhouFishing?.() : onAction(a)}
+            <button key={a} onClick={() =>
+                a === "看到老周在钓鱼"     ? onZhouFishing?.()   :
+                a === "观察老周最近的状态" ? onZhouIdentity?.()  :
+                onAction(a)
+              }
               style={{
                 width: "100%",
                 padding: "5px 14px",
