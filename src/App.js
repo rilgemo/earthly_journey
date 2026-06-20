@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AREAS } from "./data/areas";
 import { ACTION_DATA } from "./data/actions";
-import { AGENTS, getAgentStatus, tickAgentSkillXp, tickSkillHabit, pushActionLog, describeIdentityNarrative, driftSchedule } from "./data/npcs";
+import { AGENTS, getAgentStatus, tickAgentSkillXp, tickSkillHabit, pushActionLog, describeIdentityNarrative, driftSchedule, buildDistributionSummary, compareIdentityNarrative } from "./data/npcs";
 import { onTick, checkTick } from "./utils/tickSystem";
 import { SKILL_SLOTS } from "./data/skills";
 import { getWorldTime } from "./utils/worldTime";
@@ -42,6 +42,7 @@ const ST_WARN = 30;
 const ST_CRIT = 10;
 const ST_COST = { high: 18, mid: 10, low: 5, vlow: 2 };
 const INITIAL_BASE_STATS = Object.freeze({ 物攻: 0, 防御: 0, 魔攻: 0, 魔防: 0, 速度: 0, 精神: 0, 灵巧: 0 });
+const MIN_OBSERVE_GAP_TICKS = 72; // ~3 ingame days — minimum gap before re-observation compares to memory
 const inspectorSimulator = createInspectorSimulationStream();
 
 function normalizeBaseStats(candidate = {}) {
@@ -76,6 +77,9 @@ export default function App() {
   const [notif, setNotif] = useState(null);
   const [worldTime, setWorldTime] = useState(() => getWorldTime());
   const [agents, setAgents] = useState(AGENTS);
+  // PLAYER-side memory of what the player has observed about an agent —
+  // not agent state. Persisted in the save file alongside player progress.
+  const [observeHistory, setObserveHistory] = useState({ lao_zhou: [] });
   const inspector = useSimulationStream(inspectorSimulator);
 
   const pushMessage = useCallback((type, text, speaker) => {
@@ -152,6 +156,7 @@ export default function App() {
       if (typeof data.gold === "number") setGold(data.gold);
       if (Array.isArray(data.items)) setItems(data.items);
       if (data.equipped) setEquipped(data.equipped);
+      if (data.observeHistory) setObserveHistory(data.observeHistory);
       if (Array.isArray(data.messages)) {
         const loaded = data.messages.slice(-50);
         const maxId = loaded.reduce((max, msg) => Math.max(max, msg.id ?? 0), messageIdRef.current);
@@ -180,6 +185,7 @@ export default function App() {
         gold,
         items,
         equipped,
+        observeHistory,
         messages: messages.slice(-50),
       };
       const currentJson = JSON.stringify(saveData);
@@ -193,7 +199,7 @@ export default function App() {
       initialSaveRef.current = false;
     }, 120000);
     return () => clearTimeout(timer);
-  }, [area, areaActions, skills, slots, baseStats, stamina, gold, items, equipped, messages, pushMessage]);
+  }, [area, areaActions, skills, slots, baseStats, stamina, gold, items, equipped, observeHistory, messages, pushMessage]);
 
   // ── 派生状态 ─────────────────────────────────────────
   const stPct = (stamina / ST_MAX) * 100;
@@ -320,12 +326,26 @@ export default function App() {
     ]);
   }, [agents.lao_zhou, doAction]);
 
-  // ── 观察老周近期状态（从 actionLog 生成动态叙事） ────────
+  // ── 观察老周近期状态（从 actionLog 生成动态叙事，并与玩家此前的印象比较） ────────
   const observeZhouIdentity = useCallback(() => {
     doAction("观察老周最近的状态");
     const log = agents.lao_zhou.actionLog || [];
-    setNarrative(describeIdentityNarrative(log));
-  }, [agents.lao_zhou, doAction]);
+    const currentTick = worldTime.day * 24 + worldTime.hour;
+    const history = observeHistory.lao_zhou || [];
+    const prior = history[history.length - 1];
+    const enoughTimePassed = prior && (currentTick - prior.tick) >= MIN_OBSERVE_GAP_TICKS;
+
+    const narrative = enoughTimePassed
+      ? compareIdentityNarrative(log, prior.distributionSummary)
+      : describeIdentityNarrative(log);
+    setNarrative(narrative);
+
+    const entry = { tick: currentTick, narrative, distributionSummary: buildDistributionSummary(log) };
+    setObserveHistory(prev => ({
+      ...prev,
+      lao_zhou: [...(prev.lao_zhou || []), entry].slice(-10),
+    }));
+  }, [agents.lao_zhou, doAction, worldTime, observeHistory]);
 
   // ── 移动区域 ─────────────────────────────────────────
   const travelTo = useCallback(key => {
