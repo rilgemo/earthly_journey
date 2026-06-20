@@ -164,6 +164,68 @@ export function describeIdentityNarrative(actionLog) {
   return [NO_PATTERN_LINE];
 }
 
+// Anchor place/verb used by comparative narrative phrasing below.
+const ANCHOR_PLACE = { "锻造": "炉台", "钓鱼": "河边" };
+const ACTIVITY_VERB = { "锻造": "打铁", "钓鱼": "钓鱼", "用餐": "吃饭", "闲逛": "闲逛" };
+function anchorPlace(activity) { return ANCHOR_PLACE[activity] || activity; }
+function activityVerb(activity) { return ACTIVITY_VERB[activity] || activity; }
+
+const SAME_AS_BEFORE_LINE = "老周还是老样子。";
+
+// Dominance is compared by qualitative tier, not raw percentage-point delta —
+// a 2% wobble in a rolling window isn't a "real" shift, but crossing from
+// "moderate" to "strong" dominance is. Keeps the comparison narrative
+// consistent with the narrative-over-numeric principle.
+const TIER_WEAK_MAX = 40;     // < this = weak dominance
+const TIER_STRONG_MIN = 65;   // >= this = strong dominance
+const TIER_RANK = { weak: 0, moderate: 1, strong: 2 };
+function dominanceTier(percent) {
+  if (percent < TIER_WEAK_MAX) return "weak";
+  if (percent >= TIER_STRONG_MIN) return "strong";
+  return "moderate";
+}
+
+// Pure function — lightweight, qualitative-data summary of actionLog,
+// for PLAYER-side memory only. Stores top/second activity + percent,
+// not raw counts — this is what the player "remembers", not a stat sheet.
+export function buildDistributionSummary(actionLog) {
+  const summary = summarizeIdentity(actionLog);
+  if (summary.length === 0) return null;
+  return {
+    topActivity: summary[0].activity,
+    topPercent: summary[0].percent,
+    secondActivity: summary[1]?.activity ?? null,
+    secondPercent: summary[1]?.percent ?? null,
+  };
+}
+
+// Pure function — compares the current actionLog-derived distribution to a
+// prior observation's stored summary, and returns a qualitative Chinese
+// comparison. Never invents a trend: if the data shows no real shift, it
+// says so ("老周还是老样子。") instead of manufacturing change.
+export function compareIdentityNarrative(actionLog, priorSummary) {
+  const current = buildDistributionSummary(actionLog);
+  if (!current || !priorSummary) return describeIdentityNarrative(actionLog);
+
+  if (current.topActivity === priorSummary.topActivity) {
+    const currentRank = TIER_RANK[dominanceTier(current.topPercent)];
+    const priorRank = TIER_RANK[dominanceTier(priorSummary.topPercent)];
+    if (currentRank > priorRank) {
+      return [`和你记忆里的样子比，他最近似乎越来越少离开${anchorPlace(current.topActivity)}了。`];
+    }
+    if (currentRank < priorRank) {
+      return [`比起你上次看到的样子，他好像没那么专注于${activityVerb(current.topActivity)}了。`];
+    }
+    return [SAME_AS_BEFORE_LINE];
+  }
+
+  // The dominant activity itself changed — that's a shift either way.
+  if (current.topPercent >= (priorSummary.secondPercent ?? 0)) {
+    return [`比起你上次看到的样子，他好像没那么专注于${activityVerb(priorSummary.topActivity)}了。`];
+  }
+  return [SAME_AS_BEFORE_LINE];
+}
+
 // Pure function — returns updated agent object, never mutates.
 export function tickAgentSkillXp(agent, activity, minutesElapsed) {
   const rate = XP_RATES[activity];
