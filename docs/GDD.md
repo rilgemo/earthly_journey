@@ -17,6 +17,27 @@ Internal state (action logs, dominance ratios, trends) is never shown directly t
 
 ---
 
+## 0.2 Validated Principles
+
+Principles confirmed through implementation and testing (2026-06),
+kept here as ongoing design guardrails:
+
+- **Need is a constraint, not a source of identity.** Physiological
+  state may limit what is feasible; it must not be the primary driver
+  of what an individual prefers to do.
+- **The Narrator compresses history; it does not invent story.** If no
+  real change has occurred, the system must say so, not manufacture
+  a trend for dramatic effect.
+- **Identity drift must remain bounded.** Behaviour can shift gradually
+  over time, but a person should not become unrecognisable — drift is
+  computed as a deviation from a stable baseline, not as accumulating
+  mutation.
+- **Internal state stays hidden from the player.** Raw numbers,
+  percentages, and counts are implementation detail. What the player
+  receives is always narrative.
+
+---
+
 ## 0.1 Magic — Design Principles (Concept Stage, Not Implemented)
 
 Not rules. Direction only. Currently **no implementation**.
