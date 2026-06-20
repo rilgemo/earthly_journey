@@ -186,17 +186,6 @@ driftSchedule(agent) → schedule   // pure, computed from BASE_SCHEDULE (not ag
 
 Once per ingame day boundary (checked via `worldTime.day` changing, not every tick), `driftSchedule(agent)` reads `skillHabit` imbalance and nudges the forge/fishing block boundary by a small bounded amount (max ±2 ingame hours from the original schedule shape, floor of 30min per block). This lets long-term behavioral dominance show up as a real shift in the action distribution, giving Phase 0.5's "deepening dominance" narrative branch in `describeIdentityNarrative` something genuine to detect — no changes to that function were needed.
 
-**Observation memory (Phase 0.7):**
-
-`observeHistory` is PLAYER-side state in `App.js` (`{ lao_zhou: [{ tick, narrative, distributionSummary }] }`), not agent state — it represents what the player remembers having seen, not anything lao_zhou knows about himself. It is persisted in the localStorage save file alongside other player progress fields, capped at the last 10 entries per agent.
-
-```js
-buildDistributionSummary(actionLog) → { topActivity, topPercent, secondActivity, secondPercent } | null   // pure
-compareIdentityNarrative(actionLog, priorSummary) → string[]   // pure
-```
-
-When the player re-triggers "观察老周最近的状态" at least `MIN_OBSERVE_GAP_TICKS` (72 ticks / ~3 ingame days) after their last observation, `compareIdentityNarrative` is used instead of a fresh `describeIdentityNarrative` snapshot. It compares the current dominance tier (weak / moderate / strong, bucketed from `topPercent`) against the tier stored in the prior observation's `distributionSummary` — tier comparison rather than a raw percentage-point delta, so a few points of rolling-window noise doesn't get reported as "change." If the tier rose, it's reported as deepening; if it fell (or the dominant activity itself changed), as a weakening; if unchanged, "老周还是老样子。" First observation, or insufficient elapsed time, falls back to the plain snapshot. This is the first instance of "world changed + player noticed = meaning" — the comparison is always derived from real `actionLog`/`skillHabit`-driven data, never hardcoded.
-
 **Presence-gated actions:**
 
 Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.
