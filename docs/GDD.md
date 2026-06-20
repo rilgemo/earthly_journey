@@ -35,6 +35,14 @@ kept here as ongoing design guardrails:
 - **Internal state stays hidden from the player.** Raw numbers,
   percentages, and counts are implementation detail. What the player
   receives is always narrative.
+- **The world has no hidden director.** Nothing in the system should
+  exist to serve the player's experience by adjusting difficulty,
+  generating content on demand, or steering outcomes toward what is
+  "interesting." The world runs according to its own ecology; the
+  player discovers what is already happening, rather than being
+  given content. (This is the same principle, at a larger scale, as
+  "need is a constraint, not identity" — anything that quietly
+  optimises the world toward player engagement is a hidden director.)
 
 ---
 
