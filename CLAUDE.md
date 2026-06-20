@@ -197,6 +197,14 @@ compareIdentityNarrative(actionLog, priorSummary) → string[]   // pure
 
 When the player re-triggers "观察老周最近的状态" at least `MIN_OBSERVE_GAP_TICKS` (72 ticks / ~3 ingame days) after their last observation, `compareIdentityNarrative` is used instead of a fresh `describeIdentityNarrative` snapshot. It compares the current dominance tier (weak / moderate / strong, bucketed from `topPercent`) against the tier stored in the prior observation's `distributionSummary` — tier comparison rather than a raw percentage-point delta, so a few points of rolling-window noise doesn't get reported as "change." If the tier rose, it's reported as deepening; if it fell (or the dominant activity itself changed), as a weakening; if unchanged, "老周还是老样子。" First observation, or insufficient elapsed time, falls back to the plain snapshot. This is the first instance of "world changed + player noticed = meaning" — the comparison is always derived from real `actionLog`/`skillHabit`-driven data, never hardcoded.
 
+Verified acceptance run (3 checkpoints, EPOCH_MS-accelerated):
+
+- Day 1: baseline snapshot (first observation, no comparison yet)
+- Day 8: "和你记忆里的样子比，他最近似乎越来越少离开炉台了。" (schedule drift from Phase 0.6 had deepened the forge dominance tier since day 1)
+- Day 31: "老周还是老样子。" (drift had already capped by ~day 7 per Phase 0.6's ±2h bound — correctly reports no further change rather than inventing one)
+
+Combined with Phase 0.6 (schedule drift via `skillHabit`) and Phase 0.5 (narrative-only observation, no raw stats), the full chain now reads: real behaviour accumulates → schedule nudges within a bounded range → player-facing narrative reflects the shift honestly, including reporting "no change" when that is true.
+
 **Presence-gated actions:**
 
 Actions that require an agent to be physically present are filtered in `MainPanel.jsx`. When the agent is absent, those actions are hidden and a narrative line is shown based on their current activity. New action buttons (e.g., "看到老周在钓鱼") are injected when the agent is present at that location.
