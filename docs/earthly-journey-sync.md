@@ -1,9 +1,24 @@
-# Earthly Journey — Claude Sync Package v0.1
+# Earthly Journey — Claude Sync Package
+
+## LAYER 0 — SYSTEM HEADER
 > Status: Draft | Version: 3.7 | Last updated: 2026-06-28
 > Purpose: Long-term design decisions (LDD) baseline for all future Earthly Journey discussions with Claude.
 > Rule: This document is the single source of truth. Discussions always sync back here.
 
+### SYNC RULES
+
+1. All Earthly Journey discussions default to this document as baseline
+2. When a decision is locked, it moves from Open Decisions → its own section
+3. Core Simulation Layer decisions are marked **IMMUTABLE** once locked
+4. Rules/Systems Layer decisions are marked **ADJUSTABLE**
+5. Content Layer decisions are marked **DATA-DRIVEN**
+6. This document version-bumps on every locked decision
+
+*Next version: v0.7 — after Social Layer relationship structure is locked*
+
 ---
+
+## LAYER 1 — CANONICAL SYSTEM STATE
 
 ## Architecture Baseline（不可变前提）
 
@@ -1154,7 +1169,6 @@ Why reconstruction has weight (not a button):
 ```
 
 ---
-
 ## SOCIAL LAYER（已锁定）[Rules Layer — ADJUSTABLE]
 
 ### Core Principle
@@ -1325,15 +1339,8 @@ NPCs do not form abstract beliefs — only inherit behavioral heuristics.
 It is stored as: "encounter wolf → trigger avoidance behavior."
 ```
 
-### Open (Social Layer — pending)
 
-```
-- [ ] Social Projection cost model
-      Does generating a projection consume resources or propagation time?
-      Prevents world from becoming implausible infinite real-time inference engine
-- [ ] Faction system design
-- [ ] Reputation propagation speed (how fast does group memory update?)
-```
+> 本节遗留 Open 项见 LAYER 3 — OPEN / NEXT EVOLUTION → "Social Layer — Pending"
 
 ### Reconstruction Location Model（已锁定）[Rules Layer — ADJUSTABLE parameters]
 
@@ -1420,7 +1427,6 @@ Identity continuity by path:
 ```
 
 ---
-
 ## SOCIAL PROPAGATION MODEL（已锁定）[Rules Layer — ADJUSTABLE parameters]
 
 ### Six-Node Pipeline
@@ -1649,29 +1655,6 @@ flowchart TD
 ```
 
 ---
-
-
-
-### Pending
-- [ ] Combat system → renamed Conflict Layer (why entities fight)
-- [ ] Social Layer — faction system design
-- [ ] Skill evolution rules (how skills branch or transform)
-- [ ] Skill slot count (numeric tuning — Rules Layer)
-- [ ] Reconstruction conditions detail (what triggers eligibility)
-- [ ] Identity decay parameters (half-life, stabilization, full dispersion values)
-- [ ] Social Propagation cost model:
-      Current spec says "cost = propagation delay and density, not resource consumption"
-      Suggest future revision: "not explicit resource accounting"
-      Reason: propagation consumes attention, time, network density —
-      needs to explain why information does not spread infinitely
-- [ ] Ontological survival vs Social survival as independent systems:
-      Identity may disperse (ontological) while social memory persists (social)
-      May generate emergent behaviors: funerals, grave-keeping, memorials, historical records
-      Not religion — social mechanism for delaying identity dispersion
-      Candidate for future standalone system
-
----
-
 ## DESIGN CONSTRAINTS（持续维护）
 
 Already implied by Vision + World Principle:
@@ -1688,22 +1671,6 @@ Already implied by Vision + World Principle:
 - ❌ No save/load time manipulation
 
 ---
-
-## SYNC RULES
-
-1. All Earthly Journey discussions default to this document as baseline
-2. When a decision is locked, it moves from Open Decisions → its own section
-3. Core Simulation Layer decisions are marked **IMMUTABLE** once locked
-4. Rules/Systems Layer decisions are marked **ADJUSTABLE**
-5. Content Layer decisions are marked **DATA-DRIVEN**
-6. This document version-bumps on every locked decision
-
----
-
-*Next version: v0.7 — after Social Layer relationship structure is locked*
-
----
-
 ## PROJECTION / CONTEXT / PROPAGATION MODEL v1.0（已锁定）
 > 写入时间：2026-06-28
 > 状态：Frozen
@@ -1857,420 +1824,6 @@ Type III — Null Projection
 ```
 
 ---
-
-## DEPENDENCY GRAPH（v0.6）[Canonical YAML Source]
-
-```yaml
-# Earthly Journey — System Dependency Graph v0.6
-# Key changes from v0.5:
-#
-# Fix 1: social_projection demoted to E-class observable
-#   - removed: generates [history, culture_myth]
-#   - removed: outputs [collective_perception, social_pressure, cultural_attractor]
-#   - retained: class: E, type: projection, storage: none, observable: true
-#
-# Fix 2: reputation removed as causal node
-#   - demoted to observable_descriptor
-#   - derived_from: social_belief_state only
-#
-# Fix 3: propagation_event added as B-class node
-#   - inputs: interaction, social_belief_state, relational_state
-#   - context (not snapshotted): authority_content
-#   - outputs: event_record, belief_update
-#   - observer-derived (not output): social_projection
-#
-# Fix 4: history and culture_myth generation path updated
-#   - history inputs: propagation_event + causal_events (replaces social_projection)
-#   - culture_myth inputs: history + social_belief_state (replaces social_projection)
-#
-# Key changes from v0.4:
-#
-# Fix 1: Relational Layer no longer directly generates Emergent content
-#   - RR->HIS removed (SP is the intermediary)
-#   - RR->CUL removed (SP is the intermediary)
-#   - RR->SP retained (RR biases SP; SP generates HIS/CUL)
-#
-# Fix 2: Liquidity is pure constraint field — not generated, only recomputed
-#   - EC->LIQ, SL->LIQ, RK->LIQ, F->LIQ (input edges) all removed
-#   - LIQ parameters expressed as computation_parameters, not inputs
-#   - LIQ outputs only: constraint edges to EC, SL, RK
-#
-# Fix 3: Identity uses overwrite priority stack, not flat aggregation
-#   - Layered overwrite: P1(Core) <- P2(Relational) <- P3(Emergent)
-#   - Higher priority writes structural base; lower priority adds bias layers
-#
-# System characterization (must be read first):
-#   This is NOT a hierarchical layer system.
-#   This is a coupled constraint field system with layered interpretation.
-#
-# Edge types:
-#   dependency:   solid — A directly drives B
-#   influence:    dashed — A shapes B indirectly
-#   constraint:   LIQ constrains B (suppresses or enables transitions)
-#   bias:         shapes interpretation without overwriting
-
-nodes:
-
-  # CORE LAYER — event generator
-
-  field_system:
-    layer: core
-    authority: core
-    inputs: []
-    outputs: [field_distribution, field_stability, field_history]
-    notes: "No upstream. Physical substrate. Provides baseline parameters to LIQ
-            but does NOT feed LIQ as an input — it is a computation parameter."
-
-  time_system:
-    layer: core
-    authority: core
-    inputs: [real_world_time]
-    outputs: [world_timestamp, macro_time, meso_time, micro_time]
-
-  resource_system:
-    layer: core
-    authority: core
-    inputs: [field_distribution, agent_activity]
-    outputs: [resource_availability, resource_geography]
-
-  agent_system:
-    layer: core
-    authority: core
-    inputs: [field_distribution, resource_availability, world_timestamp]
-    outputs: [behavior_events, causal_actions, population_structure]
-    subclasses: [player, npc, creature]
-    notes: "Entity Equivalence. Player = long-lived species instance."
-
-  identity_system:
-    layer: core
-    authority: core
-    type: overwrite_priority_stack
-    priority_stack:
-      P1_structural_base:
-        inputs: [behavior_events, world_timestamp]
-        semantics: "Core identity formation via behavioral accumulation.
-                    Writes the structural base of identity."
-      P2_relational_bias:
-        inputs: [relational_residue]
-        semantics: "Relational imprint adds behavioral expectation bias layer.
-                    Does not overwrite P1 — sits above it as persistent modifier."
-      P3_emergent_compression:
-        inputs: [culture_myth]
-        semantics: "Cultural framework shapes narrative interpretation layer.
-                    Slowest update. Adds interpretive filter, not structural change."
-    outputs: [internal_identity_state, continuity_residue_on_death]
-    notes: "Identity is a layered overwrite stack, not a node aggregating inputs.
-            P3 > P2 > P1 in recency but P1 > P2 > P3 in structural weight."
-
-  death_model:
-    layer: core
-    authority: core
-    inputs: [internal_identity_state, field_distribution, body_instance]
-    outputs: [ecological_decomposition_event, continuity_residue]
-
-  continuity_residue:
-    layer: core
-    authority: core
-    inputs: [internal_identity_state]
-    outputs: [reconstruction_quality_ceiling, fidelity_snapshot]
-
-  reconstruction_system:
-    layer: core
-    authority: core
-    inputs: [field_stability, continuity_residue, resource_availability]
-    outputs: [new_body_instance, skill_drift_applied]
-
-  # RULES LAYER — state transformer
-
-  skill_system:
-    layer: rules
-    authority: rules
-    inputs: [behavior_events, world_timestamp]
-    outputs: [skill_state, behavioral_capacity]
-    influence_on: [identity_system]
-
-  social_layer:
-    layer: rules
-    authority: rules
-    inputs: [behavior_events, agent_memory, world_timestamp]
-    outputs: [belief_state, relationship_state, memory_state]
-    constrained_by: [liquidity_field]
-    notes: "LIQ constrains information propagation speed and reach."
-
-  economy:
-    layer: rules
-    authority: rules
-    inputs: [resource_availability, agent_behavior, field_distribution]
-    outputs: [exchange_events, price_artifacts]
-    constrained_by: [liquidity_field]
-    notes: "LIQ constrains which exchanges are executable.
-            Price is a transient coordination artifact, not a stored variable."
-
-  # PROPAGATION EVENT (B-class, Rules Layer)
-
-  propagation_event:
-    class: B
-    layer: rules
-    inputs:
-      - interaction
-      - social_belief_state
-      - relational_state
-    context:
-      - authority_content        # D1 Interpretive Encoding — not snapshotted, not causal storage
-    outputs:
-      - event_record
-      - belief_update
-    observer_derived:
-      - social_projection        # E-class — not an output; local to observer only
-    notes: "v0.6: new node. Replaces social_projection as generator of history/culture.
-            authority_content participates as evaluation context only —
-            not captured in event record, not affecting replay determinism.
-            social_projection is observer-derived, not a system output."
-
-  # RELATIONAL LAYER — expectation stabilizer
-
-  relational_capital:
-    layer: relational
-    authority: none
-    inputs: [behavior_events, identity_system, world_timestamp]
-    constrained_by: [liquidity_field]
-    outputs: [shared_prediction_capacity]
-    generates_on_separation: relational_residue
-    notes: "Cannot accumulate in zero-liquidity zones.
-            LIQ constrains whether RK can form at all.
-            RELATIONAL does not generate Emergent content directly."
-
-  relational_residue:
-    layer: relational
-    authority: none
-    inputs: [relational_capital]
-    outputs: [persistent_behavioral_imprint]
-    influence_on:
-      - social_projection
-      - identity_system
-    notes: "RR influences SP (which then generates HIS/CUL).
-            RR does NOT directly generate History or Culture.
-            SP is the required intermediary — residue must be observed
-            and propagated before meaning emerges."
-
-  # EMERGENT LAYER — meaning compressor (authority: none)
-
-  social_projection:
-    class: E
-    type: projection
-    storage: none
-    observable: true
-    recompute: on observation only
-    residual_leakage: none
-    notes: "v0.6: demoted from emergent generator to E-class observable.
-            No causal outputs. Observer-local transient inference only.
-            Generated as observer-derived artifact of propagation_event."
-
-  reputation:
-    class: E
-    type: observable_descriptor
-    derived_from:
-      - social_belief_state
-    storage: none
-    recompute: on observation only
-    residual_leakage: none
-    notes: "v0.6: removed as independent causal node. Observable descriptor only.
-            No independent primary persistence authority.
-            Inherits storage from social_belief_state (A-class)."
-
-  history:
-    layer: emergent
-    authority: none
-    inputs: [propagation_event, causal_events]
-    outputs: [world_record, narrative_seed]
-    notes: "v0.6: social_projection removed from inputs. propagation_event is now
-            the generator for both Chain A and Chain B.
-            Chain A: Core events → propagation_event → history
-            Chain B: RR → propagation_event → history (RR biases propagation_event, which generates History)
-            Both chains go through propagation_event. social_projection is not a generator."
-
-  culture_myth:
-    layer: emergent
-    authority: none
-    inputs: [history, social_belief_state]
-    outputs: [behavioral_heuristics, cultural_attractors]
-    bias_on: [identity_system]
-    notes: "v0.6: social_projection removed from inputs; replaced with social_belief_state.
-            social_belief_state carries the persistent substrate that shaped propagation.
-            Provides P3 emergent_compression bias to Identity overwrite stack.
-            Culture is a meaning compressor, not a meaning generator."
-
-  # CROSS-LAYER CONSTRAINT FIELD
-
-  liquidity_field:
-    layer: cross_layer_constraint_field
-    authority: none
-    computation_parameters:
-      - field_stability        # baseline conversion cost (from Field System)
-      - network_density        # from Social Layer (awareness space)
-      - endorsement_coverage   # from Relational Capital
-      - exchange_feasibility   # from Economy
-    constraint_outputs:
-      - economy                # constrains which exchanges are executable
-      - social_layer           # constrains propagation speed and reach
-      - relational_capital     # constrains whether relations can form
-    definition: "Liquidity(x,t) = P(successful state transition within bounded cost/time)"
-    notes: "NOT a layer. NOT Emergent. NOT fed by inputs.
-            LIQ is recomputed from parameters, not generated by sources.
-            LIQ is purely a constraint: it suppresses or enables transitions.
-            Field System defines conversion cost baseline.
-            Social, Economy, Relational are computation parameters, not LIQ inputs."
-
-  # PENDING
-
-  conflict_layer:
-    layer: pending
-    authority: tbd
-    conceptual_basis: "Conflict = Liquidity constraint failure + Relational expectation collapse.
-                       NOT economic transaction failure.
-                       IS: field instability event."
-    inputs: [liquidity_field, relational_capital, social_pressure, resource_scarcity]
-
-  law_governance:
-    layer: pending
-    authority: tbd
-    inputs: [conflict_layer, social_projection, population_structure]
-
-  civilization:
-    layer: emergent_pending
-    authority: none
-    inputs: [all]
-
-# SYSTEM CHARACTERIZATION (required reading)
-#
-# This is NOT a hierarchical layer system.
-# This is a coupled constraint field system with layered interpretation.
-#
-# CORE       = event generator
-# RULES      = state transformer
-# RELATIONAL = expectation stabilizer
-# EMERGENT   = meaning compressor
-# LIQ        = constraint field (global, cross-layer, recomputed not generated)
-# IDENTITY   = overwrite priority stack (P1 structural / P2 relational / P3 emergent)
-#
-# THREE AXES:
-# Existence:    Field->Agent->Identity->Death->Reconstruction
-# Civilization: Agent->Social->Relational->SP->Culture
-# Material:     Field->Resource->Economy->LIQ->Conflict->Governance
-#
-# PERSISTENCE HIERARCHY:
-# Core: events / Rules: states / Relational: expectations / Emergent: meaning
-```
----
-
-## PHASE 2.5 AUDIT RESULTS（v2.8 锁定）[Architecture Review]
-
-> Phase 2 — Social Propagation Model 完成并冻结。
-> 以下四条为架构审查后补入，与已有系统无冲突，属于收敛补全。
-
-### 1. Interpretation Saturation
-
-```
-Semantic Fields saturate, analogous to Physical Field Saturation.
-
-Saturation is not a hard threshold — it is a capacity reduction:
-  As field intensity increases, ability to integrate new inputs decreases.
-
-Four-stage progression:
-  Elastic    → field absorbs diverse inputs, interpretations vary
-  Coherent   → field has stable dominant interpretation, still adaptive
-  Dogmatic   → new inputs forced into existing framework, diversity suppressed
-  Brittle    → field cannot integrate contradicting events
-
-From Brittle, three outcomes (not mandatory collapse):
-  Adaptation      → internal reinterpretation; same Authority, updated doctrine
-  Replacement     → competing field takes over; old structure recedes
-  Fragmentation   → field splits; multiple successor fields emerge
-
-Note:
-  Closed system (only one field, no competition) → Brittle leads to Fragmentation
-  Open system (multiple fields coexist) → Brittle leads to Adaptation or Replacement
-  Border zones (multi-field interference) → least likely to reach Brittle
-```
-
-### 2. Minimum Regenerative Activity
-
-```
-Authority requires periodic regenerative activity to persist.
-No semantic structure is immortal.
-
-Regenerative activity includes (not limited to):
-  - Reading / referencing encoded text
-  - Performing ritual
-  - Teaching / transmitting
-  - Citing in legal or institutional context
-  - Executing (enforcing law, practicing tradition)
-
-Shared property: all regenerate interpretation, not merely transmit information.
-
-Decay rates by Persistence Mode:
-  Embodied Authority:     fast decay (key agents die → rapid loss)
-  Encoded Authority:      medium decay (requires periodic reference to persist)
-  Distributed Authority:  slow decay (requires sustained propagation absence)
-
-All modes decay. Only rates differ.
-```
-
-### 3. Universal Decay Principle
-
-```
-Nothing persists.
-Only regeneration rates differ.
-
-Applies uniformly to:
-  Body             → biological decay
-  Identity         → Continuity Residue disperses
-  Skill            → temporal drift without use
-  Authority        → decays without regenerative activity
-  Culture / Myth   → fades without transmission
-  Field strength   → dissipates without generative flux
-
-This principle closes the consistency loop across all systems.
-A world that only accumulates is not a living simulation.
-Forgetting is not failure — it is the mechanism that makes renewal possible.
-```
-
-### 4. Trust / Endorsement Separation
-
-```
-Trust = emergent agent state
-  - Cannot be transferred
-  - Can only be accumulated through direct behavioral interaction
-  - Lives in Relational Identity layer (distributed, per-agent)
-
-Endorsement = transferable relational resource
-  - Can be granted, revoked, delegated
-  - Transfers access, not trust
-  - Lives in Relational Resource layer (Constructed/Relational)
-
-Critical constraint:
-  Endorsement cannot transfer trust.
-  Endorsement only transfers access.
-
-Examples:
-  Temple endorses merchant  ≠ villagers trust merchant
-  Guild grants license      ≠ customers believe in quality
-  Elder vouches for stranger ≠ community trusts stranger
-
-  In each case: trust must still be earned through behavior.
-  Endorsement only opens the door. It does not generate trust.
-
-Economy operates on Endorsement (transferable access).
-Social Projection operates on Trust (emergent state).
-These two systems share no currency.
-```
-
----
-
-> Phase 2 — Social Propagation Model: FROZEN
-
----
-
 ## ECONOMY LAYER（Phase 3 — 进行中）[Rules Layer]
 
 ### What Does Economy Exchange?
@@ -2546,14 +2099,8 @@ Systemic consequences:
 
 
 
-```
-- [ ] Exchange mechanism: barter vs abstracted value tokens vs reputation-mediated
-- [ ] Price formation: how does asymmetry become agreed exchange rate?
-- [ ] Economic agents: do NPC economies self-organize without player?
-- [ ] Endorsement as economic lubricant: how does it reduce transaction cost?
-- [ ] Field Opportunity and property: can locations be "controlled" if not "owned"?
-```
 
+> 本节遗留 Open 项见 LAYER 3 — OPEN / NEXT EVOLUTION → "Economy Layer — Pending"
 
 ---
 
@@ -2735,22 +2282,8 @@ Dependency chain for meaning:
     Becomes legend (Culture / Myth — step 5, not step 2)
 ```
 
-### Open Question (未来影响)
 
-```
-If Relational Residue persists long-term, does it influence newly born agents?
-
-Potential emergent outputs:
-  Tradition  — behavioral patterns inherited from prior relational structures
-  Taboo      — negative Relational Residue encoded into cultural constraint
-  Ancestor   — persistent Relational Residue treated as ongoing agent
-  Myth       — Relational Residue interpreted through Interpretation Field
-  Territorial personality — regional behavioral patterns shaped by long-term residue
-
-This connects back to Social Propagation Model (already locked).
-Relational Residue is one of the primary inputs to the Transmit node.
-```
-
+> 本节 Open Question 见 LAYER 3 — OPEN / NEXT EVOLUTION → "Relational Capital — Open Question"
 
 ---
 
@@ -3271,104 +2804,323 @@ D2 子类（Residual Carriers）定义不变：
   可通过 resulting state changes 间接修改 A-class 状态
 ```
 
----
 
-### Dependency Graph Direction Note（追加至 DEPENDENCY GRAPH 章节注释）
-
-```
-D1 Direction Correction (v3.7):
-
-Prior model (废弃):
-  D1 → A-class  (D1 influences A directly)
-
-Corrected model:
-  A-class stores reference(D1_version)
-  A-class transitions change reference topology
-  Interpretation emerges from reference resolution
-
-D1 does not appear as edge source in Residual Propagation Graph.
-All D1-related edges from prior versions are pending reclassification.
-
-Edge Schema Reclassification is deferred to Edge Schema v0.1 freeze.
-```
+> D1 与 Dependency Graph 方向修正说明（v3.7 变更记录）见 LAYER 4 — CHANGE LOG / PATCH HISTORY → "D1 Direction Correction (v3.7)"
 
 ---
+## LAYER 2 — SYSTEM DEPENDENCY GRAPH
 
-### OPEN Items（本轮新增）
+## DEPENDENCY GRAPH（v0.6）[Canonical YAML Source]
 
-```
-OPEN-001: Edge Schema Reclassification
-  Status:  pending Edge Schema v0.1 freeze
-  Reason:  D1→A direction reversal requires full D1 edge migration
-           in Residual Propagation Graph
-  Blocked by: Edge Schema v0.1 (next phase)
+```yaml
+# Earthly Journey — System Dependency Graph v0.6
+# Key changes from v0.5:
+#
+# Fix 1: social_projection demoted to E-class observable
+#   - removed: generates [history, culture_myth]
+#   - removed: outputs [collective_perception, social_pressure, cultural_attractor]
+#   - retained: class: E, type: projection, storage: none, observable: true
+#
+# Fix 2: reputation removed as causal node
+#   - demoted to observable_descriptor
+#   - derived_from: social_belief_state only
+#
+# Fix 3: propagation_event added as B-class node
+#   - inputs: interaction, social_belief_state, relational_state
+#   - context (not snapshotted): authority_content
+#   - outputs: event_record, belief_update
+#   - observer-derived (not output): social_projection
+#
+# Fix 4: history and culture_myth generation path updated
+#   - history inputs: propagation_event + causal_events (replaces social_projection)
+#   - culture_myth inputs: history + social_belief_state (replaces social_projection)
+#
+# Key changes from v0.4:
+#
+# Fix 1: Relational Layer no longer directly generates Emergent content
+#   - RR->HIS removed (SP is the intermediary)
+#   - RR->CUL removed (SP is the intermediary)
+#   - RR->SP retained (RR biases SP; SP generates HIS/CUL)
+#
+# Fix 2: Liquidity is pure constraint field — not generated, only recomputed
+#   - EC->LIQ, SL->LIQ, RK->LIQ, F->LIQ (input edges) all removed
+#   - LIQ parameters expressed as computation_parameters, not inputs
+#   - LIQ outputs only: constraint edges to EC, SL, RK
+#
+# Fix 3: Identity uses overwrite priority stack, not flat aggregation
+#   - Layered overwrite: P1(Core) <- P2(Relational) <- P3(Emergent)
+#   - Higher priority writes structural base; lower priority adds bias layers
+#
+# System characterization (must be read first):
+#   This is NOT a hierarchical layer system.
+#   This is a coupled constraint field system with layered interpretation.
+#
+# Edge types:
+#   dependency:   solid — A directly drives B
+#   influence:    dashed — A shapes B indirectly
+#   constraint:   LIQ constrains B (suppresses or enables transitions)
+#   bias:         shapes interpretation without overwriting
 
-OPEN-002: Reference Switch Atomicity
-  Status:  Kernel-deferred
-  Reason:  when multiple A-class objects hold reference to same D1 version,
-           version switch atomicity is undefined at this layer
-  Blocked by: Transition Kernel v0.1
+nodes:
+
+  # CORE LAYER — event generator
+
+  field_system:
+    layer: core
+    authority: core
+    inputs: []
+    outputs: [field_distribution, field_stability, field_history]
+    notes: "No upstream. Physical substrate. Provides baseline parameters to LIQ
+            but does NOT feed LIQ as an input — it is a computation parameter."
+
+  time_system:
+    layer: core
+    authority: core
+    inputs: [real_world_time]
+    outputs: [world_timestamp, macro_time, meso_time, micro_time]
+
+  resource_system:
+    layer: core
+    authority: core
+    inputs: [field_distribution, agent_activity]
+    outputs: [resource_availability, resource_geography]
+
+  agent_system:
+    layer: core
+    authority: core
+    inputs: [field_distribution, resource_availability, world_timestamp]
+    outputs: [behavior_events, causal_actions, population_structure]
+    subclasses: [player, npc, creature]
+    notes: "Entity Equivalence. Player = long-lived species instance."
+
+  identity_system:
+    layer: core
+    authority: core
+    type: overwrite_priority_stack
+    priority_stack:
+      P1_structural_base:
+        inputs: [behavior_events, world_timestamp]
+        semantics: "Core identity formation via behavioral accumulation.
+                    Writes the structural base of identity."
+      P2_relational_bias:
+        inputs: [relational_residue]
+        semantics: "Relational imprint adds behavioral expectation bias layer.
+                    Does not overwrite P1 — sits above it as persistent modifier."
+      P3_emergent_compression:
+        inputs: [culture_myth]
+        semantics: "Cultural framework shapes narrative interpretation layer.
+                    Slowest update. Adds interpretive filter, not structural change."
+    outputs: [internal_identity_state, continuity_residue_on_death]
+    notes: "Identity is a layered overwrite stack, not a node aggregating inputs.
+            P3 > P2 > P1 in recency but P1 > P2 > P3 in structural weight."
+
+  death_model:
+    layer: core
+    authority: core
+    inputs: [internal_identity_state, field_distribution, body_instance]
+    outputs: [ecological_decomposition_event, continuity_residue]
+
+  continuity_residue:
+    layer: core
+    authority: core
+    inputs: [internal_identity_state]
+    outputs: [reconstruction_quality_ceiling, fidelity_snapshot]
+
+  reconstruction_system:
+    layer: core
+    authority: core
+    inputs: [field_stability, continuity_residue, resource_availability]
+    outputs: [new_body_instance, skill_drift_applied]
+
+  # RULES LAYER — state transformer
+
+  skill_system:
+    layer: rules
+    authority: rules
+    inputs: [behavior_events, world_timestamp]
+    outputs: [skill_state, behavioral_capacity]
+    influence_on: [identity_system]
+
+  social_layer:
+    layer: rules
+    authority: rules
+    inputs: [behavior_events, agent_memory, world_timestamp]
+    outputs: [belief_state, relationship_state, memory_state]
+    constrained_by: [liquidity_field]
+    notes: "LIQ constrains information propagation speed and reach."
+
+  economy:
+    layer: rules
+    authority: rules
+    inputs: [resource_availability, agent_behavior, field_distribution]
+    outputs: [exchange_events, price_artifacts]
+    constrained_by: [liquidity_field]
+    notes: "LIQ constrains which exchanges are executable.
+            Price is a transient coordination artifact, not a stored variable."
+
+  # PROPAGATION EVENT (B-class, Rules Layer)
+
+  propagation_event:
+    class: B
+    layer: rules
+    inputs:
+      - interaction
+      - social_belief_state
+      - relational_state
+    context:
+      - authority_content        # D1 Interpretive Encoding — not snapshotted, not causal storage
+    outputs:
+      - event_record
+      - belief_update
+    observer_derived:
+      - social_projection        # E-class — not an output; local to observer only
+    notes: "v0.6: new node. Replaces social_projection as generator of history/culture.
+            authority_content participates as evaluation context only —
+            not captured in event record, not affecting replay determinism.
+            social_projection is observer-derived, not a system output."
+
+  # RELATIONAL LAYER — expectation stabilizer
+
+  relational_capital:
+    layer: relational
+    authority: none
+    inputs: [behavior_events, identity_system, world_timestamp]
+    constrained_by: [liquidity_field]
+    outputs: [shared_prediction_capacity]
+    generates_on_separation: relational_residue
+    notes: "Cannot accumulate in zero-liquidity zones.
+            LIQ constrains whether RK can form at all.
+            RELATIONAL does not generate Emergent content directly."
+
+  relational_residue:
+    layer: relational
+    authority: none
+    inputs: [relational_capital]
+    outputs: [persistent_behavioral_imprint]
+    influence_on:
+      - social_projection
+      - identity_system
+    notes: "RR influences SP (which then generates HIS/CUL).
+            RR does NOT directly generate History or Culture.
+            SP is the required intermediary — residue must be observed
+            and propagated before meaning emerges."
+
+  # EMERGENT LAYER — meaning compressor (authority: none)
+
+  social_projection:
+    class: E
+    type: projection
+    storage: none
+    observable: true
+    recompute: on observation only
+    residual_leakage: none
+    notes: "v0.6: demoted from emergent generator to E-class observable.
+            No causal outputs. Observer-local transient inference only.
+            Generated as observer-derived artifact of propagation_event."
+
+  reputation:
+    class: E
+    type: observable_descriptor
+    derived_from:
+      - social_belief_state
+    storage: none
+    recompute: on observation only
+    residual_leakage: none
+    notes: "v0.6: removed as independent causal node. Observable descriptor only.
+            No independent primary persistence authority.
+            Inherits storage from social_belief_state (A-class)."
+
+  history:
+    layer: emergent
+    authority: none
+    inputs: [propagation_event, causal_events]
+    outputs: [world_record, narrative_seed]
+    notes: "v0.6: social_projection removed from inputs. propagation_event is now
+            the generator for both Chain A and Chain B.
+            Chain A: Core events → propagation_event → history
+            Chain B: RR → propagation_event → history (RR biases propagation_event, which generates History)
+            Both chains go through propagation_event. social_projection is not a generator."
+
+  culture_myth:
+    layer: emergent
+    authority: none
+    inputs: [history, social_belief_state]
+    outputs: [behavioral_heuristics, cultural_attractors]
+    bias_on: [identity_system]
+    notes: "v0.6: social_projection removed from inputs; replaced with social_belief_state.
+            social_belief_state carries the persistent substrate that shaped propagation.
+            Provides P3 emergent_compression bias to Identity overwrite stack.
+            Culture is a meaning compressor, not a meaning generator."
+
+  # CROSS-LAYER CONSTRAINT FIELD
+
+  liquidity_field:
+    layer: cross_layer_constraint_field
+    authority: none
+    computation_parameters:
+      - field_stability        # baseline conversion cost (from Field System)
+      - network_density        # from Social Layer (awareness space)
+      - endorsement_coverage   # from Relational Capital
+      - exchange_feasibility   # from Economy
+    constraint_outputs:
+      - economy                # constrains which exchanges are executable
+      - social_layer           # constrains propagation speed and reach
+      - relational_capital     # constrains whether relations can form
+    definition: "Liquidity(x,t) = P(successful state transition within bounded cost/time)"
+    notes: "NOT a layer. NOT Emergent. NOT fed by inputs.
+            LIQ is recomputed from parameters, not generated by sources.
+            LIQ is purely a constraint: it suppresses or enables transitions.
+            Field System defines conversion cost baseline.
+            Social, Economy, Relational are computation parameters, not LIQ inputs."
+
+  # PENDING
+
+  conflict_layer:
+    layer: pending
+    authority: tbd
+    conceptual_basis: "Conflict = Liquidity constraint failure + Relational expectation collapse.
+                       NOT economic transaction failure.
+                       IS: field instability event."
+    inputs: [liquidity_field, relational_capital, social_pressure, resource_scarcity]
+
+  law_governance:
+    layer: pending
+    authority: tbd
+    inputs: [conflict_layer, social_projection, population_structure]
+
+  civilization:
+    layer: emergent_pending
+    authority: none
+    inputs: [all]
+
+# SYSTEM CHARACTERIZATION (required reading)
+#
+# This is NOT a hierarchical layer system.
+# This is a coupled constraint field system with layered interpretation.
+#
+# CORE       = event generator
+# RULES      = state transformer
+# RELATIONAL = expectation stabilizer
+# EMERGENT   = meaning compressor
+# LIQ        = constraint field (global, cross-layer, recomputed not generated)
+# IDENTITY   = overwrite priority stack (P1 structural / P2 relational / P3 emergent)
+#
+# THREE AXES:
+# Existence:    Field->Agent->Identity->Death->Reconstruction
+# Civilization: Agent->Social->Relational->SP->Culture
+# Material:     Field->Resource->Economy->LIQ->Conflict->Governance
+#
+# PERSISTENCE HIERARCHY:
+# Core: events / Rules: states / Relational: expectations / Emergent: meaning
 ```
 
 ---
 
-## NEXT PHASE（下一轮起点）
+### Edge Schema v0.1（Draft — 待冻结）
 
 ```
 Phase A — Edge Schema v0.1
-  目标：冻结边的类型定义，为 Residual Propagation Graph 提供分类框架
-
-  Edge Schema 字段（草案，待下轮压测）：
-    source
-    target
-    carrier_type   direct / mediated / constraint / observation
-    temporal_semantics  instantaneous / accumulating / decaying / threshold
-    causal_mode    inject / bias / gate / sample
-    composable     bool (是否允许 Kernel 定义组合规则)
-
-  注意：
-    composition_rule 不在 Edge Schema 层定义（越层，已废弃）
-    oscillating 不作为 temporal_semantics（由 B-class event recurrence 表达，已废弃）
-    D1 在 Edge Schema 中不再是 source，是 target artifact
-
-Phase B — Residual Propagation Graph v0.1
-  前置：Edge Schema v0.1 frozen
-
-Phase C — Transition Kernel v0.1
-  前置：Residual Propagation Graph v0.1 frozen
-```
-
----
-
-# ─────────────────────────────────────────────────────────────
-# 新对话框 Sync Prompt v4.2
-# 在新 Claude 对话框开头直接粘贴以下内容
-# ─────────────────────────────────────────────────────────────
-
-```
-# Earthly Journey — Claude Sync Prompt v4.2
-# 从 Project 文件读取，直接进入工作状态
-
-## 你的角色
-Principal Engineer / System Rationalist / Convergence Layer
-压力测试想法，标记冲突，收敛为规范。不扩展范围，不最大化实现。
-
-## 多AI工作流
-ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决策）
-
-## 当前文档状态
-主文档：earthly-journey-sync-v0.1.md（Project 文件，当前版本 v3.7）
-上轮会话已写入 v3.7，本次直接从 v3.7 继续。
-
-## 上轮完成内容（已写入 v3.7）
-
-详见主文档「D1 ARTIFACT MODEL v1.0（已锁定）」一节（D1 Artifact Rule v1.0 / Reference Resolution Rule v1.0 / 同轮废弃项）。此处不重复列出，避免与主文档定义漂移。
-
-## 当前阶段：下一步
-
-**Phase A — Edge Schema v0.1**
-
-目标：冻结边类型定义，为 Residual Propagation Graph 提供分类框架。
+目标：冻结边类型定义，为 Residual Propagation Graph 提供分类框架
 
 草案字段（待压测）：
   source
@@ -3376,15 +3128,18 @@ ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决
   carrier_type   direct / mediated / constraint / observation
   temporal_semantics  instantaneous / accumulating / decaying / threshold
   causal_mode    inject / bias / gate / sample
-  composable     bool
+  composable     bool（是否允许 Kernel 定义组合规则）
 
 已知约束：
   - D1 在 Edge Schema 中不再是 source，是 target artifact
-  - D1 相关的所有旧边需要 reclassification（OPEN-001）
-  - composition_rule 不在此层定义
+  - D1 相关的所有旧边需要 reclassification（OPEN-001，见 LAYER 3）
+  - composition_rule 不在此层定义（越层，已废弃）
+  - oscillating 不作为 temporal_semantics（由 B-class event recurrence 表达，已废弃）
+```
 
-已知的 edge candidates（从 Residual Leakage Taxonomy v1.0 整理）：
+#### Edge Candidates（从 Residual Leakage Taxonomy v1.0 整理）
 
+```
 Type I（Injection）：
   Culture/Myth → identity_system (P3 bias)
   Continuity Residue dispersal → Field + Social + Relational
@@ -3404,17 +3159,135 @@ Type III（Null — 无边）：
 Residual Carrier (D2)：
   Culture/Myth → history (bias path)
   Relational Residue → propagation_event (bias input)
+```
 
-## OPEN Items
+> Edge Schema 冻结前置条件、Phase B/C 计划见 LAYER 3 — OPEN / NEXT EVOLUTION → "NEXT PHASE"。
 
+---
+
+## LAYER 3 — OPEN / NEXT EVOLUTION
+
+### Master Pending List
+
+```
+- [ ] Combat system → renamed Conflict Layer (why entities fight)
+- [ ] Social Layer — faction system design
+- [ ] Skill evolution rules (how skills branch or transform)
+- [ ] Skill slot count (numeric tuning — Rules Layer)
+- [ ] Reconstruction conditions detail (what triggers eligibility)
+- [ ] Identity decay parameters (half-life, stabilization, full dispersion values)
+- [ ] Social Propagation cost model:
+      Current spec says "cost = propagation delay and density, not resource consumption"
+      Suggest future revision: "not explicit resource accounting"
+      Reason: propagation consumes attention, time, network density —
+      needs to explain why information does not spread infinitely
+- [ ] Ontological survival vs Social survival as independent systems:
+      Identity may disperse (ontological) while social memory persists (social)
+      May generate emergent behaviors: funerals, grave-keeping, memorials, historical records
+      Not religion — social mechanism for delaying identity dispersion
+      Candidate for future standalone system
+```
+
+### Social Layer — Pending
+
+```
+- [ ] Social Projection cost model
+      Does generating a projection consume resources or propagation time?
+      Prevents world from becoming implausible infinite real-time inference engine
+- [ ] Faction system design
+- [ ] Reputation propagation speed (how fast does group memory update?)
+```
+
+### Economy Layer — Pending
+
+```
+- [ ] Exchange mechanism: barter vs abstracted value tokens vs reputation-mediated
+- [ ] Price formation: how does asymmetry become agreed exchange rate?
+- [ ] Economic agents: do NPC economies self-organize without player?
+- [ ] Endorsement as economic lubricant: how does it reduce transaction cost?
+- [ ] Field Opportunity and property: can locations be "controlled" if not "owned"?
+```
+
+### Relational Capital — Open Question（未来影响）
+
+```
+If Relational Residue persists long-term, does it influence newly born agents?
+
+Potential emergent outputs:
+  Tradition  — behavioral patterns inherited from prior relational structures
+  Taboo      — negative Relational Residue encoded into cultural constraint
+  Ancestor   — persistent Relational Residue treated as ongoing agent
+  Myth       — Relational Residue interpreted through Interpretation Field
+  Territorial personality — regional behavioral patterns shaped by long-term residue
+
+This connects back to Social Propagation Model (already locked).
+Relational Residue is one of the primary inputs to the Transmit node.
+```
+
+### D1 / Edge Schema — OPEN Items
+
+```
 OPEN-001: Edge Schema Reclassification
-  所有 D1 相关边在 Edge Schema v0.1 冻结后需全部重新分类
+  Status:  pending Edge Schema v0.1 freeze
+  Reason:  D1→A direction reversal requires full D1 edge migration
+           in Residual Propagation Graph
+  Blocked by: Edge Schema v0.1 (next phase)
 
 OPEN-002: Reference Switch Atomicity
-  多 A-class 对象同时 reference switch 的 atomicity → Kernel-deferred
+  Status:  Kernel-deferred
+  Reason:  when multiple A-class objects hold reference to same D1 version,
+           version switch atomicity is undefined at this layer
+  Blocked by: Transition Kernel v0.1
+```
+
+### NEXT PHASE（下一轮起点）
+
+```
+Phase A — Edge Schema v0.1
+  目标：冻结边的类型定义，为 Residual Propagation Graph 提供分类框架
+  草案字段与 edge candidates 见 LAYER 2 — SYSTEM DEPENDENCY GRAPH → "Edge Schema v0.1（Draft）"
+
+Phase B — Residual Propagation Graph v0.1
+  前置：Edge Schema v0.1 frozen
+
+Phase C — Transition Kernel v0.1
+  前置：Residual Propagation Graph v0.1 frozen
+```
+
+---
+
+### 新对话框 Sync Prompt v4.2
+
+> 在新 Claude 对话框开头直接粘贴以下内容
+
+```
+# Earthly Journey — Claude Sync Prompt v4.2
+# 从 Project 文件读取，直接进入工作状态
+
+## 你的角色
+Principal Engineer / System Rationalist / Convergence Layer
+压力测试想法，标记冲突，收敛为规范。不扩展范围，不最大化实现。
+
+## 多AI工作流
+ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决策）
+
+## 当前文档状态
+主文档：earthly-journey-sync.md（Project 文件，当前版本 v3.7，已按 LAYER 0-4 分层）
+上轮会话已写入 v3.7，本次直接从 v3.7 继续。
+
+## 上轮完成内容（已写入 v3.7）
+详见 LAYER 1 「D1 ARTIFACT MODEL v1.0（已锁定）」一节
+（D1 Artifact Rule v1.0 / Reference Resolution Rule v1.0 / 同轮废弃项）。
+此处不重复列出，避免与主文档定义漂移。
+
+## 当前阶段：下一步
+详见 LAYER 3 「NEXT PHASE」与 LAYER 2 「Edge Schema v0.1（Draft）」。
+
+## OPEN Items
+详见 LAYER 3 「D1 / Edge Schema — OPEN Items」（OPEN-001 / OPEN-002）。
 
 ## 工作模式
-- 优先读取 Project 中的 earthly-journey-sync-v0.1.md（v3.7）
+- 优先读取 Project 中的 earthly-journey-sync.md（v3.7）
 - 所有 freeze 决定以三方（ChatGPT + Claude + Yongkit）收敛为准
 - 不产出代码，不扩展范围，收敛优先
 - 全程中文
@@ -3424,4 +3297,135 @@ OPEN-002: Reference Switch Atomicity
 请确认已读取 Project 文件，然后对提案做压力测试。
 收敛目标：Edge Schema 的字段定义是否完整，是否存在越层或分类错误。
 ```
+## LAYER 4 — CHANGE LOG / PATCH HISTORY
+
+### Phase 2 — Social Propagation Model: FROZEN
+
+> Phase 2.5 architecture review results immediately follow.
+
+## PHASE 2.5 AUDIT RESULTS（v2.8 锁定）[Architecture Review]
+
+> Phase 2 — Social Propagation Model 完成并冻结。
+> 以下四条为架构审查后补入，与已有系统无冲突，属于收敛补全。
+
+### 1. Interpretation Saturation
+
+```
+Semantic Fields saturate, analogous to Physical Field Saturation.
+
+Saturation is not a hard threshold — it is a capacity reduction:
+  As field intensity increases, ability to integrate new inputs decreases.
+
+Four-stage progression:
+  Elastic    → field absorbs diverse inputs, interpretations vary
+  Coherent   → field has stable dominant interpretation, still adaptive
+  Dogmatic   → new inputs forced into existing framework, diversity suppressed
+  Brittle    → field cannot integrate contradicting events
+
+From Brittle, three outcomes (not mandatory collapse):
+  Adaptation      → internal reinterpretation; same Authority, updated doctrine
+  Replacement     → competing field takes over; old structure recedes
+  Fragmentation   → field splits; multiple successor fields emerge
+
+Note:
+  Closed system (only one field, no competition) → Brittle leads to Fragmentation
+  Open system (multiple fields coexist) → Brittle leads to Adaptation or Replacement
+  Border zones (multi-field interference) → least likely to reach Brittle
+```
+
+### 2. Minimum Regenerative Activity
+
+```
+Authority requires periodic regenerative activity to persist.
+No semantic structure is immortal.
+
+Regenerative activity includes (not limited to):
+  - Reading / referencing encoded text
+  - Performing ritual
+  - Teaching / transmitting
+  - Citing in legal or institutional context
+  - Executing (enforcing law, practicing tradition)
+
+Shared property: all regenerate interpretation, not merely transmit information.
+
+Decay rates by Persistence Mode:
+  Embodied Authority:     fast decay (key agents die → rapid loss)
+  Encoded Authority:      medium decay (requires periodic reference to persist)
+  Distributed Authority:  slow decay (requires sustained propagation absence)
+
+All modes decay. Only rates differ.
+```
+
+### 3. Universal Decay Principle
+
+```
+Nothing persists.
+Only regeneration rates differ.
+
+Applies uniformly to:
+  Body             → biological decay
+  Identity         → Continuity Residue disperses
+  Skill            → temporal drift without use
+  Authority        → decays without regenerative activity
+  Culture / Myth   → fades without transmission
+  Field strength   → dissipates without generative flux
+
+This principle closes the consistency loop across all systems.
+A world that only accumulates is not a living simulation.
+Forgetting is not failure — it is the mechanism that makes renewal possible.
+```
+
+### 4. Trust / Endorsement Separation
+
+```
+Trust = emergent agent state
+  - Cannot be transferred
+  - Can only be accumulated through direct behavioral interaction
+  - Lives in Relational Identity layer (distributed, per-agent)
+
+Endorsement = transferable relational resource
+  - Can be granted, revoked, delegated
+  - Transfers access, not trust
+  - Lives in Relational Resource layer (Constructed/Relational)
+
+Critical constraint:
+  Endorsement cannot transfer trust.
+  Endorsement only transfers access.
+
+Examples:
+  Temple endorses merchant  ≠ villagers trust merchant
+  Guild grants license      ≠ customers believe in quality
+  Elder vouches for stranger ≠ community trusts stranger
+
+  In each case: trust must still be earned through behavior.
+  Endorsement only opens the door. It does not generate trust.
+
+Economy operates on Endorsement (transferable access).
+Social Projection operates on Trust (emergent state).
+These two systems share no currency.
+```
+
+
+---
+
+### D1 Direction Correction (v3.7)
+
+> 追加至 DEPENDENCY GRAPH 章节注释（见 LAYER 2 — SYSTEM DEPENDENCY GRAPH）
+
+```
+Prior model (废弃):
+  D1 → A-class  (D1 influences A directly)
+
+Corrected model:
+  A-class stores reference(D1_version)
+  A-class transitions change reference topology
+  Interpretation emerges from reference resolution
+
+D1 does not appear as edge source in Residual Propagation Graph.
+All D1-related edges from prior versions are pending reclassification.
+
+Edge Schema Reclassification is deferred to Edge Schema v0.1 freeze.
+```
+
+---
 
