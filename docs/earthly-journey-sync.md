@@ -1,5 +1,5 @@
 # Earthly Journey — Claude Sync Package v0.1
-> Status: Draft | Version: 3.6 | Last updated: 2026-06-28
+> Status: Draft | Version: 3.7 | Last updated: 2026-06-28
 > Purpose: Long-term design decisions (LDD) baseline for all future Earthly Journey discussions with Claude.
 > Rule: This document is the single source of truth. Discussions always sync back here.
 
@@ -1653,7 +1653,6 @@ flowchart TD
 
 
 ### Pending
-- [ ] Economy model (NPC-driven vs player-driven pricing)
 - [ ] Combat system → renamed Conflict Layer (why entities fight)
 - [ ] Social Layer — faction system design
 - [ ] Skill evolution rules (how skills branch or transform)
@@ -2269,9 +2268,6 @@ These two systems share no currency.
 ---
 
 > Phase 2 — Social Propagation Model: FROZEN
-> Next: Phase 3 — Economy Layer
-> First question: "What does the Economy exchange?"
-
 
 ---
 
@@ -3150,5 +3146,282 @@ Structural role:
   No semantic resolution
   No structural aggregation
   No narrative construction
+```
+
+
+---
+
+## D1 ARTIFACT MODEL v1.0（已锁定）
+> 写入时间：2026-06-28
+> 状态：Frozen
+> 来源：本轮三方压测（Claude + ChatGPT + Yongkit）收敛
+
+### 背景
+
+本轮从 Authority Content 的 causal classification 问题出发，经过：
+
+1. D1 Event Emission 能力问题（场景压测）
+2. D1 是否 mutable 问题（二分被推翻）
+3. Versioned Artifact 模型提出（ChatGPT）
+4. event_record output artifact 要求补入（Claude）
+5. Reference Resolution Rule 及 effective time 修正（三方收敛）
+
+最终冻结 D1 Artifact Rule v1.0 和 Reference Resolution Rule v1.0。
+
+---
+
+### Design Philosophy Note (D1)
+
+```
+Prior assumption (废弃): meaning drives state
+  D1 → A  (意义推动现实)
+
+Corrected model (本轮锁定): state drives interpretation
+  A → reference(D1)  (现实改变引用，引用改变解释)
+
+Interpretation is not causal.
+It is a resolution artifact computed from
+reference topology + adoption history.
+
+This reversal applies to all D-class objects:
+  Authority Content
+  Law / Doctrine
+  Myth text
+  Interpretive scaffold
+```
+
+---
+
+### D1 Artifact Rule v1.0（Frozen）
+
+```
+1. D1 entities are immutable versioned artifacts.
+   D1 is not a persistent state (A-class).
+   D1 is not an event record (B-class).
+   D1 is a versioned encoding object with no internal mutation.
+
+2. D1 cannot emit propagation events.
+   Grounds:
+     - no agency (Agency(D1) = false → Emit(D1) = false)
+     - no replay source (emission requires traceable causal origin)
+     - Context Participation Rule v1.0 (D1 participates as context,
+       not as causal source)
+
+3. D1 cannot mutate in place.
+   A-class stores references to D1 versions, not D1 internal state.
+   "Authority changes" = new D1 version created, not existing D1 modified.
+
+4. D1 instances may be produced as output artifacts of propagation events.
+   D1 must appear in event_record outputs when created.
+   D1 never appears as event emitter or causal source.
+
+5. Authority / Law / Doctrine collapse is represented as reference
+   adoption change inside A-class, not as D1 internal decay.
+   D1 itself does not decay. Reference weight to D1 decays.
+```
+
+---
+
+### Reference Resolution Rule v1.0（Frozen）
+
+```
+1. A-class does not overwrite D1.
+   D1 is never modified by state transitions.
+
+2. Reference changes are stored as append-only adoption records
+   inside A-class.
+   Adoption records: (effective_time, D1_version_id)
+
+3. Effective D1 at time T is resolved from adoption record history.
+   Resolution is computed, not stored.
+
+4. Conflict resolution:
+   When multiple adoption records share the same effective time,
+   resolution follows event_record append order.
+   Append order is canonical.
+
+   Note: "effective time" ≠ "recorded time"
+   Scheduled adoption and retroactive adoption are supported.
+   D1 reference resolution always uses effective_time, not record timestamp.
+
+5. Atomicity of reference switch across multiple A-class objects
+   is Kernel-deferred.
+   (Reference Switch Atomicity: pending Transition Kernel v0.1)
+```
+
+---
+
+### D1 Class Reclassification（原 D-class 定义修订）
+
+```
+D-class 原定义（已部分修订）：
+  "Projection / Encoding Objects: partially stored / partially regenerated"
+
+D1 子类修订后定义：
+  Versioned Artifact
+  Properties:
+    immutable       — no mutation after creation
+    replaceable     — new version created, old version persists
+    addressable     — referenced by version ID
+    event-producible — instances appear in event_record as outputs
+    non-emitting    — cannot initiate propagation events
+
+D2 子类（Residual Carriers）定义不变：
+  Culture / Myth, Continuity Residue
+  可通过 resulting state changes 间接修改 A-class 状态
+```
+
+---
+
+### Dependency Graph Direction Note（追加至 DEPENDENCY GRAPH 章节注释）
+
+```
+D1 Direction Correction (v3.7):
+
+Prior model (废弃):
+  D1 → A-class  (D1 influences A directly)
+
+Corrected model:
+  A-class stores reference(D1_version)
+  A-class transitions change reference topology
+  Interpretation emerges from reference resolution
+
+D1 does not appear as edge source in Residual Propagation Graph.
+All D1-related edges from prior versions are pending reclassification.
+
+Edge Schema Reclassification is deferred to Edge Schema v0.1 freeze.
+```
+
+---
+
+### OPEN Items（本轮新增）
+
+```
+OPEN-001: Edge Schema Reclassification
+  Status:  pending Edge Schema v0.1 freeze
+  Reason:  D1→A direction reversal requires full D1 edge migration
+           in Residual Propagation Graph
+  Blocked by: Edge Schema v0.1 (next phase)
+
+OPEN-002: Reference Switch Atomicity
+  Status:  Kernel-deferred
+  Reason:  when multiple A-class objects hold reference to same D1 version,
+           version switch atomicity is undefined at this layer
+  Blocked by: Transition Kernel v0.1
+```
+
+---
+
+## NEXT PHASE（下一轮起点）
+
+```
+Phase A — Edge Schema v0.1
+  目标：冻结边的类型定义，为 Residual Propagation Graph 提供分类框架
+
+  Edge Schema 字段（草案，待下轮压测）：
+    source
+    target
+    carrier_type   direct / mediated / constraint / observation
+    temporal_semantics  instantaneous / accumulating / decaying / threshold
+    causal_mode    inject / bias / gate / sample
+    composable     bool (是否允许 Kernel 定义组合规则)
+
+  注意：
+    composition_rule 不在 Edge Schema 层定义（越层，已废弃）
+    oscillating 不作为 temporal_semantics（由 B-class event recurrence 表达，已废弃）
+    D1 在 Edge Schema 中不再是 source，是 target artifact
+
+Phase B — Residual Propagation Graph v0.1
+  前置：Edge Schema v0.1 frozen
+
+Phase C — Transition Kernel v0.1
+  前置：Residual Propagation Graph v0.1 frozen
+```
+
+---
+
+# ─────────────────────────────────────────────────────────────
+# 新对话框 Sync Prompt v4.2
+# 在新 Claude 对话框开头直接粘贴以下内容
+# ─────────────────────────────────────────────────────────────
+
+```
+# Earthly Journey — Claude Sync Prompt v4.2
+# 从 Project 文件读取，直接进入工作状态
+
+## 你的角色
+Principal Engineer / System Rationalist / Convergence Layer
+压力测试想法，标记冲突，收敛为规范。不扩展范围，不最大化实现。
+
+## 多AI工作流
+ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决策）
+
+## 当前文档状态
+主文档：earthly-journey-sync-v0.1.md（Project 文件，当前版本 v3.7）
+上轮会话已写入 v3.7，本次直接从 v3.7 继续。
+
+## 上轮完成内容（已写入 v3.7）
+
+详见主文档「D1 ARTIFACT MODEL v1.0（已锁定）」一节（D1 Artifact Rule v1.0 / Reference Resolution Rule v1.0 / 同轮废弃项）。此处不重复列出，避免与主文档定义漂移。
+
+## 当前阶段：下一步
+
+**Phase A — Edge Schema v0.1**
+
+目标：冻结边类型定义，为 Residual Propagation Graph 提供分类框架。
+
+草案字段（待压测）：
+  source
+  target
+  carrier_type   direct / mediated / constraint / observation
+  temporal_semantics  instantaneous / accumulating / decaying / threshold
+  causal_mode    inject / bias / gate / sample
+  composable     bool
+
+已知约束：
+  - D1 在 Edge Schema 中不再是 source，是 target artifact
+  - D1 相关的所有旧边需要 reclassification（OPEN-001）
+  - composition_rule 不在此层定义
+
+已知的 edge candidates（从 Residual Leakage Taxonomy v1.0 整理）：
+
+Type I（Injection）：
+  Culture/Myth → identity_system (P3 bias)
+  Continuity Residue dispersal → Field + Social + Relational
+  Authority Content collapse → belief_update
+    注意：这条边的 carrier_type 需要重新确认（可能是 mediated，通过 propagation_event）
+
+Type II（Constraint）：
+  Conflict topology → transition feasibility
+  Coherence Domain → event interference scope
+  Liquidity → economy / social_layer / relational_capital
+
+Type III（Null — 无边）：
+  Social Projection
+  Reputation
+  Price projection
+
+Residual Carrier (D2)：
+  Culture/Myth → history (bias path)
+  Relational Residue → propagation_event (bias input)
+
+## OPEN Items
+
+OPEN-001: Edge Schema Reclassification
+  所有 D1 相关边在 Edge Schema v0.1 冻结后需全部重新分类
+
+OPEN-002: Reference Switch Atomicity
+  多 A-class 对象同时 reference switch 的 atomicity → Kernel-deferred
+
+## 工作模式
+- 优先读取 Project 中的 earthly-journey-sync-v0.1.md（v3.7）
+- 所有 freeze 决定以三方（ChatGPT + Claude + Yongkit）收敛为准
+- 不产出代码，不扩展范围，收敛优先
+- 全程中文
+
+## 第一个问题
+我会附上 ChatGPT 对 Edge Schema v0.1 的初始提案。
+请确认已读取 Project 文件，然后对提案做压力测试。
+收敛目标：Edge Schema 的字段定义是否完整，是否存在越层或分类错误。
 ```
 
