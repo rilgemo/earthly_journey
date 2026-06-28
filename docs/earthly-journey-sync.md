@@ -2808,6 +2808,107 @@ D2 子类（Residual Carriers）定义不变：
 > D1 与 Dependency Graph 方向修正说明（v3.7 变更记录）见 LAYER 4 — CHANGE LOG / PATCH HISTORY → "D1 Direction Correction (v3.7)"
 
 ---
+
+## PROPAGATION AXIOMS（Frozen）
+
+### 1. Interpretation Saturation
+
+```
+Semantic Fields saturate, analogous to Physical Field Saturation.
+
+Saturation is not a hard threshold — it is a capacity reduction:
+  As field intensity increases, ability to integrate new inputs decreases.
+
+Four-stage progression:
+  Elastic    → field absorbs diverse inputs, interpretations vary
+  Coherent   → field has stable dominant interpretation, still adaptive
+  Dogmatic   → new inputs forced into existing framework, diversity suppressed
+  Brittle    → field cannot integrate contradicting events
+
+From Brittle, three outcomes (not mandatory collapse):
+  Adaptation      → internal reinterpretation; same Authority, updated doctrine
+  Replacement     → competing field takes over; old structure recedes
+  Fragmentation   → field splits; multiple successor fields emerge
+
+Note:
+  Closed system (only one field, no competition) → Brittle leads to Fragmentation
+  Open system (multiple fields coexist) → Brittle leads to Adaptation or Replacement
+  Border zones (multi-field interference) → least likely to reach Brittle
+```
+
+### 2. Minimum Regenerative Activity
+
+```
+Authority requires periodic regenerative activity to persist.
+No semantic structure is immortal.
+
+Regenerative activity includes (not limited to):
+  - Reading / referencing encoded text
+  - Performing ritual
+  - Teaching / transmitting
+  - Citing in legal or institutional context
+  - Executing (enforcing law, practicing tradition)
+
+Shared property: all regenerate interpretation, not merely transmit information.
+
+Decay rates by Persistence Mode:
+  Embodied Authority:     fast decay (key agents die → rapid loss)
+  Encoded Authority:      medium decay (requires periodic reference to persist)
+  Distributed Authority:  slow decay (requires sustained propagation absence)
+
+All modes decay. Only rates differ.
+```
+
+### 3. Universal Decay Principle
+
+```
+Nothing persists.
+Only regeneration rates differ.
+
+Applies uniformly to:
+  Body             → biological decay
+  Identity         → Continuity Residue disperses
+  Skill            → temporal drift without use
+  Authority        → decays without regenerative activity
+  Culture / Myth   → fades without transmission
+  Field strength   → dissipates without generative flux
+
+This principle closes the consistency loop across all systems.
+A world that only accumulates is not a living simulation.
+Forgetting is not failure — it is the mechanism that makes renewal possible.
+```
+
+### 4. Trust / Endorsement Separation
+
+```
+Trust = emergent agent state
+  - Cannot be transferred
+  - Can only be accumulated through direct behavioral interaction
+  - Lives in Relational Identity layer (distributed, per-agent)
+
+Endorsement = transferable relational resource
+  - Can be granted, revoked, delegated
+  - Transfers access, not trust
+  - Lives in Relational Resource layer (Constructed/Relational)
+
+Critical constraint:
+  Endorsement cannot transfer trust.
+  Endorsement only transfers access.
+
+Examples:
+  Temple endorses merchant  ≠ villagers trust merchant
+  Guild grants license      ≠ customers believe in quality
+  Elder vouches for stranger ≠ community trusts stranger
+
+  In each case: trust must still be earned through behavior.
+  Endorsement only opens the door. It does not generate trust.
+
+Economy operates on Endorsement (transferable access).
+Social Projection operates on Trust (emergent state).
+These two systems share no currency.
+```
+
+---
 ## LAYER 2 — SYSTEM DEPENDENCY GRAPH
 
 ## DEPENDENCY GRAPH（v0.6）[Canonical YAML Source]
@@ -3301,110 +3402,9 @@ ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决
 
 ### Phase 2 — Social Propagation Model: FROZEN
 
-> Phase 2.5 architecture review results immediately follow.
-
-## PHASE 2.5 AUDIT RESULTS（v2.8 锁定）[Architecture Review]
-
-> Phase 2 — Social Propagation Model 完成并冻结。
-> 以下四条为架构审查后补入，与已有系统无冲突，属于收敛补全。
-
-### 1. Interpretation Saturation
-
-```
-Semantic Fields saturate, analogous to Physical Field Saturation.
-
-Saturation is not a hard threshold — it is a capacity reduction:
-  As field intensity increases, ability to integrate new inputs decreases.
-
-Four-stage progression:
-  Elastic    → field absorbs diverse inputs, interpretations vary
-  Coherent   → field has stable dominant interpretation, still adaptive
-  Dogmatic   → new inputs forced into existing framework, diversity suppressed
-  Brittle    → field cannot integrate contradicting events
-
-From Brittle, three outcomes (not mandatory collapse):
-  Adaptation      → internal reinterpretation; same Authority, updated doctrine
-  Replacement     → competing field takes over; old structure recedes
-  Fragmentation   → field splits; multiple successor fields emerge
-
-Note:
-  Closed system (only one field, no competition) → Brittle leads to Fragmentation
-  Open system (multiple fields coexist) → Brittle leads to Adaptation or Replacement
-  Border zones (multi-field interference) → least likely to reach Brittle
-```
-
-### 2. Minimum Regenerative Activity
-
-```
-Authority requires periodic regenerative activity to persist.
-No semantic structure is immortal.
-
-Regenerative activity includes (not limited to):
-  - Reading / referencing encoded text
-  - Performing ritual
-  - Teaching / transmitting
-  - Citing in legal or institutional context
-  - Executing (enforcing law, practicing tradition)
-
-Shared property: all regenerate interpretation, not merely transmit information.
-
-Decay rates by Persistence Mode:
-  Embodied Authority:     fast decay (key agents die → rapid loss)
-  Encoded Authority:      medium decay (requires periodic reference to persist)
-  Distributed Authority:  slow decay (requires sustained propagation absence)
-
-All modes decay. Only rates differ.
-```
-
-### 3. Universal Decay Principle
-
-```
-Nothing persists.
-Only regeneration rates differ.
-
-Applies uniformly to:
-  Body             → biological decay
-  Identity         → Continuity Residue disperses
-  Skill            → temporal drift without use
-  Authority        → decays without regenerative activity
-  Culture / Myth   → fades without transmission
-  Field strength   → dissipates without generative flux
-
-This principle closes the consistency loop across all systems.
-A world that only accumulates is not a living simulation.
-Forgetting is not failure — it is the mechanism that makes renewal possible.
-```
-
-### 4. Trust / Endorsement Separation
-
-```
-Trust = emergent agent state
-  - Cannot be transferred
-  - Can only be accumulated through direct behavioral interaction
-  - Lives in Relational Identity layer (distributed, per-agent)
-
-Endorsement = transferable relational resource
-  - Can be granted, revoked, delegated
-  - Transfers access, not trust
-  - Lives in Relational Resource layer (Constructed/Relational)
-
-Critical constraint:
-  Endorsement cannot transfer trust.
-  Endorsement only transfers access.
-
-Examples:
-  Temple endorses merchant  ≠ villagers trust merchant
-  Guild grants license      ≠ customers believe in quality
-  Elder vouches for stranger ≠ community trusts stranger
-
-  In each case: trust must still be earned through behavior.
-  Endorsement only opens the door. It does not generate trust.
-
-Economy operates on Endorsement (transferable access).
-Social Projection operates on Trust (emergent state).
-These two systems share no currency.
-```
-
+v2.8:
+locked propagation axioms
+→ see LAYER 1 §PROPAGATION AXIOMS
 
 ---
 
