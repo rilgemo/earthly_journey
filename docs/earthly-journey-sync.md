@@ -1,7 +1,7 @@
 # Earthly Journey — Claude Sync Package
 
 ## LAYER 0 — SYSTEM HEADER
-> Status: Draft | Version: 3.7 | Last updated: 2026-06-28
+> Status: Draft | Version: 3.8-clean | Last updated: 2026-06-29
 > Purpose: Long-term design decisions (LDD) baseline for all future Earthly Journey discussions with Claude.
 > Rule: This document is the single source of truth. Discussions always sync back here.
 
@@ -3064,10 +3064,6 @@ nodes:
   propagation_event:
     class: B
     layer: rules
-    inputs:
-      - interaction
-      - social_belief_state
-      - relational_state
     context:
       - authority_content        # D1 Interpretive Encoding — not snapshotted, not causal storage
     outputs:
@@ -3079,6 +3075,7 @@ nodes:
             authority_content participates as evaluation context only —
             not captured in event record, not affecting replay determinism.
             social_projection is observer-derived, not a system output."
+    notes_migration: "inputs removed v3.8-clean — emission rule belongs to World_Execute pipeline, not Graph schema"
 
   # RELATIONAL LAYER — expectation stabilizer
 
@@ -3226,16 +3223,38 @@ Phase A — Edge Schema v0.1
 草案字段（待压测）：
   source
   target
-  carrier_type   direct / mediated / constraint / observation
-  temporal_semantics  instantaneous / accumulating / decaying / threshold
-  causal_mode    inject / bias / gate / sample
+  transmission_type
+  persistence_type
+  influence_semantics
   composable     bool（是否允许 Kernel 定义组合规则）
+
+  transmission_type:
+    - direct
+    - mediated
+    - constraint
+
+  persistence_type:
+    - instant
+    - accumulating
+    - decaying
+    - persistent
+
+  influence_semantics:
+    - direct_modification
+    - feasibility_limit
 
 已知约束：
   - D1 在 Edge Schema 中不再是 source，是 target artifact
   - D1 相关的所有旧边需要 reclassification（OPEN-001，见 LAYER 3）
   - composition_rule 不在此层定义（越层，已废弃）
   - oscillating 不作为 temporal_semantics（由 B-class event recurrence 表达，已废弃）
+
+migration note:
+  "causal_mode deprecated v3.8-clean. Semantic decomposition:
+   inject → transmission_type: direct + influence_semantics: direct_modification + persistence_type: instant
+   bias   → transmission_type: direct + influence_semantics: direct_modification + persistence_type: decaying
+   gate   → transmission_type: constraint + influence_semantics: feasibility_limit
+   sample → REMOVED (observation semantics, not a graph edge)"
 ```
 
 #### Edge Candidates（从 Residual Leakage Taxonomy v1.0 整理）
@@ -3263,6 +3282,21 @@ Residual Carrier (D2)：
 ```
 
 > Edge Schema 冻结前置条件、Phase B/C 计划见 LAYER 3 — OPEN / NEXT EVOLUTION → "NEXT PHASE"。
+
+---
+
+### Node Registry — B-Class Entries（v3.8-clean）
+
+```
+event_record:
+  class: B
+  append_only: true
+  valid_as_edge_target: false
+  valid_as_edge_source: conditional
+  allowed_targets:
+    - D2 (History only)
+  note: "B-class source permission added v3.8-clean"
+```
 
 ---
 
@@ -3545,4 +3579,14 @@ Conditional source permission for B-class event records
 Clarified A-class coupling semantics without schema expansion
 
 📌 END v3.8
+
+---
+
+### v3.8-clean (schema migration)
+
+- propagation_event.inputs removed from Graph YAML (emission rule → World_Execute)
+- causal_mode deprecated, replaced with transmission_type + influence_semantics decomposition
+- sample value removed (zero instances found, observation semantics excluded from Graph)
+- Node Registry B-class entry added: event_record source permission defined
+- inject/bias/gate semantic mappings documented
 
