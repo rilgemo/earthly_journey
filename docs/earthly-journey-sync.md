@@ -3300,6 +3300,75 @@ event_record:
 
 ---
 
+## RESIDUAL PROPAGATION GRAPH v1.1 (Frozen)
+
+### Scope Declaration
+
+```
+Scope: D2 → A-class edges only (A1 scope)
+
+D2 sources covered:  continuity_residue, culture_myth
+Targets covered:     A-class objects only (per A-Class Object Registry, LAYER 1)
+
+This graph is NOT the full Residual Propagation Graph.
+It is the A1-scope slice: D2 → A-class injection/constraint edges.
+Remaining scopes (A→A, B-class log edges, D2→D2) are explicitly out of scope —
+see Exclusion List below.
+```
+
+### Exclusion List
+
+```
+Excluded from this graph (handled elsewhere or not yet modeled):
+  - A → A edges               (see LAYER 4 §4 "Edge Semantics Clarification — A-class coupling")
+  - B-class edges              (event_record / propagation_event — see Node Registry, B-Class Entries above;
+                                 Graph Layer must not encode emission semantics, per LAYER 4 §1-2)
+  - Emission semantics         (A-class → B-class is NOT a graph edge — World_Execute pipeline only)
+  - D2 → D2 edges               (no Culture/Myth ↔ Continuity Residue edge currently modeled)
+```
+
+### Mermaid Graph (structural topology, solid edges only)
+
+```mermaid
+flowchart LR
+  ContRes[continuity_residue D2] --> Field[field_system]
+  ContRes --> Social[social_layer]
+  ContRes --> RC[relational_capital]
+  ContRes --> Recon[reconstruction_system]
+  ContRes --> Skill[skill_state]
+  ContRes --> Mem[agent_memory]
+  Culture[culture_myth D2] --> Identity[identity_system]
+  Culture --> Agent[agent_system]
+  Culture --> Social
+```
+
+### Edge Schema — Formal Spec (9 edges)
+
+| # | source | target | transmission_type | persistence_type | influence_semantics | note |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | continuity_residue | field_system | direct | persistent | direct_modification | Dispersal injection into Field substrate. **Constraint decay rate may be asymptotically slow at civilization scale. Geological Memory applies — see LAYER 1 §FIELD SYSTEM.** |
+| 2 | continuity_residue | social_layer | mediated | decaying | direct_modification | Dispersal injection; reaches belief_state via local Field-to-observation coupling. |
+| 3 | continuity_residue | relational_capital | mediated | decaying | direct_modification | Dispersal injection; biases shared_prediction_capacity formation. |
+| 4 | continuity_residue | reconstruction_system | direct | instant | feasibility_limit | Graph input edge; determines reconstruction_quality_ceiling. |
+| 5 | continuity_residue | skill_state | constraint | persistent | feasibility_limit | Reconstruct ceiling capped by Continuity Residue fidelity. |
+| 6 | continuity_residue | agent_memory | constraint | persistent | feasibility_limit | Reconstruct quality capped by Continuity Residue fidelity. |
+| 7 | culture_myth | identity_system | mediated | decaying | direct_modification | P3 emergent_compression bias layer (overwrite priority stack). |
+| 8 | culture_myth | agent_system | mediated | decaying | direct_modification | behavioral_heuristics inheritance ("encounter wolf → trigger avoidance behavior"). |
+| 9 | culture_myth | social_layer | mediated | decaying | direct_modification | Myth feeds back into Interpret, reshaping belief_state formation (Social Propagation Model). |
+
+```
+Field values used above (Edge Schema v0.1 — LAYER 2):
+  transmission_type:    direct | mediated | constraint
+  persistence_type:     instant | accumulating | decaying | persistent
+  influence_semantics:  direct_modification | feasibility_limit
+```
+
+> Annotation — ContRes → Field (edge #1):
+> Constraint decay rate may be asymptotically slow at civilization scale.
+> Geological Memory applies — see LAYER 1 §FIELD SYSTEM.
+
+---
+
 ## LAYER 3 — OPEN / NEXT EVOLUTION
 
 ### Master Pending List
