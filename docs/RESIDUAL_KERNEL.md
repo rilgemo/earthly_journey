@@ -99,50 +99,39 @@ Residual Kernel acts as a **pre-execution deterministic filter layer only**.
 
 ---
 
-## 9. World_Execute Interface Contract (Forward Declaration)
+## 9. World_Execute Interface Contract (Phase 2+ Activation)
 
-This section defines the interface contract for a future system extension.
+Status: PENDING — declared but inactive in Phase 1.
+This section defines the future coupling contract only.
+It does NOT affect current Phase 1 execution behavior.
 
-It is NOT active in Phase 1.
+### Interface Declaration
 
-It does NOT affect current execution behavior.
+When World_Execute is extended to consume residual inputs (Phase 2+):
 
----
+Input channel:
+  source: Residual Kernel v1
+  format: eligible_for_emission boolean flags per edge
 
-### Activation Condition
+Processing rule:
+  IF edge.eligible_for_emission == true
+  THEN include edge in execution consideration set
+  ELSE ignore edge
 
-This interface becomes active only when system enters Phase 2+ simulation mode.
-
----
-
-### Input Channel (future)
-
-source:
-  Residual Kernel v1
-
-format:
-  eligible_for_emission: boolean (per edge)
-
----
-
-### Processing Rule (future World_Execute extension)
-
-IF edge.eligible_for_emission == true
-THEN include edge in execution consideration set
-ELSE ignore edge
-
----
-
-### Constraints (future-enforced)
+### Constraints (binding at activation)
 
 - No recomputation of residual_strength inside World_Execute
-- Residual Kernel remains sole authority for eligibility evaluation
-- No fallback evaluation in execution layer
+- No re-evaluation of persistence_type inside World_Execute
+- Residual Kernel is the ONLY authority for eligibility filtering
+- World_Execute must not modify or override eligible_for_emission flags
 
----
+### Phase Isolation Rule
 
-### Status
+This contract must NOT be compiled into Phase 1 execution logic.
+Activation occurs only when Phase 2 boundary is explicitly reached
+and documented in MILESTONES.md.
 
-PENDING (Phase 2+ only)
-NOT ACTIVE in Phase 1
+Retroactive reinterpretation of Phase 1 event history
+via Residual Kernel is FORBIDDEN after activation.
+Phase 1 B-class records are immutable regardless of Phase 2 state.
 
