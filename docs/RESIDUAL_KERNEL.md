@@ -97,3 +97,52 @@ Graph → Residual Kernel → World_Execute
 
 Residual Kernel acts as a **pre-execution deterministic filter layer only**.
 
+---
+
+## 9. World_Execute Interface Contract (Forward Declaration)
+
+This section defines the interface contract for a future system extension.
+
+It is NOT active in Phase 1.
+
+It does NOT affect current execution behavior.
+
+---
+
+### Activation Condition
+
+This interface becomes active only when system enters Phase 2+ simulation mode.
+
+---
+
+### Input Channel (future)
+
+source:
+  Residual Kernel v1
+
+format:
+  eligible_for_emission: boolean (per edge)
+
+---
+
+### Processing Rule (future World_Execute extension)
+
+IF edge.eligible_for_emission == true
+THEN include edge in execution consideration set
+ELSE ignore edge
+
+---
+
+### Constraints (future-enforced)
+
+- No recomputation of residual_strength inside World_Execute
+- Residual Kernel remains sole authority for eligibility evaluation
+- No fallback evaluation in execution layer
+
+---
+
+### Status
+
+PENDING (Phase 2+ only)
+NOT ACTIVE in Phase 1
+
