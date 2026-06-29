@@ -3429,3 +3429,120 @@ Edge Schema Reclassification is deferred to Edge Schema v0.1 freeze.
 
 ---
 
+1. Graph / Execution / Log 三系统分离原则（FROZEN）
+
+Earthly system is formally partitioned into three independent semantic domains:
+
+(A) Graph Layer (Structural Ontology)
+Represents persistent A-class relational state only
+Expresses "what exists"
+Must NOT encode runtime execution behavior
+Must NOT contain event generation semantics
+(B) Execution Layer (World_Execute Pipeline)
+Responsible for runtime state transitions per tick
+Defines emission rules from A-class state to B-class events
+Not represented as graph edges
+(C) Log Layer (B-class Event Records)
+Append-only immutable event storage
+Records outputs of Execution Layer
+Cannot be a causal source in Graph Layer
+2. A → B Emission Rule (REMOVED FROM GRAPH)
+
+A-class → B-class relationships are NOT graph edges.
+
+They are defined exclusively in Execution Layer as:
+
+World_Execute(tick):
+    input: A-class state graph
+    output: B-class event records
+
+Graph must not encode emission semantics.
+
+3. Node Registry Update — event_record
+event_record:
+  class: B
+  valid_as_edge_source: conditional
+  allowed_targets:
+    - D2 (aggregation layer only)
+
+Event records may act as causal sources ONLY for D2 aggregation processes.
+
+4. Edge Semantics Clarification — A-class coupling
+
+A → A relationships remain in Graph Layer but must be interpreted using existing schema fields:
+
+transmission_type: direct | constraint
+influence_semantics: direct_modification
+persistence_type: accumulating | decaying
+
+No new edge_type field is introduced.
+
+5. v3.8 Commit Summary
+
+This version introduces:
+
+Formal separation of Graph / Execution / Log layers
+Removal of emission semantics from Graph Layer
+Conditional source permission for B-class event records
+Clarified A-class coupling semantics without schema expansion
+
+📌 v3.8 — Graph / Execution / Log Separation Freeze
+1. Graph / Execution / Log 三系统分离原则（FROZEN）
+
+Earthly system is formally partitioned into three independent semantic domains:
+
+(A) Graph Layer (Structural Ontology)
+Represents persistent A-class relational state only
+Expresses "what exists"
+Must NOT encode runtime execution behavior
+Must NOT contain event generation semantics
+(B) Execution Layer (World_Execute Pipeline)
+Responsible for runtime state transitions per tick
+Defines emission rules from A-class state to B-class events
+Not represented as graph edges
+(C) Log Layer (B-class Event Records)
+Append-only immutable event storage
+Records outputs of Execution Layer
+Cannot be a causal source in Graph Layer
+2. A → B Emission Rule (REMOVED FROM GRAPH)
+
+A-class → B-class relationships are NOT graph edges.
+
+They are defined exclusively in Execution Layer as:
+
+World_Execute(tick):
+    input: A-class state graph
+    output: B-class event records
+
+Graph must not encode emission semantics.
+
+3. Node Registry Update — event_record
+event_record:
+  class: B
+  valid_as_edge_source: conditional
+  allowed_targets:
+    - D2 (aggregation layer only)
+
+Event records may act as causal sources ONLY for D2 aggregation processes.
+
+4. Edge Semantics Clarification — A-class coupling
+
+A → A relationships remain in Graph Layer but must be interpreted using existing schema fields:
+
+transmission_type: direct | constraint
+influence_semantics: direct_modification
+persistence_type: accumulating | decaying
+
+No new edge_type field is introduced.
+
+5. v3.8 Commit Summary
+
+This version introduces:
+
+Formal separation of Graph / Execution / Log layers
+Removal of emission semantics from Graph Layer
+Conditional source permission for B-class event records
+Clarified A-class coupling semantics without schema expansion
+
+📌 END v3.8
+
