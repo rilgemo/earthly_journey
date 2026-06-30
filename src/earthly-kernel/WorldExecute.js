@@ -2,10 +2,24 @@
 // STATE(t+1) = World_Execute(STATE(t), INPUT(t))
 // worldExecute is the ONLY legal function that may modify WorldState (Invariant 12.2).
 
+const { hasIntent, consumeIntent } = require('./IntentBuffer');
+const { createCommitment } = require('./Commitment');
+
 // Step 1 — Resolve Agent Inputs
 // Drain each agent's intent_buffer into the pipeline for this tick.
 // intent_buffer is cleared immediately after consumption (edge-trigger, not persisted).
+//
+// _resolvedIntents is a transient scratch field,
+// NOT part of canonical WorldState schema.
+// Created in step 1, consumed in step 3, deleted after step 3.
 function resolveAgentInputs(worldState) {
+  worldState._resolvedIntents = new Map();
+  for (const [agent_id, agent] of worldState.agents) {
+    if (hasIntent(agent)) {
+      const intent = consumeIntent(agent);
+      worldState._resolvedIntents.set(agent_id, intent);
+    }
+  }
   return worldState;
 }
 
@@ -22,6 +36,12 @@ function applyFocusTransitionRules(worldState) {
 // Commitment.origin_state_snapshot = deep copy of agent state at this moment (Invariant 12.4).
 // No Intent → no new Commitment.
 function generateUpdateCommitments(worldState) {
+  for (const [agent_id, intent] of worldState._resolvedIntents) {
+    const agent = worldState.agents.get(agent_id);
+    const commitment = createCommitment(agent_id, intent.domain, intent.type, agent);
+    worldState.commitments.add(commitment);
+  }
+  delete worldState._resolvedIntents;
   return worldState;
 }
 
