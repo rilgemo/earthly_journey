@@ -3456,6 +3456,12 @@ Phase B — Residual Propagation Graph v0.1
 
 Phase C — Transition Kernel v0.1
   前置：Residual Propagation Graph v0.1 frozen
+
+Phase 2 Goal:
+Transform deterministic trace output into human-interpretable narrative
+without introducing non-deterministic semantics.
+
+Status: PENDING — begins after Phase 1 review settlement.
 ```
 
 ---
