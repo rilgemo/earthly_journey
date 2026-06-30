@@ -47,18 +47,45 @@ function generateUpdateCommitments(worldState) {
 
 // Step 4 — Validate Commitments (World Validation)
 // Step 4 is read-only projection — must not modify any Execution Layer state.
-// For each ACTIVE Commitment, evaluate all required_conditions against current WorldState.
-// Violations are collected here; state changes happen in Step 5 only.
+// MAY write: commitment.status (→ BROKEN), commitment.failure_reason
+// MUST NOT: delete commitments, create commitments, touch agents/focus_map/trace_log
+// First failing condition wins; break after first failure per commitment.
 function validateCommitments(worldState) {
+  const { CommitmentStatus } = require('./Commitment');
+  for (const commitment of worldState.commitments) {
+    if (commitment.status !== CommitmentStatus.ACTIVE) continue;
+    const agent = worldState.agents.get(commitment.agent_id);
+    for (const condition of commitment.required_conditions) {
+      if (condition.check(worldState, agent) === false) {
+        commitment.status = CommitmentStatus.BROKEN;
+        commitment.failure_reason = condition.id;
+        break;
+      }
+    }
+  }
   return worldState;
 }
 
 // Step 5 — Resolve Broken Events
-// For each Commitment whose conditions failed in Step 4:
-//   mark Commitment.status = BROKEN
-//   emit BROKEN_EVENT { commitment_id, failure_reason: <condition_id>, timestamp }
-// No silent drops — every failure produces a traceable BROKEN_EVENT.
+// Emit-once rule: scan trace_log before emitting — do not re-emit for commitments
+// already present in trace_log (BROKEN → BROKEN on tick N+1 produces no new event).
+// failure_reason must not be null (SIMULATION_SPEC §6.3, §13).
 function resolveBrokenEvents(worldState) {
+  const emitted = new Set(
+    worldState.trace_log
+      .filter(e => e.event_type === 'COMMITMENT_BROKEN')
+      .map(e => e.commitment_id)
+  );
+  for (const commitment of worldState.commitments) {
+    if (commitment.status !== 'BROKEN') continue;
+    if (emitted.has(commitment.id)) continue;
+    worldState.trace_log.push({
+      event_type:     'COMMITMENT_BROKEN',
+      commitment_id:  commitment.id,
+      failure_reason: commitment.failure_reason,
+      timestamp:      worldState._currentTick ?? 0,
+    });
+  }
   return worldState;
 }
 
@@ -82,6 +109,7 @@ function commitNewWorldState(worldState) {
 // Executes all 7 steps in strict order for a single tick.
 // This is the ONLY entry point for WorldState mutation.
 function worldExecute(worldState) {
+  worldState._currentTick = (worldState._currentTick ?? -1) + 1;
   worldState = resolveAgentInputs(worldState);
   worldState = applyFocusTransitionRules(worldState);
   worldState = generateUpdateCommitments(worldState);
