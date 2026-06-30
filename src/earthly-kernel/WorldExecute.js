@@ -3,7 +3,7 @@
 // worldExecute is the ONLY legal function that may modify WorldState (Invariant 12.2).
 
 const { hasIntent, consumeIntent } = require('./IntentBuffer');
-const { createCommitment } = require('./Commitment');
+const { createCommitment, CommitmentStatus } = require('./Commitment');
 
 // Step 1 — Resolve Agent Inputs
 // Drain each agent's intent_buffer into the pipeline for this tick.
@@ -23,11 +23,40 @@ function resolveAgentInputs(worldState) {
   return worldState;
 }
 
-// Step 2 — Apply Focus Transition Rules
-// For each agent with a pending focus change, update focus_map[agent_id].
-// Emit FOCUS_CHANGED trace event (cost_delta recorded in Trace only, not stored in WorldState).
-// If new domain matches an existing Commitment's domain, mark that Commitment OVERRIDDEN.
+// Step 2 — Apply Focus Transition Rules (SIMULATION_SPEC §4)
+// Reads _resolvedIntents (from step 1). Updates focus_map. Emits FOCUS_CHANGED.
+// Same-domain existing ACTIVE Commitment → OVERRIDDEN (§4.2).
+// NO delta_value in trace event — raw event only (M.O.B 4).
 function applyFocusTransitionRules(worldState) {
+  for (const [agent_id, intent] of worldState._resolvedIntents) {
+    const old_focus = worldState.focus_map.get(agent_id) ?? { active_domain: null, active_type: null };
+    const new_focus = { active_domain: intent.domain, active_type: intent.type };
+
+    // §4.2 — same-domain existing ACTIVE Commitment is OVERRIDDEN by the new focus
+    if (old_focus.active_domain === new_focus.active_domain) {
+      for (const commitment of worldState.commitments) {
+        if (
+          commitment.agent_id === agent_id &&
+          commitment.domain   === new_focus.active_domain &&
+          commitment.status   === CommitmentStatus.ACTIVE
+        ) {
+          commitment.status = CommitmentStatus.OVERRIDDEN;
+        }
+      }
+    }
+
+    worldState.focus_map.set(agent_id, new_focus);
+
+    worldState.trace_log.push({
+      event_type: 'FOCUS_CHANGED',
+      agent_id,
+      old_domain: old_focus.active_domain,
+      old_type:   old_focus.active_type,
+      new_domain: new_focus.active_domain,
+      new_type:   new_focus.active_type,
+      timestamp:  worldState._currentTick ?? 0,
+    });
+  }
   return worldState;
 }
 
@@ -36,10 +65,14 @@ function applyFocusTransitionRules(worldState) {
 // Commitment.origin_state_snapshot = deep copy of agent state at this moment (Invariant 12.4).
 // No Intent → no new Commitment.
 function generateUpdateCommitments(worldState) {
+  // _newCommitments is a transient scratch list for step 6 (emitTraceEvents).
+  // Created here, consumed and deleted in step 6.
+  worldState._newCommitments = [];
   for (const [agent_id, intent] of worldState._resolvedIntents) {
     const agent = worldState.agents.get(agent_id);
     const commitment = createCommitment(agent_id, intent.domain, intent.type, agent);
     worldState.commitments.add(commitment);
+    worldState._newCommitments.push(commitment);
   }
   delete worldState._resolvedIntents;
   return worldState;
@@ -90,11 +123,22 @@ function resolveBrokenEvents(worldState) {
 }
 
 // Step 6 — Emit Trace Events
-// Append raw TraceEvents to worldState.trace_log for all state changes this tick.
-// Allowed event types: COMMITMENT_CREATED, COMMITMENT_BROKEN, COMMITMENT_COMPLETED,
-//   COMMITMENT_OVERRIDDEN, FOCUS_CHANGED, POSITION_UPDATED.
-// No semantic labeling — raw event data only (Invariant: no delta_value, no derived labels).
+// Emits COMMITMENT_CREATED for each new Commitment generated this tick.
+// Raw event only — no stat deltas, no level fields, no delta_value (M.O.B 4).
+// _newCommitments scratch list consumed and deleted here.
 function emitTraceEvents(worldState) {
+  for (const commitment of worldState._newCommitments) {
+    worldState.trace_log.push({
+      event_type:     'COMMITMENT_CREATED',
+      commitment_id:  commitment.id,
+      agent_id:       commitment.agent_id,
+      domain:         commitment.domain,
+      type:           commitment.type,
+      origin_posture: commitment.origin_state_snapshot.posture_state,
+      timestamp:      worldState._currentTick ?? 0,
+    });
+  }
+  delete worldState._newCommitments;
   return worldState;
 }
 
