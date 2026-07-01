@@ -393,6 +393,37 @@ Act
 - ✅ Skills emerge from repeated action
 - ✅ Identity is readable from skill history, not skill list
 
+### Growth Semantics（已锁定）
+
+Growth in Earthly is not attribute change. It is cost change.
+
+Correct model:
+
+```
+behavior → maintenance cost change
+         → stability change
+         → recoverability change
+         → performance change
+```
+
+Incorrect model (forbidden):
+
+```
+behavior → attribute delta  (e.g. Endurance +1)
+```
+
+Temporal Drift determines whether change occurs.
+Narrative Projection determines whether change is felt.
+
+Behavioral accumulation produces bias, not upgrade:
+
+- repeated actions reduce attention cost
+- sustained patterns change default scheduling
+- history creates inertia, not penalty
+
+Avoid: "gained A, lost B" (hidden attribute tree)
+Prefer: "repeated behavior formed bias, changing future adaptation cost"
+
 ---
 
 ## PLAYER AGENT SYSTEM（已锁定）[Core Simulation Layer — IMMUTABLE]
