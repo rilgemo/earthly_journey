@@ -395,7 +395,7 @@ Act
 
 ### Growth Semantics（已锁定）
 
-Growth in Earthly is not attribute change. It is cost change.
+Growth in Earthly is not attribute accumulation. It is trajectory deformation.
 
 Correct model:
 
@@ -415,7 +415,7 @@ behavior → attribute delta  (e.g. Endurance +1)
 Temporal Drift determines whether change occurs.
 Narrative Projection determines whether change is felt.
 
-Behavioral accumulation produces bias, not upgrade:
+Behavioral accumulation produces path dependence, not discrete advancement:
 
 - repeated actions reduce attention cost
 - sustained patterns change default scheduling
