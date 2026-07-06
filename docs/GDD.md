@@ -12,6 +12,11 @@ The long-term direction of Earthly Journey: move from "a system that computes" t
 
 "Existence layers" can be used as a design-thinking framework, but code and data always use game language (NPC, skill, affinity, memory), never abstract architecture terminology.
 
+> Note: "Agent" is a SIMULATION_SPEC term (kernel/execution layer).
+> "NPC" is a GDD term (design/expression layer). No semantic priority
+> between them — they are separate language layers, not competing
+> definitions of the same concept.
+
 **World state may be numeric. Player understanding must be narrative.**
 Internal state (action logs, dominance ratios, trends) is never shown directly to the player. A Narrator layer compresses history into qualitative perception. The Narrator compresses — it does not invent. If no real trend exists, it must not manufacture one (e.g. "growing more diligent" when nothing has actually changed).
 
