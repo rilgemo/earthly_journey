@@ -1,4 +1,4 @@
-﻿// CP-5: Unattended Presence (G5)
+// CP-5: Unattended Presence (G5)
 // Proves: a Commitment receives ZERO protection under sustained zero-Intent
 // input -- World Validation continues to run and can BREAK it, identically
 // to the IPS case, with no code path distinguishing "presence" at all.
