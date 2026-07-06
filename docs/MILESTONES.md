@@ -141,7 +141,14 @@ Structural neutrality:
  
 **M.O.B 1 — Focus shift produces measurable state delta**
 Focus 切换产生可测量的系统状态变化。
-可测量表现：切换后的 Commitment 记录的初始 body state 与切换前不同。
+可测量表现：Commitment 创建/覆盖时，存在一条可追溯的 FOCUS_CHANGED 事件，
+其 old_domain/new_domain（跨 domain 场景）或 old_type/new_type（同 domain
+override 场景）与新 Commitment 的 domain/type 因果一致。
+
+NOTE: This rule assumes Intent sequences without duplicate (domain, type)
+resubmission for the same agent. See LAYER 3 Pending — "Repeated
+Identical Intent" for the known edge case where old_type == new_type
+on a same-domain re-issue.
  
 **M.O.B 2 — Commitment persists under zero Intent input**
 在无 Intent 输入期间，Commitment 仍然存在并被 World 持续 validate。
