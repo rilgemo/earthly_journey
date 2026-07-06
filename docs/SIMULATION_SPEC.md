@@ -59,6 +59,11 @@ PostureState = STANDING | MOVING | OBSERVING | INTERACTING
 - 只服务于 Commitment `origin_state_snapshot` 的一致性
 - 不记录 velocity / balance / skeletal data
 - Phase 1 不进入连续状态空间
+
+> 见 M.O.B 1 决策记录：OBSERVING/INTERACTING 的存在定义的是合法状态空间，
+> 不代表 Phase 1 已启用由 Commitment 驱动的 posture_state 状态迁移。
+> 该迁移规则（如需要）应作为独立的 Phase 2+ Transition Rule 提案单独冻结。
+
 ### 1.4 FocusState
  
 ```
