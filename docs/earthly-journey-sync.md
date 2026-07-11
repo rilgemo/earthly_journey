@@ -16,6 +16,25 @@
 
 *Next version: v0.7 — after Social Layer relationship structure is locked*
 
+### LAYER SEMANTICS
+
+LAYER 1
+Canonical system state.
+
+LAYER 4
+Historical decision narrative.
+
+Historical records explain why a rule exists.
+They never redefine the current rule.
+
+Decision records are append-only.
+
+Significant architectural decisions are encouraged
+to document Context and Alternatives.
+
+Each decision record includes Status:
+Active / Superseded / Deprecated / Withdrawn.
+
 ---
 
 ## LAYER 1 — CANONICAL SYSTEM STATE
@@ -3538,6 +3557,28 @@ ChatGPT（发散/生成） → Claude（收敛/对抗） → Yongkit（最终决
 请确认已读取 Project 文件，然后对提案做压力测试。
 收敛目标：Edge Schema 的字段定义是否完整，是否存在越层或分类错误。
 ```
+
+### DRAFT: Document Ownership principle (not yet applied)
+
+Definition:
+"Every repository-level fact has exactly one owning document.
+Other documents may reference that fact, but must not redefine
+or duplicate it."
+
+Proposed first application (not yet applied):
+TODO.md would own "current project phase"
+
+Target formalization:
+PROJECT_RULES.md (future, does not yet exist)
+
+### PENDING: Body Transition Rule (Commitment -> posture_state mutation)
+
+Deferred from Phase 1 (M.O.B 1 A2 decision).
+Not a missing implementation - Phase 1 explicitly excludes continuous
+state space evolution for PostureState (SIMULATION_SPEC 1.3).
+Revisit only if/when a dedicated Body Controller / Pose Planner
+layer is designed in Phase 2+.
+
 ## LAYER 4 — CHANGE LOG / PATCH HISTORY
 
 ### Phase 2 — Social Propagation Model: FROZEN
@@ -3696,3 +3737,33 @@ Clarified A-class coupling semantics without schema expansion
 - Node Registry B-class entry added: event_record source permission defined
 - inject/bias/gate semantic mappings documented
 
+---
+
+### M.O.B 1 adopts A2 (v3.9)
+> Current rule: see LAYER 1 / MILESTONES.md M.O.B 1. This entry is
+> informational history only and has no authority over system behavior.
+
+**Context**
+MILESTONES.md originally required M.O.B 1 to prove a literal "body state"
+(AgentState.position/posture_state) delta across Commitment transitions.
+Live kernel probing confirmed WorldExecute.js never mutates these fields;
+a same-domain override always produces byte-identical
+origin_state_snapshot values.
+
+**Alternatives Considered**
+- A1: Implement a Commitment-driven posture_state mutation
+- A2: Redefine M.O.B 1 acceptance criterion around FOCUS_CHANGED
+  event-level causal pairing (already implemented, test_cp3.js)
+
+**Decision**
+A2. SIMULATION_SPEC 1.3 explicitly states Phase 1 excludes continuous,
+Commitment-driven state transitions for PostureState. enum does not
+imply transition - OBSERVING/INTERACTING define legal state space,
+not an active transition rule.
+
+**Consequences**
+- MILESTONES.md / SIMULATION_SPEC.md updated (merged)
+- Body Transition Rule deferred - see LAYER 3 Pending
+  "Body Transition Rule (Commitment -> posture_state mutation)"
+
+Status: Active
