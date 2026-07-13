@@ -28,6 +28,13 @@ Examples observed in this repository:
 - Referencing a document version (e.g. sync doc "v3.7") without
   verifying it against the actual current file
 
+Repository Truth applies equally to relationships between entities.
+Do not describe a relationship that cannot be supported by
+repository evidence. Historical influence, runtime dependency,
+ownership, reference, and future proposals are distinct concepts
+and must not be conflated — do not infer one from the mere
+coexistence of two things.
+
 ## 2. Single Owner Principle
 
 Every repository-level fact has exactly one owning document. Other
