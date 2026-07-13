@@ -3767,3 +3767,35 @@ not an active transition rule.
   "Body Transition Rule (Commitment -> posture_state mutation)"
 
 Status: Active
+
+---
+
+### Simulation Sandbox / Earthly Kernel historical relationship (v3.9)
+> Current rule: no formal cross-reference exists between the two
+> systems' architecture documents. This entry is informational
+> history only and has no authority over current system behavior.
+
+**Context**
+Simulation Sandbox (src/simulation/, AI/*, docs/00-10) was originally
+built to validate agent decision direction. The conclusions reached
+during that validation later influenced the design direction taken
+by Earthly Kernel (src/earthly-kernel/).
+
+**Confirmed (Yongkit, 2026-07-XX)**
+Simulation Sandbox 当时是为了验证 agent 决策方向而搭建的系统，它验证
+过程中获得的结论，后来影响了 Earthly Kernel 的设计方向。两者目前不
+存在运行时依赖，也没有共享 schema 或直接的数据流关系。
+
+**Not claimed**
+- No specific mapping to individual Kernel concepts (Commitment,
+  FocusState, WorldExecute, etc.) is asserted — which particular
+  ideas were carried over, and to what degree, remains undocumented.
+- No runtime dependency, shared schema, or data flow currently
+  exists between the two systems.
+- This entry does not describe a producer/consumer pipeline or any
+  future integration plan — if Simulation Sandbox and Earthly Kernel
+  are ever connected at runtime, that will be a separate, new
+  Decision Record, not a revision of this one.
+
+Status: Active
+
