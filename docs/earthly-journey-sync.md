@@ -3781,7 +3781,7 @@ built to validate agent decision direction. The conclusions reached
 during that validation later influenced the design direction taken
 by Earthly Kernel (src/earthly-kernel/).
 
-**Confirmed (Yongkit, 2026-07-XX)**
+**Confirmed (Yongkit, 2026-07-14)**
 Simulation Sandbox 当时是为了验证 agent 决策方向而搭建的系统，它验证
 过程中获得的结论，后来影响了 Earthly Kernel 的设计方向。两者目前不
 存在运行时依赖，也没有共享 schema 或直接的数据流关系。
