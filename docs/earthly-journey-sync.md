@@ -3579,6 +3579,22 @@ state space evolution for PostureState (SIMULATION_SPEC 1.3).
 Revisit only if/when a dedicated Body Controller / Pose Planner
 layer is designed in Phase 2+.
 
+### PENDING: Design Methodology Collection (not yet its own document)
+
+First entry: "Genealogy Before Redesign" — before designing or
+specifying a new system layer, first investigate whether it already
+has a history in this repository (prior designs, parallel
+documentation lineages, earlier conversational decisions) before
+defaulting to designing from scratch.
+
+Status: Deferred
+
+Reason: Design Method, not Repository Rule.
+
+Future: May become DESIGN_METHOD.md when enough related principles
+exist to justify a separate ownership boundary and a dedicated
+document improves discoverability.
+
 ## LAYER 4 — CHANGE LOG / PATCH HISTORY
 
 ### Phase 2 — Social Propagation Model: FROZEN
