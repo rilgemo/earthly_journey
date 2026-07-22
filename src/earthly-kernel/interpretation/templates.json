@@ -1,0 +1,5 @@
+{
+  "COMMITMENT_CREATED": "{agent_id} created a {domain}/{type} commitment.",
+  "COMMITMENT_BROKEN": "{agent_id}'s commitment ({commitment_id}) ended. Reason: {failure_reason}",
+  "FOCUS_CHANGED": "{agent_id} shifted focus from {old_domain}/{old_type} to {new_domain}/{new_type}."
+}
