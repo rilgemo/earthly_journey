@@ -1,5 +1,3 @@
-# `docs/decisions/FIELD_ONTOLOGY_FREEZE_v1.md`
-
 # Field Ontology Freeze v1
 
 Status: Frozen
