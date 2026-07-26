@@ -870,14 +870,19 @@ configurations of these fields.
 Field = how the world exists, not a tool the world provides.
 ```
 
-### Five Fields
+### Physical Fields
+
+> Field enumeration re-qualified and revised — see
+> `docs/decisions/FIELD_ONTOLOGY_FREEZE_v1.md`.
+> World Arcana Field: Rejected. Entity ability to influence Fields:
+> Deferred to Agent Interaction Ontology ("Arcana" not reserved as
+> final name).
 
 ```
 Life Field    — biological flow, growth, healing, decay
 Water Field   — fluid dynamics, purification, circulation, erosion
 Earth Field   — structural stability, mass, geological process
 Fire Field    — energy conversion, combustion, transformation
-Arcana Field  — information, pattern, order, rule coherence
 ```
 
 ### Dual-Field Ontology（已锁定）
@@ -892,8 +897,9 @@ But they operate on different state spaces:
 
 ```
 Physical Fields (Magic / World Substrate):
-  Fields:       Life, Water, Earth, Fire, Arcana
+  Fields:       Life, Water, Earth, Fire
   Layer:        Core Simulation (world substrate)
+  Note:         Arcana removed — see FIELD_ONTOLOGY_FREEZE_v1.md
   Acts on:      world state (matter, energy, biological process)
   Propagation:  continuous spatial physics
   Stability:    governed by physical laws + Field Saturation
