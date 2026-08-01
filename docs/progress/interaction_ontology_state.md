@@ -176,3 +176,54 @@ Execute **Interaction Nature — Multi-framing Enumeration (Experimental Trial #
 per the protocol above. On return: (1) run Framing Independence Check retroactively
 on the produced framings, (2) run Coverage Convergence Check, (3) decide whether to
 proceed to Structural Validity.
+
+---
+
+## Interaction Nature — Multi-framing Enumeration: Pre-Trial Findings (Finding, Not Frozen)
+
+**Source**: Pre-Trial discussion session, prior to formal Trial #1 execution.
+**Status**: Finding — informs execution, does not modify protocol.
+**Access Note**: This section should NOT be included when providing protocol
+context to a fresh Trial #1 execution session — only the Experimental
+Protocol section itself should be provided, per Section Access. This
+section is for post-hoc governance/audit reference only.
+
+### Finding 1 — Protocol Executability Review
+- Filter 0 check: Passed. No protocol defect identified.
+- Two issues surfaced (Independence Check qualitative limitation;
+  common-cause bias risk) are classified as **execution integrity risks**,
+  not protocol defects. Do not escalate to protocol modification.
+
+### Finding 2 — A/B Framing Overlap (applies to future framing generation)
+- Two preliminary framings drafted pre-Trial —
+  "Interaction as Field Influence Relationship" and
+  "Interaction as Entity-to-Entity Relational Exchange" — were identified
+  as potentially sharing the same underlying analytical lens ("what type
+  of relationship/influence is this"), differing only in interaction-target
+  scope (Field vs. Entity), not in analytical lens. This has not undergone
+  formal Structural Validity review.
+- **Action for formal Trial #1**: when generating framings, verify each
+  pair against lens-type (property/process/functional/counterfactual/
+  constraint-oriented), not just against subject/target scope.
+
+### Finding 3 — Session Contamination Boundary
+- Confirmed: a discarded/non-authoritative artifact is not equivalent to
+  an unseen artifact. An execution environment that has already produced
+  preliminary framings/candidates carries semantic anchoring risk even if
+  those outputs are formally discarded.
+- **Action**: Formal Trial #1 should be executed in a fresh session that
+  has not been exposed to any preliminary framing or candidate enumeration
+  from prior discussion — including this Findings section itself.
+
+### Execution Note — Prior Expectation Disclosure
+- Recommended (not a protocol requirement, not written into governance):
+  before independent enumeration, each framing should briefly pre-register
+  its lens definition, and the executor should disclose whether they held
+  any prior expectation of likely Interaction Nature candidates before
+  running the Trial.
+
+**Reopen/Use condition**: These findings apply to the next execution of
+Interaction Nature — Multi-framing Enumeration Trial #1. They do not
+require re-opening Qualification Ownership Boundary v1 or any other
+Frozen decision.
+
