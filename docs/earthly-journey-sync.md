@@ -42,19 +42,19 @@ Active / Superseded / Deprecated / Withdrawn.
 ## Architecture Baseline（不可变前提）
 
 ```
-Layer 0 — Core Simulation Layer   （不可变）
+Core Simulation Layer   （不可变）
   Answers: What happened?
   Persists: Events
 
-Layer 1 — Rules / Systems Layer   （可调整）
+Rules / Systems Layer   （可调整）
   Answers: How does the world update after events?
   Persists: States
 
-Layer 2 — Relational Layer        （新增，待锁定）
+Relational Layer        （新增，待锁定）
   Answers: Who begins to include whom in their future model?
   Persists: Expectations
 
-Layer 3 — Emergent Layer          （涌现，无 owner）
+Emergent Layer          （涌现，无 owner）
   Answers: Which patterns does the world retain long-term?
   Persists: Meaning
 ```
