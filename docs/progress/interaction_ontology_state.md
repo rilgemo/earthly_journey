@@ -194,6 +194,13 @@ section is for post-hoc governance/audit reference only.
   common-cause bias risk) are classified as **execution integrity risks**,
   not protocol defects. Do not escalate to protocol modification.
 
+**Related Record**: This execution-side limitation is consistent with the
+generation-side weak independence limitation recorded in `5159d4f`
+("Known Limitation" note on the Multi-framing Enumeration protocol). The
+two records describe the same concern domain — Interaction Nature framing
+independence — from different stages of the Trial lifecycle (generation
+vs. execution/verification) and do not introduce conflicting constraints.
+
 ### Finding 2 — A/B Framing Overlap (applies to future framing generation)
 - Two preliminary framings drafted pre-Trial —
   "Interaction as Field Influence Relationship" and
