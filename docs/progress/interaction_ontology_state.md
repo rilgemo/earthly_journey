@@ -234,3 +234,78 @@ Interaction Nature — Multi-framing Enumeration Trial #1. They do not
 require re-opening Qualification Ownership Boundary v1 or any other
 Frozen decision.
 
+---
+
+## Interaction Nature — Multi-framing Enumeration Trial #1
+### Experimental Output (Candidate Artifact)
+
+Status: Experimental Trial Output — Candidate Artifact (not Frozen, not a Candidate Definition)
+Source: Multi-framing Enumeration Experimental Trial #1, executed per
+Experimental Protocol in this file. Independence Check: Pass.
+
+### Candidate Space
+
+**F1 — Property-oriented** (lens: irreducible required attributes of any interaction)
+1. Directionality
+2. Symmetry
+3. Reciprocity
+4. Boundedness
+5. Participant Multiplicity
+
+**F2 — Process-oriented** (lens: what changes during an interaction)
+1. State Transition
+2. Information Transfer
+3. Relational Update
+4. Causal Propagation
+5. Commitment Formation *(see Flag 1 below)*
+
+**F3 — Counterfactual/Functional** (lens: what capability is lost if interaction is removed)
+1. Cross-Entity Effect Capability
+2. Relationship Formation Capability
+3. Emergent Behavior Capability *(see Flag 2 below)*
+4. Social/World Coupling Capability *(see Flag 2 below)*
+5. Observable Consequence Capability
+
+### Coverage Convergence (observation only, no ranking/elimination performed)
+
+Candidate clusters (surface overlap, not adjudicated):
+- Cluster A: Reciprocity (F1) / Causal Propagation (F2) / Observable Consequence Capability (F3)
+- Cluster B: Directionality + Symmetry (F1) / Cross-Entity Effect Capability (F3)
+- Cluster C: Relational Update (F2) / Relationship Formation Capability (F3)
+
+Isolated candidates: Boundedness (F1), Commitment Formation (F2)
+
+Scale divergence: F1/F2 operate at pairwise-interaction level;
+Emergent Behavior Capability and Social/World Coupling Capability (F3)
+operate at multi-entity/system level.
+
+### Structural Validity Report (Round 1 — structural observation only)
+
+**Flag 1 — Commitment Formation: Potential Frozen Term Collision**
+Verified against `src/earthly-kernel/Commitment.js` (Frozen, SIMULATION_SPEC §1.5):
+Commitment is a single-agent-owned data structure (`agent_id`, `domain`,
+`type`, `origin_state_snapshot`). The candidate's description ("过程本身促成了
+某种可追溯的持续性痕迹") implies an interaction-level/dyadic origin.
+Two structurally consistent interpretations exist, not adjudicated:
+(a) candidate refers to interaction triggering creation of a Frozen
+Commitment on an agent, or (b) candidate is an unrelated concept that
+happens to reuse the name. Requires design-intent resolution
+(not a Review-stage decision).
+
+**Flag 2 — Emergent Behavior Capability / Social/World Coupling Capability:
+Potential Nature-Scope Boundary Leakage**
+No Frozen Interaction Scope definition exists yet to adjudicate against.
+Scale divergence recorded as observation only; boundary status unresolved
+pending future Scope investigation.
+
+Remaining 13 candidates: no structural conflict found against currently
+Frozen decisions (Field Ontology Freeze v1, World Causality Boundary v1,
+Qualification Ownership Boundary v1).
+
+### Outstanding
+
+- Commitment Formation naming ambiguity — awaits design-intent resolution
+- Emergent Behavior Capability / Social-World Coupling Capability — awaits
+  future Scope sub-item investigation
+
+---
