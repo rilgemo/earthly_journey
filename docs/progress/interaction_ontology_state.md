@@ -170,6 +170,32 @@ of classification completeness.
 
 ---
 
+## External Hypotheses (Non-Frozen)
+
+**H-Idlemir** — Status: Pending
+
+Multiple interaction domains sharing a causal world, given long-term feedback,
+may produce recognizable agent trajectory/identity without predefined role
+assignment. Not evaluated. Must not enter current Interaction Nature
+enumeration or any Trial context.
+
+**Access Note**: Do not include in context provided to Interaction Nature
+Trial sessions.
+
+---
+
+## Repository Clarifications (Observation)
+
+**simulation/ ↔ earthly-kernel relationship** — Status: Observation
+
+Confirms existing record (`docs/earthly-journey-sync.md`, "Simulation
+Sandbox / Earthly Kernel historical relationship (v3.9)"). No new
+architectural decision. `src/simulation/` predates current Frozen decisions
+and has no runtime dependency, shared schema, or data flow with
+`src/earthly-kernel/`.
+
+---
+
 ## Next Action
 
 Execute **Interaction Nature — Multi-framing Enumeration (Experimental Trial #1)**
